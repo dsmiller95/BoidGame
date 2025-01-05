@@ -63,50 +63,41 @@ namespace Boids.Domain
             }
             bucket.Add(item);
         }
-    
-        public Bucket<T>?[] GetNeighborBuckets(
+
+        public List<Bucket<T>> GetNeighborBuckets(
+            Vector2 around,
+            float overlappingSquareRadius)
+        {
+            var newList = new List<Bucket<T>>();
+            GetNeighborBuckets(around, overlappingSquareRadius, newList);
+            return newList;
+        }
+        
+        public void GetNeighborBuckets(
             Vector2 around,
             float overlappingSquareRadius,
-            Bucket<T>?[]? existingBuckets)
+            List<Bucket<T>> existingBuckets)
         {
             Profiler.BeginSample("SpatialHash.GetBuckets");
             var overlapExtents = new Vector2(overlappingSquareRadius, overlappingSquareRadius);
             var minCell = GetCell(around - overlapExtents);
             var maxCell = GetCell(around + overlapExtents);
         
-            var outLen = GetIndex(maxCell) + 1;
-            if(existingBuckets == null || existingBuckets.Length < outLen)
-            {
-                Profiler.BeginSample("SpatialHash.GetBuckets.AllocBucket");
-                existingBuckets = new Bucket<T>?[outLen];
-                Profiler.EndSample();
-            }
+            existingBuckets.Clear();
             for (var x = minCell.x; x <= maxCell.x; x++)
             {
                 for (var y = minCell.y; y <= maxCell.y; y++)
                 {
                     var cell = new Vector2Int(x, y);
-                    var index = GetIndex(cell);
-                    if (_cellContents.TryGetValue(cell, out var bucket))
+                    if (!_cellContents.TryGetValue(cell, out var bucket))
                     {
-                        existingBuckets[index] = bucket;
+                        bucket = Bucket<T>.Empty(VectorUtil.MultComponents(cell, _cellSize));
                     }
-                    else
-                    {
-                        existingBuckets[index] = Bucket<T>.Empty(VectorUtil.MultComponents(cell, _cellSize));
-                    }
+                    existingBuckets.Add(bucket);
                 }
             }
-            Profiler.EndSample();
 
-            return existingBuckets;
-        
-            int GetIndex(Vector2Int atPos)
-            {
-                var relativePos = atPos - minCell;
-                var height = maxCell.y - minCell.y + 1; // +1 because it's inclusive
-                return relativePos.x + relativePos.y * height;
-            }
+            Profiler.EndSample();
         }
     
         private Vector2Int GetCell(Vector2 position)

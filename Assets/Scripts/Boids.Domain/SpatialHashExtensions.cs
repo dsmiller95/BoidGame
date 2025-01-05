@@ -8,8 +8,7 @@ namespace Boids.Domain
     {
         public static IEnumerable<T> GetNeighborBucketsEnumerator<T>(this SpatialHash<T> hash, Vector2 around, float overlappingSquareRadius)
         {
-            return hash.GetNeighborBuckets(around, overlappingSquareRadius, null)
-                .WhereHasValue()
+            return hash.GetNeighborBuckets(around, overlappingSquareRadius)
                 .Where(x => x.Contents != null).SelectMany(x => x.Contents);
         }
     }

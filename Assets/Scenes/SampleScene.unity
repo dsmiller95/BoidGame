@@ -184,7 +184,7 @@ MonoBehaviour:
   config:
     drawDebugRays: 0
     hashGridSize: {x: 3, y: 3}
-    framesPerFullUpdate: 1
+    framesPerFullUpdate: 4
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

@@ -68,9 +68,9 @@ public class BoidSwarm : MonoBehaviour
     }
 
     private SpatialHash<BoidBehavior> _spatialHash = new(new Vector2(10, 10));
-    private Bucket<BoidBehavior>?[]? _neighborBuckets;
+    private readonly List<Bucket<BoidBehavior>> _neighborBuckets = new();
     private int _fixedUpdateCounter = 0;
-    private System.Diagnostics.Stopwatch _timer = new();
+    private readonly System.Diagnostics.Stopwatch _timer = new();
     private void FixedUpdate()
     {
         _fixedUpdateCounter++;
@@ -102,10 +102,11 @@ public class BoidSwarm : MonoBehaviour
         var updateInfo = new BoidUpdateInfo();
         var deltaTime = Time.fixedDeltaTime * stride;
         _timer.Restart();
+        var toRemove = new List<int>();
         for (int i = offset; i < _allBoids.Count; i += stride)
         {
             BoidBehavior boid = _allBoids[i];
-            _neighborBuckets = _spatialHash.GetNeighborBuckets(
+            _spatialHash.GetNeighborBuckets(
                 boid.GetPosition(),
                 _maxNeighborDistance, 
                 _neighborBuckets);
@@ -118,8 +119,7 @@ public class BoidSwarm : MonoBehaviour
             switch (updateResult)
             {
                 case BoidUpdateResult.Destroy:
-                    DeregisterBoid(boid, atIndex: i);
-                    Destroy(boid.gameObject);
+                    toRemove.Add(i);
                     break;
                 case BoidUpdateResult.KeepAlive:
                     break;
@@ -127,6 +127,15 @@ public class BoidSwarm : MonoBehaviour
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        for (int i = toRemove.Count - 1; i >= 0; i--)
+        {
+            var removeIndex = toRemove[i];
+            var boid = _allBoids[removeIndex];
+            DeregisterBoid(boid, atIndex: removeIndex);
+            Destroy(boid.gameObject);
+        }
+        
         _timer.Stop();
         updateInfo.totalElapsed = _timer.Elapsed;
         Debug.Log(updateInfo);

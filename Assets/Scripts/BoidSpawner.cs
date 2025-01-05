@@ -40,7 +40,7 @@ public class BoidSpawner : MonoBehaviour
             UnityEngine.Random.Range(-spawnSize.x / 2, spawnSize.x / 2),
             UnityEngine.Random.Range(-spawnSize.y / 2, spawnSize.y / 2)
         );
-        var instantiated = Instantiate(boidPrefab, spawnPosition, Quaternion.identity);
+        var instantiated = Instantiate(boidPrefab, spawnPosition, Quaternion.identity, this.transform);
         instantiated.Initialize(swarmOwner);
     }
 

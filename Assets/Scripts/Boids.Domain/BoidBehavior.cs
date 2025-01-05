@@ -79,7 +79,7 @@ public class BoidBehavior : MonoBehaviour
     }
     
     public BoidUpdateResult ManagedFixedUpdate(
-        Bucket<BoidBehavior>?[] sharedBucketBoids,
+        List<Bucket<BoidBehavior>> sharedBucketBoids,
         SwarmConfig swarmConfig,
         float deltaTime,
         ref BoidUpdateInfo updateInfo)
@@ -104,17 +104,24 @@ public class BoidBehavior : MonoBehaviour
         Profiler.BeginSample("Boid.IterateBuckets");
         foreach (var bucket in sharedBucketBoids)
         {
-            if (bucket?.Contents == null) continue;
-            updateInfo.totalIterations += bucket.Value.Contents.Count;
-            foreach (var otherBoid in bucket.Value.Contents)
+            if (bucket.Contents == null) continue;
+            updateInfo.totalIterations += bucket.Contents.Count;
+            foreach (var otherBoid in bucket.Contents)
             {
-                if(otherBoid == this) continue;
+                if (otherBoid == this)
+                {
+                    continue;
+                }
                 
                 var neighborPosition = otherBoid._rigidbody2D.position;
                 var myPosition = _rigidbody2D.position;
                 Vector2 toNeighbor = neighborPosition - myPosition;
                 float distanceSq = toNeighbor.sqrMagnitude;
-                if(distanceSq > maxDistSq) continue;
+                if (distanceSq > maxDistSq)
+                {
+                    updateInfo.totalSkipped++;
+                    continue;
+                }
 
                 float distance = Mathf.Sqrt(distanceSq);
 
