@@ -8,7 +8,9 @@ public class BoidSpawner : MonoBehaviour
     public BoidSwarm swarmOwner;
     public BoidBehavior boidPrefab;
     
+    [Range(0.001f, 10f)]
     public float timePerSpawn = 0.5f;
+    public int targetBoidCount = 1000;
     
     public Vector2 spawnSize;
 
@@ -17,14 +19,18 @@ public class BoidSpawner : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if(_timeSinceLastSpawn < timePerSpawn)
-        {
-            _timeSinceLastSpawn += Time.fixedDeltaTime;
-            return;
-        }
-        _timeSinceLastSpawn -= timePerSpawn;
+        timePerSpawn = MathF.Max(0.001f, timePerSpawn);
+        _timeSinceLastSpawn += Time.fixedDeltaTime;
         
-        SpawnBoid();
+        while(_timeSinceLastSpawn >= timePerSpawn &&
+              swarmOwner.BoidCount < targetBoidCount)
+        {
+            _timeSinceLastSpawn -= timePerSpawn;
+            SpawnBoid();
+        }
+        
+        // don't let _timeSinceLastSpawn accumulate across frames above the amount required to spawn 1 
+        _timeSinceLastSpawn = Mathf.Min(_timeSinceLastSpawn, timePerSpawn);
     }
 
     private void SpawnBoid()

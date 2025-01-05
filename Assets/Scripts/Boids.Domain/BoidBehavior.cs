@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BoidBehavior : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class BoidBehavior : MonoBehaviour
     private Rigidbody2D _rigidbody2D;
     private Collider2D _collider2D;
     private BoidSwarm _mySwarm;
-    private float _spawnedAtTime = 0f;
+    private float _deathTime = 0f;
     private Vector2 _currentSteering = Vector2.zero;
     
     [Serializable]
@@ -42,7 +43,8 @@ public class BoidBehavior : MonoBehaviour
         var randDir = UnityEngine.Random.insideUnitCircle.normalized;
         var targetHeading = Vector2.Lerp(cycleDir, randDir, config.randomMagnitude);
         _rigidbody2D.linearVelocity = targetHeading * config.initialSpeed; 
-        _spawnedAtTime = Time.fixedTime;
+        _deathTime = Time.fixedTime + config.lifetimeSeconds;
+        _deathTime *= Random.Range(0.9f, 1.1f);
         
         _mySwarm = swarm;
         _mySwarm.RegisterBoid(this);
@@ -74,19 +76,12 @@ public class BoidBehavior : MonoBehaviour
         _mySwarm.DeregisterBoid(this);
     }
 
-    private Collider2D[] _neighborQueryResults;
-
-    public void ManagedFixedUpdate(List<BoidBehavior>[] sharedBucketBoids)
+    public void ManagedFixedUpdate(List<BoidBehavior>?[] sharedBucketBoids, SwarmConfig swarmConfig)
     {
-        if(_spawnedAtTime + config.lifetimeSeconds < Time.fixedTime)
+        if(_deathTime < Time.fixedTime)
         {
             Destroy(gameObject);
             return;
-        }
-        
-        if(_neighborQueryResults?.Length != config.maxNeighbors)
-        {
-            _neighborQueryResults = new Collider2D[config.maxNeighbors];
         }
         
         Vector2 separation = Vector2.zero;
@@ -98,6 +93,7 @@ public class BoidBehavior : MonoBehaviour
 
         foreach (var bucket in sharedBucketBoids)
         {
+            if (bucket == null) return;
             foreach (var otherBoid in bucket)
             {
                 var neighborPosition = otherBoid._rigidbody2D.position;
@@ -132,14 +128,12 @@ public class BoidBehavior : MonoBehaviour
         }
 
 
-        var forward = _rigidbody2D.linearVelocity.normalized;
-        var currentPosition = _rigidbody2D.position;
         if(separationNeighborCount > 0)
         {
             //separation =  (currentPosition * separationNeighborCount) - separation;
             //separation = separation.normalized;
             //if(separation.magnitude > config.maxForce) separation = separation.normalized * config.maxForce;
-            DrawSteeringForce(separation, Color.blue);
+            if(swarmConfig.drawDebugRays) DrawSteeringForce(separation, Color.blue);
         }
         else separation = Vector2.zero;
         
@@ -148,7 +142,7 @@ public class BoidBehavior : MonoBehaviour
             alignment = (alignment / alignmentNeighborCount) - _rigidbody2D.linearVelocity;
             //alignment = alignment.normalized;
             //if(alignment.magnitude > config.maxForce) alignment = alignment.normalized * config.maxForce;
-            DrawSteeringForce(alignment, Color.green);
+            if(swarmConfig.drawDebugRays) DrawSteeringForce(alignment, Color.green);
         }
         else alignment = Vector2.zero;
 
@@ -158,12 +152,15 @@ public class BoidBehavior : MonoBehaviour
             cohesion -= _rigidbody2D.position;
             //cohesion = cohesion.normalized;
             //if(cohesion.magnitude > config.maxForce) cohesion = cohesion.normalized * config.maxForce;
-            DrawSteeringForce(cohesion, Color.red);
+            if(swarmConfig.drawDebugRays) DrawSteeringForce(cohesion, Color.red);
         }
         else cohesion = Vector2.zero;
-        
-        var steerFrom = _rigidbody2D.position + _rigidbody2D.linearVelocity * _velocityTimeAheadDraw;
-        Debug.DrawLine(_rigidbody2D.position, steerFrom, Color.magenta);
+
+        if (swarmConfig.drawDebugRays)
+        {
+            var steerFrom = _rigidbody2D.position + _rigidbody2D.linearVelocity * _velocityTimeAheadDraw;
+            Debug.DrawLine(_rigidbody2D.position, steerFrom, Color.magenta);
+        }
 
         var targetForward = separation * config.separationWeight + alignment * config.alignmentWeight + cohesion * config.cohesionWeight;
         var nextHeading = _rigidbody2D.linearVelocity + Time.fixedDeltaTime * (targetForward - _rigidbody2D.linearVelocity);
@@ -193,7 +190,7 @@ public class BoidBehavior : MonoBehaviour
         return heading;
     }
 
-    private float _velocityTimeAheadDraw = 0.5f;
+    private readonly float _velocityTimeAheadDraw = 0.5f;
     private void DrawSteeringForce(Vector2 steering, Color color)
     {
         var velocity = _rigidbody2D.linearVelocity;

@@ -1,19 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using Boids.Domain;
 using UnityEngine;
+using UnityEngine.Profiling;
+
+[Serializable]
+public struct SwarmConfig
+{
+    public static SwarmConfig Default => new()
+    {
+        drawDebugRays = false,
+        hashGridSize = new Vector2(10, 10)
+    };
+    
+    public bool drawDebugRays;
+    public Vector2 hashGridSize;
+}
 
 public class BoidSwarm : MonoBehaviour
 {
-    public Vector2 HashGridSize = new Vector2(10, 10);
+    public SwarmConfig config = SwarmConfig.Default;
     
-    private float _maxNeighborDistance = 10f;
-    private List<BoidBehavior> _allBoids;
+    private float _maxNeighborDistance = 5f;
+    private List<BoidBehavior> _allBoids = new();
     
-    private void Awake()
-    {
-        _allBoids = new List<BoidBehavior>();
-        _spatialHash = new SpatialHash<BoidBehavior>(HashGridSize);
-    }
+    public int BoidCount => _allBoids.Count;
     
     public void RegisterBoid(BoidBehavior boid)
     {
@@ -31,6 +42,7 @@ public class BoidSwarm : MonoBehaviour
     {
         if (!(boid.GetMaxNeighborDistance() >= _maxNeighborDistance)) return;
         
+        Profiler.BeginSample("BoidSwarm.RemoveMaxDist", this);
         var newMax = 0f;
         foreach (BoidBehavior b in _allBoids)
         {
@@ -43,20 +55,23 @@ public class BoidSwarm : MonoBehaviour
             }
         }
         _maxNeighborDistance = newMax;
+        Profiler.EndSample();
     }
-    
-    private SpatialHash<BoidBehavior> _spatialHash;
-    private List<BoidBehavior>[] _neighborBuckets;
+
+    private SpatialHash<BoidBehavior> _spatialHash = new(new Vector2(10, 10));
+    private List<BoidBehavior>?[]? _neighborBuckets;
     
     private void FixedUpdate()
     {
-        if(HashGridSize != _spatialHash.CellSize)
+        Profiler.BeginSample("BoidSwarm.Setup", this);
+        if(config.hashGridSize != _spatialHash.CellSize)
         {
-            _spatialHash = new SpatialHash<BoidBehavior>(HashGridSize);
+            _spatialHash = new SpatialHash<BoidBehavior>(config.hashGridSize);
         }
-        
         _spatialHash.Clear();
+        Profiler.EndSample();
         
+        Profiler.BeginSample("BoidSwarm.PopulateHash", this);
         foreach (BoidBehavior boid in _allBoids)
         {
             if (boid == null)
@@ -67,12 +82,18 @@ public class BoidSwarm : MonoBehaviour
             var position = boid.GetPosition();
             _spatialHash.Add(position, boid);
         }
+        Profiler.EndSample();
 
+        Profiler.BeginSample("BoidSwarm.UpdateBoids", this);
         foreach (BoidBehavior boid in _allBoids)
         {
-            _spatialHash.GetNeighborBuckets(boid.GetPosition(), _maxNeighborDistance, ref _neighborBuckets);
+            _neighborBuckets = _spatialHash.GetNeighborBuckets(
+                boid.GetPosition(),
+                _maxNeighborDistance, 
+                _neighborBuckets);
             
-            boid.ManagedFixedUpdate(_neighborBuckets);
+            boid.ManagedFixedUpdate(_neighborBuckets, config);
         }
+        Profiler.EndSample();
     }
 }

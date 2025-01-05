@@ -166,7 +166,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swarmOwner: {fileID: 107802732}
   boidPrefab: {fileID: 7760226954748115280, guid: ea715ca325d485043b8b56650c723894, type: 3}
-  timePerSpawn: 0
+  timePerSpawn: 0.01
+  targetBoidCount: 1000
   spawnSize: {x: 5, y: 5}
 --- !u!114 &107802732
 MonoBehaviour:
@@ -180,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e5df2b80bc44865b0e6f8c5bd1f1dc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HashGridSize: {x: 10, y: 10}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
