@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BoidBehavior : MonoBehaviour
@@ -7,6 +8,7 @@ public class BoidBehavior : MonoBehaviour
     
     private Rigidbody2D _rigidbody2D;
     private Collider2D _collider2D;
+    private BoidSwarm _mySwarm;
     private float _spawnedAtTime = 0f;
     private Vector2 _currentSteering = Vector2.zero;
     
@@ -19,12 +21,12 @@ public class BoidBehavior : MonoBehaviour
         public float maxForce = 3f;
         public float minSpeed = 1f;
         public int maxNeighbors = 50;
-        
-        public float separationRadius = 25f;
+
+        public float separationRadius = 3;
         public float separationWeight = 1.5f;
-        public float alignmentRadius = 50f;
+        public float alignmentRadius = 5f;
         public float alignmentWeight = 1f;
-        public float cohesionRadius = 50f;
+        public float cohesionRadius = 6f;
         public float cohesionWeight = 1f;
         
         public float lifetimeSeconds = 10f;
@@ -34,13 +36,26 @@ public class BoidBehavior : MonoBehaviour
 
     }
     
-    public void Initialize()
+    public void Initialize(BoidSwarm swarm)
     {
         var cycleDir = new Vector2(Mathf.Sin(Time.time), Mathf.Cos(Time.time));
         var randDir = UnityEngine.Random.insideUnitCircle.normalized;
         var targetHeading = Vector2.Lerp(cycleDir, randDir, config.randomMagnitude);
         _rigidbody2D.linearVelocity = targetHeading * config.initialSpeed; 
         _spawnedAtTime = Time.fixedTime;
+        
+        _mySwarm = swarm;
+        _mySwarm.RegisterBoid(this);
+    }
+
+    public Vector2 GetPosition()
+    {
+        return _rigidbody2D.position;
+    }
+    
+    public float GetMaxNeighborDistance()
+    {
+        return Mathf.Max(config.separationRadius, config.alignmentRadius, config.cohesionRadius);
     }
     
     private void Awake()
@@ -48,10 +63,20 @@ public class BoidBehavior : MonoBehaviour
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _collider2D = GetComponent<Collider2D>();
     }
-    
+
+    private void Start()
+    {
+        Debug.Assert(_mySwarm != null, "boid must be initialized with a swarm", this);
+    }
+
+    private void OnDestroy()
+    {
+        _mySwarm.DeregisterBoid(this);
+    }
+
     private Collider2D[] _neighborQueryResults;
 
-    private void FixedUpdate()
+    public void ManagedFixedUpdate(List<BoidBehavior>[] sharedBucketBoids)
     {
         if(_spawnedAtTime + config.lifetimeSeconds < Time.fixedTime)
         {
@@ -71,54 +96,42 @@ public class BoidBehavior : MonoBehaviour
         int alignmentNeighborCount = 0;
         int cohesionNeighborCount = 0;
 
-        var myLayer = _rigidbody2D.gameObject.layer;
-        var contactFilter = new ContactFilter2D()
+        foreach (var bucket in sharedBucketBoids)
         {
-            useLayerMask = true,
-            layerMask = 1 << myLayer
-        };
-
-        var maxRadius = Mathf.Max(config.separationRadius, config.alignmentRadius, config.cohesionRadius);
-        Physics2D.OverlapCircle(transform.position, maxRadius, contactFilter, _neighborQueryResults);
-        foreach (Collider2D neighbor in _neighborQueryResults)
-        {
-            // assume that the results are contiguous
-            if (neighbor == null) break;
-            if (neighbor == _collider2D) continue;
-            BoidBehavior otherBoid = neighbor.GetComponent<BoidBehavior>();
-            if (otherBoid == null) continue;
-
-            var neighborPosition = otherBoid._rigidbody2D.position;
-            var myPosition = _rigidbody2D.position;
-            Vector2 toNeighbor = neighborPosition - myPosition;
-            float distance = toNeighbor.magnitude;
-
-            // Separation
-            if (distance < config.separationRadius)
+            foreach (var otherBoid in bucket)
             {
-                separationNeighborCount++;
-                var fromNeighbor = -toNeighbor;
-                var separationAdjustment = 1f - (distance / config.separationRadius);
-                //separationAdjustment = separationAdjustment * separationAdjustment;
-                //separationAdjustment = Mathf.Clamp01(separationAdjustment);
-                separation += fromNeighbor.normalized * (0.5f + separationAdjustment * 0.5f);
-            }
+                var neighborPosition = otherBoid._rigidbody2D.position;
+                var myPosition = _rigidbody2D.position;
+                Vector2 toNeighbor = neighborPosition - myPosition;
+                float distance = toNeighbor.magnitude;
 
-            // Alignment and Cohesion
-            if (distance < config.alignmentRadius)
-            {
-                alignmentNeighborCount++;
-                alignment += otherBoid._rigidbody2D.linearVelocity;
-            }
+                // Separation
+                if (distance < config.separationRadius)
+                {
+                    separationNeighborCount++;
+                    var fromNeighbor = -toNeighbor;
+                    var separationAdjustment = 1f - (distance / config.separationRadius);
+                    //separationAdjustment = separationAdjustment * separationAdjustment;
+                    //separationAdjustment = Mathf.Clamp01(separationAdjustment);
+                    separation += fromNeighbor.normalized * (0.5f + separationAdjustment * 0.5f);
+                }
 
-            if (distance < config.cohesionRadius)
-            {
-                cohesionNeighborCount++;
-                cohesion += neighborPosition;
+                // Alignment and Cohesion
+                if (distance < config.alignmentRadius)
+                {
+                    alignmentNeighborCount++;
+                    alignment += otherBoid._rigidbody2D.linearVelocity;
+                }
+
+                if (distance < config.cohesionRadius)
+                {
+                    cohesionNeighborCount++;
+                    cohesion += neighborPosition;
+                }
             }
         }
 
-        
+
         var forward = _rigidbody2D.linearVelocity.normalized;
         var currentPosition = _rigidbody2D.position;
         if(separationNeighborCount > 0)

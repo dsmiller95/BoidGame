@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BoidSpawner : MonoBehaviour
 {
+    public BoidSwarm swarmOwner;
     public BoidBehavior boidPrefab;
     
     public float timePerSpawn = 0.5f;
@@ -34,7 +35,7 @@ public class BoidSpawner : MonoBehaviour
             UnityEngine.Random.Range(-spawnSize.y / 2, spawnSize.y / 2)
         );
         var instantiated = Instantiate(boidPrefab, spawnPosition, Quaternion.identity);
-        instantiated.Initialize();
+        instantiated.Initialize(swarmOwner);
     }
 
     private void OnDrawGizmosSelected()

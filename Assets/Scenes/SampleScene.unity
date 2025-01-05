@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 107802730}
   - component: {fileID: 107802731}
+  - component: {fileID: 107802732}
   m_Layer: 0
   m_Name: BoidSpawner
   m_TagString: Untagged
@@ -163,9 +164,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d68467c15554024a94362ca247b2c13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  swarmOwner: {fileID: 107802732}
   boidPrefab: {fileID: 7760226954748115280, guid: ea715ca325d485043b8b56650c723894, type: 3}
-  timePerSpawn: 0.1
+  timePerSpawn: 0
   spawnSize: {x: 5, y: 5}
+--- !u!114 &107802732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107802729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e5df2b80bc44865b0e6f8c5bd1f1dc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
