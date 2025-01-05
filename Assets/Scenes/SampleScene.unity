@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 7760226954748115280, guid: ea715ca325d485043b8b56650c723894, type: 3}
-  timePerSpawn: 0.5
+  timePerSpawn: 0.1
   spawnSize: {x: 5, y: 5}
 --- !u!1 &519420028
 GameObject:
@@ -272,7 +272,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 50
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
