@@ -21,7 +21,7 @@ public class BoidSpawner : MonoBehaviour
             _timeSinceLastSpawn += Time.fixedDeltaTime;
             return;
         }
-        _timeSinceLastSpawn -= Time.fixedDeltaTime;
+        _timeSinceLastSpawn -= timePerSpawn;
         
         SpawnBoid();
     }
