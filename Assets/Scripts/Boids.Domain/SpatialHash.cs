@@ -6,11 +6,39 @@ using UnityEngine.Profiling;
 
 namespace Boids.Domain
 {
+    public struct Bucket<T>
+    {
+        public Vector2 Center { get; }
+        public List<T>? Contents { get; private set; }
+
+        public static Bucket<T> Empty(Vector2 center) => new Bucket<T>(center)
+        {
+            Contents = null
+        };
+        public static Bucket<T> Fillable(Vector2 center) => new Bucket<T>(center)
+        {
+            Contents = new List<T>()
+        };
+        
+        private Bucket(Vector2 center)
+        {
+            Contents = null;
+            Center = center;
+        }
+        
+        public void Clear() => Contents?.Clear();
+        public void Add(T item)
+        {
+            Contents ??= new List<T>();
+            Contents.Add(item);
+        }
+    }
+    
     public class SpatialHash<T>
     {
         public Vector2 CellSize => _cellSize;
         private readonly Vector2 _cellSize;
-        private readonly Dictionary<Vector2Int, List<T>> _cellContents = new();
+        private readonly Dictionary<Vector2Int, Bucket<T>> _cellContents = new();
 
         public SpatialHash(Vector2 cellSize)
         {
@@ -28,17 +56,18 @@ namespace Boids.Domain
         public void Add(Vector2 position, T item)
         {
             var cell = GetCell(position);
-            if (!_cellContents.ContainsKey(cell))
+            if(!_cellContents.TryGetValue(cell, out var bucket))
             {
-                _cellContents[cell] = new List<T>();
+                bucket = Bucket<T>.Fillable(cell);
+                _cellContents.Add(cell, bucket);
             }
-            _cellContents[cell].Add(item);
+            bucket.Add(item);
         }
     
-        public List<T>?[] GetNeighborBuckets(
+        public Bucket<T>?[] GetNeighborBuckets(
             Vector2 around,
             float overlappingSquareRadius,
-            List<T>?[]? existingBuckets)
+            Bucket<T>?[]? existingBuckets)
         {
             Profiler.BeginSample("SpatialHash.GetBuckets");
             var overlapExtents = new Vector2(overlappingSquareRadius, overlappingSquareRadius);
@@ -46,10 +75,10 @@ namespace Boids.Domain
             var maxCell = GetCell(around + overlapExtents);
         
             var outLen = GetIndex(maxCell) + 1;
-            if(existingBuckets == null || existingBuckets.Length != outLen)
+            if(existingBuckets == null || existingBuckets.Length < outLen)
             {
                 Profiler.BeginSample("SpatialHash.GetBuckets.AllocBucket");
-                existingBuckets = new List<T>[outLen];
+                existingBuckets = new Bucket<T>?[outLen];
                 Profiler.EndSample();
             }
             for (var x = minCell.x; x <= maxCell.x; x++)
@@ -57,10 +86,14 @@ namespace Boids.Domain
                 for (var y = minCell.y; y <= maxCell.y; y++)
                 {
                     var cell = new Vector2Int(x, y);
+                    var index = GetIndex(cell);
                     if (_cellContents.TryGetValue(cell, out var bucket))
                     {
-                        var index = GetIndex(cell);
                         existingBuckets[index] = bucket;
+                    }
+                    else
+                    {
+                        existingBuckets[index] = Bucket<T>.Empty(VectorUtil.MultComponents(cell, _cellSize));
                     }
                 }
             }
@@ -71,7 +104,7 @@ namespace Boids.Domain
             int GetIndex(Vector2Int atPos)
             {
                 var relativePos = atPos - minCell;
-                var height = maxCell.y - minCell.y;
+                var height = maxCell.y - minCell.y + 1; // +1 because it's inclusive
                 return relativePos.x + relativePos.y * height;
             }
         }

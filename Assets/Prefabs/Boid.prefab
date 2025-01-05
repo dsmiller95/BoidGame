@@ -147,7 +147,7 @@ MonoBehaviour:
     cohesionRadius: 6
     cohesionWeight: 1
     lifetimeSeconds: 20
-    randomMagnitude: 0
+    randomMagnitude: 0.28
 --- !u!50 &6811515191092845683
 Rigidbody2D:
   serializedVersion: 5

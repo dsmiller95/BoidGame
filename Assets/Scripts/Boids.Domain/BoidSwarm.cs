@@ -10,11 +10,15 @@ public struct SwarmConfig
     public static SwarmConfig Default => new()
     {
         drawDebugRays = false,
-        hashGridSize = new Vector2(10, 10)
+        hashGridSize = new Vector2(10, 10),
+        framesPerFullUpdate = 1,
     };
     
     public bool drawDebugRays;
     public Vector2 hashGridSize;
+    
+    [SerializeField] private int framesPerFullUpdate;
+    public int FramesPerFullUpdate => Mathf.Max(1, framesPerFullUpdate);
 }
 
 public class BoidSwarm : MonoBehaviour
@@ -36,6 +40,11 @@ public class BoidSwarm : MonoBehaviour
     {
         RemoveBoidFromMaxDistance(boid);
         _allBoids.Remove(boid);
+    }
+    public void DeregisterBoid(BoidBehavior boid, int atIndex)
+    {
+        RemoveBoidFromMaxDistance(boid);
+        _allBoids.RemoveAt(atIndex);
     }
     
     private void RemoveBoidFromMaxDistance(BoidBehavior boid)
@@ -59,10 +68,13 @@ public class BoidSwarm : MonoBehaviour
     }
 
     private SpatialHash<BoidBehavior> _spatialHash = new(new Vector2(10, 10));
-    private List<BoidBehavior>?[]? _neighborBuckets;
-    
+    private Bucket<BoidBehavior>?[]? _neighborBuckets;
+    private int _fixedUpdateCounter = 0;
+    private System.Diagnostics.Stopwatch _timer = new();
     private void FixedUpdate()
     {
+        _fixedUpdateCounter++;
+        
         Profiler.BeginSample("BoidSwarm.Setup", this);
         if(config.hashGridSize != _spatialHash.CellSize)
         {
@@ -85,15 +97,39 @@ public class BoidSwarm : MonoBehaviour
         Profiler.EndSample();
 
         Profiler.BeginSample("BoidSwarm.UpdateBoids", this);
-        foreach (BoidBehavior boid in _allBoids)
+        var stride = config.FramesPerFullUpdate;
+        var offset = _fixedUpdateCounter % stride;
+        var updateInfo = new BoidUpdateInfo();
+        var deltaTime = Time.fixedDeltaTime * stride;
+        _timer.Restart();
+        for (int i = offset; i < _allBoids.Count; i += stride)
         {
+            BoidBehavior boid = _allBoids[i];
             _neighborBuckets = _spatialHash.GetNeighborBuckets(
                 boid.GetPosition(),
                 _maxNeighborDistance, 
                 _neighborBuckets);
             
-            boid.ManagedFixedUpdate(_neighborBuckets, config);
+            var updateResult = boid.ManagedFixedUpdate(
+                _neighborBuckets,
+                config,
+                deltaTime,
+                ref updateInfo);
+            switch (updateResult)
+            {
+                case BoidUpdateResult.Destroy:
+                    DeregisterBoid(boid, atIndex: i);
+                    Destroy(boid.gameObject);
+                    break;
+                case BoidUpdateResult.KeepAlive:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
+        _timer.Stop();
+        updateInfo.totalElapsed = _timer.Elapsed;
+        Debug.Log(updateInfo);
         Profiler.EndSample();
     }
 }

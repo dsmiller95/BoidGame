@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Boids.Domain;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
 public class BoidBehavior : MonoBehaviour
@@ -23,10 +25,15 @@ public class BoidBehavior : MonoBehaviour
         public float minSpeed = 1f;
         public int maxNeighbors = 50;
 
+        public float SeparationRadiusSquared => separationRadius * separationRadius;
         public float separationRadius = 3;
         public float separationWeight = 1.5f;
+        
+        public float AlignmentRadiusSquared => alignmentRadius * alignmentRadius;
         public float alignmentRadius = 5f;
         public float alignmentWeight = 1f;
+        
+        public float CohesionRadiusSquared => cohesionRadius * cohesionRadius;
         public float cohesionRadius = 6f;
         public float cohesionWeight = 1f;
         
@@ -70,19 +77,19 @@ public class BoidBehavior : MonoBehaviour
     {
         Debug.Assert(_mySwarm != null, "boid must be initialized with a swarm", this);
     }
-
-    private void OnDestroy()
-    {
-        _mySwarm.DeregisterBoid(this);
-    }
-
-    public void ManagedFixedUpdate(List<BoidBehavior>?[] sharedBucketBoids, SwarmConfig swarmConfig)
+    
+    public BoidUpdateResult ManagedFixedUpdate(
+        Bucket<BoidBehavior>?[] sharedBucketBoids,
+        SwarmConfig swarmConfig,
+        float deltaTime,
+        ref BoidUpdateInfo updateInfo)
     {
         if(_deathTime < Time.fixedTime)
         {
-            Destroy(gameObject);
-            return;
+            return BoidUpdateResult.Destroy;
         }
+
+        updateInfo.totalBoids++;
         
         Vector2 separation = Vector2.zero;
         Vector2 alignment = Vector2.zero;
@@ -91,25 +98,36 @@ public class BoidBehavior : MonoBehaviour
         int alignmentNeighborCount = 0;
         int cohesionNeighborCount = 0;
 
+        var maxDistSq = GetMaxNeighborDistance();
+        maxDistSq *= maxDistSq;
+
+        Profiler.BeginSample("Boid.IterateBuckets");
         foreach (var bucket in sharedBucketBoids)
         {
-            if (bucket == null) return;
-            foreach (var otherBoid in bucket)
+            if (bucket?.Contents == null) continue;
+            updateInfo.totalIterations += bucket.Value.Contents.Count;
+            foreach (var otherBoid in bucket.Value.Contents)
             {
+                if(otherBoid == this) continue;
+                
                 var neighborPosition = otherBoid._rigidbody2D.position;
                 var myPosition = _rigidbody2D.position;
                 Vector2 toNeighbor = neighborPosition - myPosition;
-                float distance = toNeighbor.magnitude;
+                float distanceSq = toNeighbor.sqrMagnitude;
+                if(distanceSq > maxDistSq) continue;
+
+                float distance = Mathf.Sqrt(distanceSq);
 
                 // Separation
                 if (distance < config.separationRadius)
                 {
                     separationNeighborCount++;
                     var fromNeighbor = -toNeighbor;
+                    var fromNeighborNormalized = fromNeighbor / distance;
                     var separationAdjustment = 1f - (distance / config.separationRadius);
                     //separationAdjustment = separationAdjustment * separationAdjustment;
                     //separationAdjustment = Mathf.Clamp01(separationAdjustment);
-                    separation += fromNeighbor.normalized * (0.5f + separationAdjustment * 0.5f);
+                    separation += fromNeighborNormalized * (0.5f + separationAdjustment * 0.5f);
                 }
 
                 // Alignment and Cohesion
@@ -126,8 +144,9 @@ public class BoidBehavior : MonoBehaviour
                 }
             }
         }
-
-
+        Profiler.EndSample();
+        
+        Profiler.BeginSample($"Boid.ApplyResults");
         if(separationNeighborCount > 0)
         {
             //separation =  (currentPosition * separationNeighborCount) - separation;
@@ -163,12 +182,14 @@ public class BoidBehavior : MonoBehaviour
         }
 
         var targetForward = separation * config.separationWeight + alignment * config.alignmentWeight + cohesion * config.cohesionWeight;
-        var nextHeading = _rigidbody2D.linearVelocity + Time.fixedDeltaTime * (targetForward - _rigidbody2D.linearVelocity);
+        var nextHeading = _rigidbody2D.linearVelocity + deltaTime * (targetForward - _rigidbody2D.linearVelocity);
         nextHeading = ClampMagnitude(nextHeading, config.minSpeed, config.maxSpeed);
         //nextHeading = nextHeading.normalized;
 
         _rigidbody2D.linearVelocity = nextHeading; //* config.maxSpeed;
         _rigidbody2D.rotation = Mathf.Atan2(nextHeading.y, nextHeading.x) * Mathf.Rad2Deg;
+        
+        Profiler.EndSample();
         
         //_currentSteering = Vector2.Lerp(_currentSteering, steerForce, 0.1f);
         // Vector2 velocity = _rigidbody2D.linearVelocity;
@@ -180,6 +201,8 @@ public class BoidBehavior : MonoBehaviour
         // }
 
         //_rigidbody2D.linearVelocity = velocity;
+
+        return BoidUpdateResult.KeepAlive;
     }
 
     private Vector2 ClampMagnitude(Vector2 heading, float min, float max)
