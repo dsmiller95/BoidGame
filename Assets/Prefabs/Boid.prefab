@@ -138,16 +138,16 @@ MonoBehaviour:
     initialSpeed: 5
     maxSpeed: 5
     maxForce: 3
-    minSpeed: 1
+    minSpeed: 4
     maxNeighbors: 50
-    separationRadius: 1
-    separationWeight: 3
-    alignmentRadius: 3
+    separationRadius: 3
+    separationWeight: 1.5
+    alignmentRadius: 5
     alignmentWeight: 1
-    cohesionRadius: 5
+    cohesionRadius: 6
     cohesionWeight: 1
     lifetimeSeconds: 10
-    randomMagnitude: 0.734
+    randomMagnitude: 0
 --- !u!50 &6811515191092845683
 Rigidbody2D:
   serializedVersion: 5
