@@ -1,4 +1,6 @@
-﻿using Unity.Burst;
+﻿using Boids.Domain.DebugFlags;
+using Boids.Domain.Lifetime;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -15,10 +17,14 @@ namespace Boids.Domain
     public partial struct BoidSteerSystem : ISystem
     {
         private uint _seedOffset;
+        private NativeArray<Entity> _debugTrackingEntity;
+        private NativeArray<float> _debugDeathTime;
         
         public void OnCreate(ref SystemState state)
         {
             _seedOffset = 9724;
+            _debugTrackingEntity = new NativeArray<Entity>(1, Allocator.Persistent);
+            _debugDeathTime = new NativeArray<float>(1, Allocator.Persistent);
         }
         
         [BurstCompile]
@@ -30,12 +36,34 @@ namespace Boids.Domain
             var dt = state.WorldUnmanaged.Time.DeltaTime;
             
             var boidQuery = SystemAPI.QueryBuilder()
-                .WithAll<Boid, BoidState>()
+                .WithAll<Boid, BoidState, LifetimeComponent>()
                 .WithAllRW<PhysicsVelocity, LocalTransform>()
+                .WithAllRW<DebugFlagComponent>()
                 .WithNone<BoidSpawnData>()
                 .Build();
             
             var world = state.WorldUnmanaged;
+
+            // check if debug tracking entity is dead
+            if (_debugTrackingEntity[0] != Entity.Null &&
+                (!state.EntityManager.Exists(_debugTrackingEntity[0]) ||
+                !state.EntityManager.HasComponent<LifetimeComponent>(_debugTrackingEntity[0])))
+            {
+                _debugTrackingEntity[0] = Entity.Null;
+            }
+            if (_debugTrackingEntity[0] == Entity.Null)
+            {
+                _debugDeathTime[0] = 0;
+                var pickYoungestJob = new PickYoungest()
+                {
+                    YoungestEntity = _debugTrackingEntity,
+                    MaxDeathTime = _debugDeathTime
+                };
+                
+                state.Dependency = pickYoungestJob.Schedule(boidQuery, state.Dependency);
+            }
+            
+            
             
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<Boid> uniqueBoidTypes, world.UpdateAllocator.ToAllocator);
 
@@ -62,6 +90,7 @@ namespace Boids.Domain
                 
                 var steerBoidsJob = new SteerBoids
                 {
+                    DebugTrackingEntity = _debugTrackingEntity,
                     DeltaTime = dt,
                     BoidVariant = boidConfig,
                     SpatialHashDefinition = spatialHashDefinition,
@@ -90,6 +119,22 @@ namespace Boids.Domain
         }
 
         [BurstCompile]
+        private partial struct PickYoungest : IJobEntity
+        {
+            public NativeArray<Entity> YoungestEntity;
+            public NativeArray<float> MaxDeathTime;
+            
+            private void Execute(in LifetimeComponent lifetime, in Entity entity)
+            {
+                if (MaxDeathTime[0] < lifetime.deathTime)
+                {
+                    MaxDeathTime[0] = lifetime.deathTime;
+                    YoungestEntity[0] = entity;
+                }
+            }
+        }
+
+        [BurstCompile]
         private partial struct SteerBoids : IJobEntity
         {
             public float DeltaTime;
@@ -97,9 +142,19 @@ namespace Boids.Domain
             public SpatialHashDefinition SpatialHashDefinition;
             
             [ReadOnly] public NativeParallelMultiHashMap<int2, OtherBoidData> SpatialMap;
+            [ReadOnly] public NativeArray<Entity> DebugTrackingEntity;
 
-            private void Execute(ref PhysicsVelocity velocity, ref LocalTransform presumedWorld, in BoidState boidState)
+            private void Execute(
+                ref PhysicsVelocity velocity, 
+                ref LocalTransform presumedWorld,
+                ref DebugFlagComponent debugFlag,
+                in BoidState boidState,
+                in Entity entity)
             {
+                var amDebug = DebugTrackingEntity[0] == entity;
+                
+                if(amDebug) debugFlag.isFlagged = true;
+                
                 var myPos = presumedWorld.Position.xy;
                 var myVelocity = velocity.Linear.xy;
                 var maxRadius = BoidVariant.MaxNeighborDistance;
@@ -137,10 +192,7 @@ namespace Boids.Domain
                 var rotation = math.atan2(nextHeading.y, nextHeading.x);
                 
                 velocity.Linear = new float3(nextHeading, 0);
-                presumedWorld = LocalTransform.FromPositionRotation(
-                    new float3(myPos, 0),
-                    quaternion.Euler(0, 0, rotation)
-                );
+                presumedWorld = presumedWorld.WithRotation(quaternion.Euler(0, 0, rotation));
             }
         }
 

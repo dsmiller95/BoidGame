@@ -1,4 +1,5 @@
-﻿using Boids.Domain.Lifetime;
+﻿using Boids.Domain.DebugFlags;
+using Boids.Domain.Lifetime;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -34,6 +35,7 @@ namespace Boids.Domain
             
             ecb.AddComponent(_entity, boidState);
             ecb.AddComponent(_entity, lifetime);
+            ecb.AddComponent(_entity, new DebugFlagComponent());
             ecb.RemoveComponent<BoidSpawnData>(_entity);
         }
     }
