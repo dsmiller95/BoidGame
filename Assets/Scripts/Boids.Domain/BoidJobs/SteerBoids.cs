@@ -19,7 +19,7 @@ namespace Boids.Domain.BoidJobs
         public bool DrawDebug;
             
         [ReadOnly] public NativeParallelMultiHashMap<int2, OtherBoidData> SpatialBoids;
-        [ReadOnly] public NativeParallelMultiHashMap<int2, ObstacleData> SpatialObstacles;
+        [ReadOnly] public NativeParallelHashMap<int2, ObstacleCellData> SpatialObstacles;
 
         private void Execute(
             ref PhysicsVelocity velocity, 
@@ -88,15 +88,12 @@ namespace Boids.Domain.BoidJobs
         private void AccumulateBucketObstacles(
             in int2 bucket, in float2 myPos, ref AccumulatedBoidSteering accumulator)
         {
-            if (!SpatialObstacles.TryGetFirstValue(bucket, out var obstacleData, out var it))
+            if(!SpatialObstacles.TryGetValue(bucket, out var obstacleData))
             {
                 return;
             }
-
-            do
-            {
-                accumulator.AccumulateObstacle(obstacleData, myPos);
-            } while (SpatialObstacles.TryGetNextValue(out obstacleData, ref it));
+            
+            accumulator.AccumulateObstacleCell(obstacleData, myPos);
         }
         
         private float2 ClampMagnitude(float2 heading, float min, float max)

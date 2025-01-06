@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &29012513
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -249,6 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &113865985
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -349,6 +351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &123426800
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -449,6 +452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &332468997
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -549,6 +553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &470357263
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -649,6 +654,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &991281502
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -749,6 +755,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &1016800053
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -849,6 +856,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &1137687549
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -998,6 +1006,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &1202678693
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1098,6 +1107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &1437224759
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1198,6 +1208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleRadius: 7
 --- !u!212 &1592976140
 SpriteRenderer:
   m_ObjectHideFlags: 0

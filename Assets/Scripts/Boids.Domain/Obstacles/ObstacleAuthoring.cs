@@ -14,10 +14,15 @@ namespace Boids.Domain.Obstacles
     public struct Obstacle : IComponentData
     {
         public ObstacleType variant;
+        public float obstacleRadius;
+        public float RadiusSq => obstacleRadius * obstacleRadius;
     }
     
     public class ObstacleAuthoring : MonoBehaviour
     {
+        [Range(1f, 30f)]
+        public float obstacleRadius = 1f;
+        
         private class ObstacleBaker : Baker<ObstacleAuthoring>
         {
             public override void Bake(ObstacleAuthoring authoring)
@@ -25,7 +30,8 @@ namespace Boids.Domain.Obstacles
                 var entity = GetEntity(TransformUsageFlags.Renderable);
                 AddComponent(entity, new Obstacle
                 {
-                    variant = ObstacleType.SphereRepel
+                    variant = ObstacleType.SphereRepel,
+                    obstacleRadius = authoring.obstacleRadius
                 });
             }
         }

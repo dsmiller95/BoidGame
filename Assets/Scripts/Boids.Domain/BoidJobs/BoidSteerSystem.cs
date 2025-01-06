@@ -54,7 +54,7 @@ namespace Boids.Domain.BoidJobs
                 .Build();
 
             var obstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<Obstacle, LocalTransform>()
+                .WithAll<Obstacle, LocalToWorld>()
                 .Build();
             
             var world = state.WorldUnmanaged;
@@ -108,23 +108,51 @@ namespace Boids.Domain.BoidJobs
 
                 var spatialHashDefinition = new SpatialHashDefinition(boidConfig.cellRadius);
 
+                // var hashMap = new NativeParallelMultiHashMap<int, int>(boidCount, world.UpdateAllocator.ToAllocator);
+                // var cellAlignment = CollectionHelper.CreateNativeArray<float3, RewindableAllocator>(boidCount, ref world.UpdateAllocator);
+
                 var spatialBoids = new NativeParallelMultiHashMap<int2, OtherBoidData>(boidCount, world.UpdateAllocator.ToAllocator);
                 var populateBoidHashMapJob = new PopulateBoidHashMap
                 {
                     SpatialHashDefinition = spatialHashDefinition,
                     SpatialMapWriter = spatialBoids.AsParallelWriter()
                 };
-                var boidMapDependency = populateBoidHashMapJob.ScheduleParallel(boidQuery, state.Dependency);
+                var initialBoidMapDependency = populateBoidHashMapJob.ScheduleParallel(boidQuery, state.Dependency);
+                
+                var copyObstaclePositions      = CollectionHelper.CreateNativeArray<float2, RewindableAllocator>(obstacleCount, ref world.UpdateAllocator);
+                var copyObstacles            = CollectionHelper.CreateNativeArray<Obstacle, RewindableAllocator>(obstacleCount, ref world.UpdateAllocator);
 
-                var spatialObstacles = new NativeParallelMultiHashMap<int2, ObstacleData>(obstacleCount, world.UpdateAllocator.ToAllocator);
+                var initialObstacleJob = new CopyPerObstacleData
+                {
+                    Obstacles = copyObstacles,
+                    ObstaclePositions = copyObstaclePositions
+                };
+                var initialObstacleDependency = initialObstacleJob.ScheduleParallel(obstacleQuery, state.Dependency);
+
+                state.Dependency = initialBoidMapDependency;
+                state.Dependency.Complete();
+                
+                // TODO: maybe use a bounding box instead to bound this operation
+                var spaceKeys = spatialBoids.GetKeyArray(world.UpdateAllocator.ToAllocator);
+                var spaceKeysCount = spaceKeys.Length;
+                
+
+                var spatialObstacles = new NativeParallelHashMap<int2, ObstacleCellData>(spaceKeysCount, world.UpdateAllocator.ToAllocator);
                 var populateObstacleHashMapJob = new PopulateObstacleHashMap
                 {
                     SpatialHashDefinition = spatialHashDefinition,
-                    SpatialMapWriter = spatialObstacles.AsParallelWriter()
+                    Buckets = spaceKeys,
+                    
+                    AllObstacles = copyObstacles,
+                    AllObstaclePositions = copyObstaclePositions,
+                    ObstacleDataWriter = spatialObstacles.AsParallelWriter()
                 };
-                var obstacleMapDependency = populateObstacleHashMapJob.ScheduleParallel(obstacleQuery, state.Dependency);
+                var initialCopyFence = JobHandle.CombineDependencies(initialObstacleDependency, initialBoidMapDependency);
+                var obstacleMapDependency = populateObstacleHashMapJob.Schedule(spaceKeys.Length, 64, initialObstacleDependency);
+
+                var preSteerFence = JobHandle.CombineDependencies(initialCopyFence, obstacleMapDependency);
                 
-                state.Dependency = JobHandle.CombineDependencies(boidMapDependency, obstacleMapDependency);
+                state.Dependency = preSteerFence;
                 
                 var steerBoidsJob = new SteerBoids
                 {
@@ -165,6 +193,7 @@ namespace Boids.Domain.BoidJobs
                     state.Dependency = job.Schedule(state.Dependency);
                 }
                 
+                obstacleQuery.AddDependency(state.Dependency);
                 boidQuery.AddDependency(state.Dependency);
                 boidQuery.ResetFilter();
             }

@@ -131,5 +131,10 @@ namespace Boids.Domain
         {
             return new int2(math.floor(position * InverseCellSize));
         }
+        
+        public float2 GetCenterOfCell(int2 cell)
+        {
+            return (new float2(cell) + new float2(0.5f)) * CellSize;
+        }
     }
 }

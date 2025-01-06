@@ -63,14 +63,15 @@ namespace Boids.Domain.BoidJobs
                 _nearestObstacleDistance = distance;
             }
         }
-        public void AccumulateObstacle(in ObstacleData obstacleData, in float2 position)
+        public void AccumulateObstacleCell(in ObstacleCellData obstacleCellData, in float2 position)
         {
-            if (obstacleData.Obstacle.variant is not ObstacleType.SphereRepel)
+            if (!obstacleCellData.IsValid) return;
+            if (obstacleCellData.Obstacle.variant is not ObstacleType.SphereRepel)
             {
                 throw new NotImplementedException("Different obstacles not implemented");
             }
             
-            var relativeObstaclePosition = obstacleData.Position - position;
+            var relativeObstaclePosition = obstacleCellData.Position - position;
             this.AccumulateObstacle(in relativeObstaclePosition);
         }
 
