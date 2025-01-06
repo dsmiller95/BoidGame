@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -103,6 +104,32 @@ namespace Boids.Domain
         private Vector2Int GetCell(Vector2 position)
         {
             return Vector2Int.RoundToInt(position / _cellSize);
+        }
+    }
+
+    public struct SpatialHashDefinition
+    {
+        public float CellSize;
+        public float InverseCellSize;
+        
+        public SpatialHashDefinition(float cellSize)
+        {
+            CellSize = cellSize;
+            InverseCellSize = 1f / cellSize;
+        }
+        public void GetMinMaxBuckets(
+            float2 around,
+            float overlappingSquareRadius,
+            out int2 minCell, out int2 maxCell)
+        {
+            var overlapExtents = new float2(overlappingSquareRadius, overlappingSquareRadius);
+            minCell = GetCell(around - overlapExtents);
+            maxCell = GetCell(around + overlapExtents);
+        }
+        
+        public int2 GetCell(float2 position)
+        {
+            return new int2(math.floor(position / CellSize));
         }
     }
 }
