@@ -1,5 +1,6 @@
 ﻿using Boids.Domain.DebugFlags;
 using Boids.Domain.Lifetime;
+using Boids.Domain.Obstacles;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -21,6 +22,7 @@ namespace Boids.Domain
         private NativeArray<Entity> _debugTrackingEntity;
         private NativeArray<float> _debugDeathTime;
         private bool _debugHashMap;
+        private bool _debugObstacles;
         
         public void OnCreate(ref SystemState state)
         {
@@ -28,6 +30,13 @@ namespace Boids.Domain
             _debugTrackingEntity = new NativeArray<Entity>(1, Allocator.Persistent);
             _debugDeathTime = new NativeArray<float>(1, Allocator.Persistent);
             _debugHashMap = false;
+            _debugObstacles = false;
+        }
+        
+        public void OnDestroy(ref SystemState state)
+        {
+            _debugTrackingEntity.Dispose();
+            _debugDeathTime.Dispose();
         }
         
         [BurstCompile]
@@ -95,14 +104,24 @@ namespace Boids.Domain
                 };
                 state.Dependency = populateBoidHashMapJob.ScheduleParallel(boidQuery, state.Dependency);
                 
+                
                 var steerBoidsJob = new SteerBoids
                 {
                     DeltaTime = dt,
                     BoidVariant = boidConfig,
                     SpatialHashDefinition = spatialHashDefinition,
-                    SpatialMap = spatialMap
+                    SpatialMap = spatialMap,
+                    DrawDebug = _debugObstacles,
                 };
-                state.Dependency = steerBoidsJob.ScheduleParallel(boidQuery, state.Dependency);
+                if (_debugObstacles)
+                {
+                    state.Dependency.Complete();
+                    steerBoidsJob.Run(boidQuery);
+                }
+                else
+                {
+                    state.Dependency = steerBoidsJob.ScheduleParallel(boidQuery, state.Dependency);
+                }
 
                 if (_debugHashMap)
                 {
@@ -159,9 +178,7 @@ namespace Boids.Domain
                 }
             }
         }
-
-
-
+        
         [BurstCompile]
         private struct FlagAllInBuckets : IJob
         {
@@ -200,6 +217,8 @@ namespace Boids.Domain
             public float DeltaTime;
             public Boid BoidVariant;
             public SpatialHashDefinition SpatialHashDefinition;
+
+            public bool DrawDebug;
             
             [ReadOnly] public NativeParallelMultiHashMap<int2, OtherBoidData> SpatialMap;
 
@@ -214,7 +233,7 @@ namespace Boids.Domain
                 var maxRadius = BoidVariant.MaxNeighborDistance;
                 SpatialHashDefinition.GetMinMaxBuckets(myPos, maxRadius, out var minBucket, out var maxBucket);
 
-                var accumulator = new AccumulatedBoidSteering();
+                var accumulator = AccumulatedBoidSteering.Empty;
                 var maxRadiusSq = maxRadius * maxRadius;
                 for (int x = minBucket.x; x <= maxBucket.x; x++)
                 {
@@ -242,11 +261,31 @@ namespace Boids.Domain
                     }
                 }
                 
-                var nextHeading = accumulator.GetNextHeading(BoidVariant, myVelocity, myPos, DeltaTime);
-                var rotation = math.atan2(nextHeading.y, nextHeading.x);
+                var obstacle = ObstacleFunction.Default.GetObstacleFromField(myPos);
+                if (DrawDebug)
+                {
+                    Debug.DrawLine(new float3(myPos, 0), new float3(obstacle, 0), Color.red);
+                }
+                var relativeObstaclePosition = obstacle - myPos;
+                accumulator.AccumulateObstacle(relativeObstaclePosition);
                 
+                var targetForward = accumulator.GetTargetForward(BoidVariant, myVelocity, myPos, DeltaTime);
+                
+                var nextHeadingUnclamped = myVelocity + DeltaTime * (targetForward - myVelocity);
+                var nextHeading = ClampMagnitude(nextHeadingUnclamped, BoidVariant.minSpeed, BoidVariant.maxSpeed);
+                
+                var rotation = math.atan2(nextHeading.y, nextHeading.x);
                 velocity.Linear = new float3(nextHeading, 0);
                 presumedWorld = presumedWorld.WithRotation(quaternion.Euler(0, 0, rotation));
+            }
+            
+            private float2 ClampMagnitude(float2 heading, float min, float max)
+            {
+                var mag = math.length(heading);
+                if (mag < 0.0001f) return heading;
+                if (mag < min) return (heading / mag) * min;
+                if (mag > max) return (heading / mag) * max;
+                return heading;
             }
         }
 
@@ -260,7 +299,14 @@ namespace Boids.Domain
             
             private float2 _cohesion;
             private int _cohesionCount;
-            
+
+            private float2 _nearestObstacleRelative;
+            private float _nearestObstacleDistance;
+
+            public static AccumulatedBoidSteering Empty => new()
+            {
+                _nearestObstacleDistance = float.MaxValue
+            };
             
             public void Accumulate(in Boid boidSettings, in OtherBoidData otherBoid, in float2 toNeighbor, in float distance)
             {
@@ -288,8 +334,18 @@ namespace Boids.Domain
                     _cohesion += otherBoid.Position;
                 }
             }
+            
+            public void AccumulateObstacle(in float2 relativeObstaclePosition)
+            {
+                var distance = math.length(relativeObstaclePosition);
+                if (distance < _nearestObstacleDistance)
+                {
+                    _nearestObstacleRelative = relativeObstaclePosition;
+                    _nearestObstacleDistance = distance;
+                }
+            }
 
-            public float2 GetNextHeading(in Boid boidSettings, in float2 linearVelocity, in float2 position, in float deltaTime)
+            public float2 GetTargetForward(in Boid boidSettings, in float2 linearVelocity, in float2 position, in float deltaTime)
             {
                 if(_separationCount > 0)
                 {
@@ -308,23 +364,22 @@ namespace Boids.Domain
                     _cohesion -= position;
                 }
                 else _cohesion = Vector2.zero;
+
+                var fromObstacle = -_nearestObstacleRelative;;
+                var obstacleDistance = _nearestObstacleDistance;
+                var avoidObstacleSteering = float2.zero;
+                if (obstacleDistance < boidSettings.obstacleAvoidanceRadius)
+                {
+                    var toObstacle = -fromObstacle;
+                    avoidObstacleSteering = toObstacle + math.normalizesafe(fromObstacle) * boidSettings.obstacleAvoidanceRadius;
+                }
                 
                 var targetForward = _separation * boidSettings.separationWeight +
                                     _alignment * boidSettings.alignmentWeight +
-                                    _cohesion * boidSettings.cohesionWeight;
-                
-                var nextHeading = linearVelocity + deltaTime * (targetForward - linearVelocity);
-                var nextHeadingClamped = ClampMagnitude(nextHeading, boidSettings.minSpeed, boidSettings.maxSpeed);
-                return nextHeadingClamped;
-            }
-            
-            private float2 ClampMagnitude(float2 heading, float min, float max)
-            {
-                var mag = math.length(heading);
-                if (mag < 0.0001f) return heading;
-                if (mag < min) return (heading / mag) * min;
-                if (mag > max) return (heading / mag) * max;
-                return heading;
+                                    _cohesion * boidSettings.cohesionWeight +
+                                    avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight;
+
+                return targetForward;
             }
         }
         

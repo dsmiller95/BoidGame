@@ -58,7 +58,9 @@ MonoBehaviour:
     alignmentWeight: 1
     cohesionRadius: 6
     cohesionWeight: 1
-    lifetimeSeconds: 10
+    obstacleAvoidanceRadius: 3
+    obstacleAvoidanceWeight: 10
+    lifetimeSeconds: 60
     randomMagnitude: 0.286
 --- !u!54 &5000036880073727084
 Rigidbody:

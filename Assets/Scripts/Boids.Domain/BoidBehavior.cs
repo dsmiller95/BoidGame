@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Boids.Domain
@@ -19,6 +20,13 @@ namespace Boids.Domain
         public float alignmentWeight;
         public float cohesionRadius;
         public float cohesionWeight;
+
+        public float obstacleAvoidanceRadius;
+        public float obstacleAvoidanceWeight;
+        
+        
+        
+        public float2 bakedObstacle;
 
         // TODO: expose in authoring
         public float cellRadius => MaxNeighborDistance / 2f;
@@ -68,6 +76,9 @@ namespace Boids.Domain
             public float CohesionRadiusSquared => cohesionRadius * cohesionRadius;
             public float cohesionRadius = 6f;
             public float cohesionWeight = 1f;
+            
+            public float obstacleAvoidanceRadius = 3f;
+            public float obstacleAvoidanceWeight = 2f;
         
             public float lifetimeSeconds = 10f;
         
@@ -113,7 +124,11 @@ namespace Boids.Domain
                     alignmentRadius = authoring.config.alignmentRadius,
                     alignmentWeight = authoring.config.alignmentWeight,
                     cohesionRadius = authoring.config.cohesionRadius,
-                    cohesionWeight = authoring.config.cohesionWeight
+                    cohesionWeight = authoring.config.cohesionWeight,
+                    obstacleAvoidanceRadius = authoring.config.obstacleAvoidanceRadius,
+                    obstacleAvoidanceWeight = authoring.config.obstacleAvoidanceWeight,
+                    
+                    bakedObstacle = new float2(2, 4),
                 });
                 AddSharedComponent(entity, new BoidSpawnData
                 {
