@@ -16,8 +16,12 @@ namespace Boids.Domain.BoidJobs
         private float2 _cohesion;
         private int _cohesionCount;
 
+        private Obstacle _nearestObstacle;
         private float2 _nearestObstacleRelative;
         private float _nearestObstacleDistance;
+        private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
+            _nearestObstacle.variant != ObstacleType.None &&
+            _nearestObstacleDistance < _nearestObstacle.obstacleRadius;
         
         // private float2 _nearestTargetRelative;
         // private float _nearestTargetDistance;
@@ -53,16 +57,7 @@ namespace Boids.Domain.BoidJobs
                 _cohesion += otherBoid.Position;
             }
         }
-            
-        public void AccumulateObstacle(in float2 relativeObstaclePosition)
-        {
-            var distance = math.length(relativeObstaclePosition);
-            if (distance < _nearestObstacleDistance && distance > 0.00001f)
-            {
-                _nearestObstacleRelative = relativeObstaclePosition;
-                _nearestObstacleDistance = distance;
-            }
-        }
+
         public void AccumulateObstacleCell(in ObstacleCellData obstacleCellData, in float2 position)
         {
             if (!obstacleCellData.IsValid) return;
@@ -72,7 +67,13 @@ namespace Boids.Domain.BoidJobs
             }
             
             var relativeObstaclePosition = obstacleCellData.Position - position;
-            this.AccumulateObstacle(in relativeObstaclePosition);
+            var distance = math.length(relativeObstaclePosition);
+            if (distance < this._nearestObstacleDistance && distance > 0.00001f)
+            {
+                this._nearestObstacleRelative = relativeObstaclePosition;
+                this._nearestObstacleDistance = distance;
+                this._nearestObstacle = obstacleCellData.Obstacle;
+            }
         }
 
         public float2 GetTargetForward(in Boid boidSettings, in float2 linearVelocity, in float2 position, in float deltaTime)
@@ -95,18 +96,21 @@ namespace Boids.Domain.BoidJobs
             }
             else _cohesion = Vector2.zero;
 
-            var fromObstacle = -_nearestObstacleRelative;;
-            var obstacleDistance = _nearestObstacleDistance;
+            var fromObstacle = -_nearestObstacleRelative;
             var avoidObstacleSteering = float2.zero;
-            if (obstacleDistance < boidSettings.obstacleAvoidanceRadius)
+            if (HasObstacle)
             {
                 var toObstacle = -fromObstacle;
-                avoidObstacleSteering = toObstacle + math.normalizesafe(fromObstacle) * boidSettings.obstacleAvoidanceRadius;
+                var awayFromObstacleNormal = math.normalizesafe(fromObstacle);
+                avoidObstacleSteering = toObstacle + awayFromObstacleNormal * _nearestObstacle.obstacleRadius;
+                avoidObstacleSteering += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
             }
-                
-            var targetForward = _separation * boidSettings.separationWeight +
-                                _alignment * boidSettings.alignmentWeight +
-                                _cohesion * boidSettings.cohesionWeight +
+
+            var flockingHeading = _separation * boidSettings.separationWeight +
+                                  _alignment * boidSettings.alignmentWeight +
+                                  _cohesion * boidSettings.cohesionWeight;
+            
+            var targetForward =  flockingHeading +
                                 avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight;
 
             return targetForward;

@@ -88,9 +88,9 @@ namespace Boids.Domain.BoidJobs
             
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<Boid> uniqueBoidTypes, world.UpdateAllocator.ToAllocator);
 
-            if (uniqueBoidTypes.Length > 2)
+            if (uniqueBoidTypes.Length > 3)
             {
-                Debug.LogError("More than 2 boid variants. will be inneficient");
+                Debug.LogError("More than 3 boid variants. will be inneficient");
             }
 
             var obstacleCount = obstacleQuery.CalculateEntityCount();

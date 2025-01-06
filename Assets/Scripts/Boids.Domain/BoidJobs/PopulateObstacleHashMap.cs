@@ -31,7 +31,7 @@ namespace Boids.Domain.BoidJobs
             }
             
             var distance = math.sqrt(sqDistance);
-            if (!(distance < Distance)) return;
+            if (distance >= Distance) return;
             
             Obstacle = obstacle;
             Position = obstaclePos;

@@ -100,4 +100,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacleRadius: 7
+  obstacleRadius: 2.2

@@ -6,6 +6,7 @@ namespace Boids.Domain.Obstacles
 {
     public enum ObstacleType
     {
+        None = 0,
         SphereRepel,
         //SphereAttract,
     }
@@ -34,6 +35,12 @@ namespace Boids.Domain.Obstacles
                     obstacleRadius = authoring.obstacleRadius
                 });
             }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, obstacleRadius);
         }
     }
 }

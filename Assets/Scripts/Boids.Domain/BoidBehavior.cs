@@ -21,8 +21,8 @@ namespace Boids.Domain
         public float cohesionRadius;
         public float cohesionWeight;
 
-        public float obstacleAvoidanceRadius;
         public float obstacleAvoidanceWeight;
+        public float obstacleAvoidanceConstantRepellent;
         
         
         
@@ -77,8 +77,10 @@ namespace Boids.Domain
             public float cohesionRadius = 6f;
             public float cohesionWeight = 1f;
             
-            public float obstacleAvoidanceRadius = 3f;
             public float obstacleAvoidanceWeight = 2f;
+            public float obstacleAvoidanceConstantRepellent = 2f;
+            // [ra]
+            // public float obstacleAvoidanceMaxDepth = f;
         
             public float lifetimeSeconds = 10f;
         
@@ -125,8 +127,9 @@ namespace Boids.Domain
                     alignmentWeight = authoring.config.alignmentWeight,
                     cohesionRadius = authoring.config.cohesionRadius,
                     cohesionWeight = authoring.config.cohesionWeight,
-                    obstacleAvoidanceRadius = authoring.config.obstacleAvoidanceRadius,
+                    //obstacleAvoidanceRadius = authoring.config.obstacleAvoidanceRadius,
                     obstacleAvoidanceWeight = authoring.config.obstacleAvoidanceWeight,
+                    obstacleAvoidanceConstantRepellent = authoring.config.obstacleAvoidanceConstantRepellent,
                     
                     bakedObstacle = new float2(2, 4),
                 });
