@@ -40,7 +40,8 @@ namespace Boids.Domain.Obstacles
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, obstacleRadius);
+            var radius = obstacleRadius * this.transform.lossyScale.x;
+            Gizmos.DrawWireSphere(transform.position, radius);
         }
     }
 }
