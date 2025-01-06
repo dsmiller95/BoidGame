@@ -146,7 +146,7 @@ MonoBehaviour:
     cohesionRadius: 6
     cohesionWeight: 1
     lifetimeSeconds: 10
-    randomMagnitude: 0.28
+    randomMagnitude: 0.286
 --- !u!54 &5000036880073727084
 Rigidbody:
   m_ObjectHideFlags: 0

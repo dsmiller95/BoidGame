@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using Boids.Domain;
 using NUnit.Framework;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -57,9 +58,43 @@ public class SpatialHashTest
         Assert.Contains(V(2,  0), bucketPoints);
         Assert.Contains(V(2,  2), bucketPoints);
     }
+
+    [Test]
+    public void SpatialHashDefinition_GetOverlapping_Returns2x2Square()
+    {
+        var hashDefinition = new SpatialHashDefinition(2f);
+
+        hashDefinition.GetMinMaxBuckets(
+            new float2(0.5f),
+            1.4f,
+            out var minBucket, out var maxBucket);
+        
+        Assert.AreEqual(Vi(-1, -1), minBucket);
+        Assert.AreEqual(Vi(0, 0), maxBucket);
+    }
+    
+    [Test]
+    public void SpatialHashDefinition_GetOverlapping_Returns3x3Square()
+    {
+        var hashDefinition = new SpatialHashDefinition(1f);
+
+        hashDefinition.GetMinMaxBuckets(
+            new float2(.5f),
+            0.6f,
+            out var minBucket, out var maxBucket);
+        
+        Assert.AreEqual(Vi(-1, -1), minBucket);
+        Assert.AreEqual(Vi(1, 1), maxBucket);
+    }
+
+
     
     private Vector2 V(float x, float y)
     {
         return new Vector2(x, y);
+    }
+    private int2 Vi(int x, int y)
+    {
+        return new int2(x, y);
     }
 }

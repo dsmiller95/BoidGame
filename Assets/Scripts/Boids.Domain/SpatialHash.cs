@@ -129,7 +129,7 @@ namespace Boids.Domain
         
         public int2 GetCell(float2 position)
         {
-            return new int2(math.floor(position / CellSize));
+            return new int2(math.floor(position * InverseCellSize));
         }
     }
 }

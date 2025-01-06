@@ -18,7 +18,7 @@ namespace Boids.Domain
         {
             var cycleDir = new float2(math.sin(time), math.cos(time));
             var randDir = rng.NextFloat2Direction();
-            var targetHeading = math.lerp(cycleDir, randDir, 0.1337f);
+            var targetHeading = math.lerp(cycleDir, randDir, _boidSpawn.randomMagnitude);
 
             _velocity.ValueRW.Linear = new float3(targetHeading * _boidSpawn.initialSpeed, 0);
             

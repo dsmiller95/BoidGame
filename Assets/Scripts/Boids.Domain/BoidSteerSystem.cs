@@ -84,13 +84,13 @@ namespace Boids.Domain
             private void Execute(in PhysicsVelocity velocity, in LocalTransform presumedWorldTransform)
             {
                 var boidData = OtherBoidData.From(velocity, presumedWorldTransform);
-                var cellIndex = new int2(math.floor(presumedWorldTransform.Position * SpatialHashDefinition.InverseCellSize).xy);
-                SpatialMapWriter.Add(cellIndex, boidData);
+                var cell = SpatialHashDefinition.GetCell(presumedWorldTransform.Position.xy);
+                SpatialMapWriter.Add(cell, boidData);
             }
         }
 
         [BurstCompile]
-        partial struct SteerBoids : IJobEntity
+        private partial struct SteerBoids : IJobEntity
         {
             public float DeltaTime;
             public Boid BoidVariant;
@@ -117,16 +117,19 @@ namespace Boids.Domain
                             continue;
                         }
 
-                        var toNeighbor = otherBoidData.Position - myPos;
-                        float distanceSq = math.lengthsq(toNeighbor);
-                        if (distanceSq < maxRadiusSq || distanceSq <= 0.0001f) // ignore self at almost 0-dist
+                        do
                         {
-                            continue;
-                        }
-                        
-                        float distance = math.sqrt(distanceSq);
-                        
-                        accumulator.Accumulate(BoidVariant, otherBoidData, toNeighbor, distance);
+                            float2 toNeighbor = otherBoidData.Position - myPos;
+                            var distanceSq = math.lengthsq(toNeighbor);
+                            if (distanceSq > maxRadiusSq || distanceSq <= 0.0001f) // ignore self at almost 0-dist
+                            {
+                                continue;
+                            }
+
+                            var distance = math.sqrt(distanceSq);
+
+                            accumulator.Accumulate(BoidVariant, otherBoidData, toNeighbor, distance);
+                        } while (SpatialMap.TryGetNextValue(out otherBoidData, ref it));
                     }
                 }
                 
@@ -141,69 +144,69 @@ namespace Boids.Domain
             }
         }
 
-        struct AccumulatedBoidSteering
+        private struct AccumulatedBoidSteering
         {
-            private float2 separation;
-            private int separationCount;
+            private float2 _separation;
+            private int _separationCount;
             
-            private float2 alignment;
-            private int alignmentCount;
+            private float2 _alignment;
+            private int _alignmentCount;
             
-            private float2 cohesion;
-            public int cohesionCount;
+            private float2 _cohesion;
+            private int _cohesionCount;
             
             
             public void Accumulate(in Boid boidSettings, in OtherBoidData otherBoid, in float2 toNeighbor, in float distance)
             {
                 if (distance < boidSettings.separationRadius)
                 {
-                    separationCount++;
+                    _separationCount++;
                     
                     var fromNeighbor = -toNeighbor;
                     var fromNeighborNormalized = fromNeighbor / distance;
                     var separationAdjustment = 1f - (distance / boidSettings.separationRadius);
                     //separationAdjustment = separationAdjustment * separationAdjustment;
                     //separationAdjustment = Mathf.Clamp01(separationAdjustment);
-                    separation += fromNeighborNormalized * (0.5f + separationAdjustment * 0.5f);
+                    _separation += fromNeighborNormalized * (0.5f + separationAdjustment * 0.5f);
                 }
 
                 if (distance < boidSettings.alignmentRadius)
                 {
-                    alignmentCount++;
-                    alignment += otherBoid.Velocity;
+                    _alignmentCount++;
+                    _alignment += otherBoid.Velocity;
                 }
 
                 if (distance < boidSettings.cohesionRadius)
                 {
-                    cohesionCount++;
-                    cohesion += toNeighbor;
+                    _cohesionCount++;
+                    _cohesion += toNeighbor;
                 }
             }
 
             public float2 GetNextHeading(in Boid boidSettings, in float2 linearVelocity, in float2 position, in float deltaTime)
             {
-                if(separationCount > 0)
+                if(_separationCount > 0)
                 {
                 }
-                else separation = Vector2.zero;
+                else _separation = Vector2.zero;
             
-                if(alignmentCount > 0)
+                if(_alignmentCount > 0)
                 {
-                    alignment = (alignment / alignmentCount) - linearVelocity;
+                    _alignment = (_alignment / _alignmentCount) - linearVelocity;
                 }
-                else alignment = Vector2.zero;
+                else _alignment = Vector2.zero;
 
-                if (cohesionCount > 0)
+                if (_cohesionCount > 0)
                 {
-                    cohesion /= cohesionCount;
-                    cohesion -= position;
+                    _cohesion /= _cohesionCount;
+                    _cohesion -= position;
                 }
-                else cohesion = Vector2.zero;
+                else _cohesion = Vector2.zero;
 
 
-                var targetForward = separation * boidSettings.separationWeight +
-                                    alignment * boidSettings.alignmentWeight +
-                                    cohesion * boidSettings.cohesionWeight;
+                var targetForward = _separation * boidSettings.separationWeight +
+                                    _alignment * boidSettings.alignmentWeight +
+                                    _cohesion * boidSettings.cohesionWeight;
                 
                 var nextHeading = linearVelocity + deltaTime * (targetForward - linearVelocity);
                 var nextHeadingClamped = ClampMagnitude(nextHeading, boidSettings.minSpeed, boidSettings.maxSpeed);
