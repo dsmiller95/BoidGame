@@ -13,7 +13,7 @@ namespace Boids.Domain
         private readonly BoidSpawnData _boidSpawn;
         private readonly RefRW<PhysicsVelocity> _velocity;
         
-        public void Initialize(Unity.Mathematics.Random rng, EntityCommandBuffer ecb, float time)
+        public void Initialize(ref Unity.Mathematics.Random rng, EntityCommandBuffer ecb, float time)
         {
             var cycleDir = new float2(math.sin(time), math.cos(time));
             var randDir = rng.NextFloat2Direction();

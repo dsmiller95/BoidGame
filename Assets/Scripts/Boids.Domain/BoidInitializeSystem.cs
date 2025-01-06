@@ -26,7 +26,7 @@ namespace Boids.Domain
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             foreach (var newBoid in SystemAPI.Query<NewBoidAspect>())
             {
-                newBoid.Initialize(rng, ecb, time);
+                newBoid.Initialize(ref rng, ecb, time);
             }
             ecb.Playback(state.EntityManager);
         }

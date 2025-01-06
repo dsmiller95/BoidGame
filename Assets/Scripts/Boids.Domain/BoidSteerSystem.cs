@@ -29,7 +29,12 @@ namespace Boids.Domain
             var time = (float)state.WorldUnmanaged.Time.ElapsedTime;
             var dt = (float)state.WorldUnmanaged.Time.ElapsedTime;
             
-            var boidQuery = SystemAPI.QueryBuilder().WithAll<Boid, BoidState>().Build();
+            var boidQuery = SystemAPI.QueryBuilder()
+                .WithAll<Boid, BoidState>()
+                .WithAllRW<PhysicsVelocity, LocalTransform>()
+                .WithNone<BoidSpawnData>()
+                .Build();
+            
             var world = state.WorldUnmanaged;
             
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<Boid> uniqueBoidTypes, world.UpdateAllocator.ToAllocator);
@@ -76,10 +81,10 @@ namespace Boids.Domain
             
             public NativeParallelMultiHashMap<int2, OtherBoidData>.ParallelWriter SpatialMapWriter;
             
-            private void Execute(in PhysicsVelocity velocity, in LocalToWorld localToWorld)
+            private void Execute(in PhysicsVelocity velocity, in LocalTransform presumedWorldTransform)
             {
-                var boidData = OtherBoidData.From(velocity, localToWorld);
-                var cellIndex = new int2(math.floor(localToWorld.Position * SpatialHashDefinition.InverseCellSize).xy);
+                var boidData = OtherBoidData.From(velocity, presumedWorldTransform);
+                var cellIndex = new int2(math.floor(presumedWorldTransform.Position * SpatialHashDefinition.InverseCellSize).xy);
                 SpatialMapWriter.Add(cellIndex, boidData);
             }
         }
@@ -93,9 +98,9 @@ namespace Boids.Domain
             
             [ReadOnly] public NativeParallelMultiHashMap<int2, OtherBoidData> SpatialMap;
 
-            private void Execute(ref PhysicsVelocity velocity, ref LocalToWorld localToWorld, in BoidState boidState)
+            private void Execute(ref PhysicsVelocity velocity, ref LocalTransform presumedWorld, in BoidState boidState)
             {
-                var myPos = localToWorld.Position.xy;
+                var myPos = presumedWorld.Position.xy;
                 var myVelocity = velocity.Linear.xy;
                 var maxRadius = BoidVariant.MaxNeighborDistance;
                 SpatialHashDefinition.GetMinMaxBuckets(myPos, maxRadius, out var minBucket, out var maxBucket);
@@ -129,10 +134,10 @@ namespace Boids.Domain
                 var rotation = math.atan2(nextHeading.y, nextHeading.x);
                 
                 velocity.Linear = new float3(nextHeading, 0);
-                localToWorld = new LocalToWorld
-                {
-                    Value = float4x4.TRS(new float3(myPos, 0), quaternion.Euler(0, 0, rotation), 1f)
-                };
+                presumedWorld = LocalTransform.FromPositionRotation(
+                    new float3(myPos, 0),
+                    quaternion.Euler(0, 0, rotation)
+                );
             }
         }
 
@@ -221,11 +226,11 @@ namespace Boids.Domain
             public float2 Position;
             public float2 Velocity;
             
-            public static OtherBoidData From(in PhysicsVelocity velocity, in LocalToWorld localToWorld)
+            public static OtherBoidData From(in PhysicsVelocity velocity, in LocalTransform presumedWorld)
             {
                 return new OtherBoidData
                 {
-                    Position = localToWorld.Position.xy,
+                    Position = presumedWorld.Position.xy,
                     Velocity = velocity.Linear.xy
                 };
             }
