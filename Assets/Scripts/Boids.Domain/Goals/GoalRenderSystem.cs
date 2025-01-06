@@ -20,7 +20,8 @@ namespace Boids.Domain.Goals
                 var required = goal.ValueRO.required;
                 var count = goalCount.ValueRO.count;
 
-                var scale = math.min(1, count / (float)required);
+                var volume = math.min(1, count / (float)required);
+                var scale = math.sqrt(volume);
                 var newLocalTransform = LocalTransform.FromScale(scale);
                 ecb.SetComponent(render.ValueRO.scaleForProgress, newLocalTransform);
             }
