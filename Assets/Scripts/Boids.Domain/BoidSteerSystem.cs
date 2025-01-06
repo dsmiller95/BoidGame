@@ -20,12 +20,14 @@ namespace Boids.Domain
         private uint _seedOffset;
         private NativeArray<Entity> _debugTrackingEntity;
         private NativeArray<float> _debugDeathTime;
+        private bool _debugHashMap;
         
         public void OnCreate(ref SystemState state)
         {
             _seedOffset = 9724;
             _debugTrackingEntity = new NativeArray<Entity>(1, Allocator.Persistent);
             _debugDeathTime = new NativeArray<float>(1, Allocator.Persistent);
+            _debugHashMap = false;
         }
         
         [BurstCompile]
@@ -39,31 +41,33 @@ namespace Boids.Domain
             var boidQuery = SystemAPI.QueryBuilder()
                 .WithAll<Boid, BoidState, LifetimeComponent>()
                 .WithAllRW<PhysicsVelocity, LocalTransform>()
-                .WithAllRW<DebugFlagComponent>()
+                //.WithAllRW<DebugFlagComponent>()
                 .WithNone<BoidSpawnData>()
                 .Build();
             
             var world = state.WorldUnmanaged;
 
-            // check if debug tracking entity is dead
-            if (_debugTrackingEntity[0] != Entity.Null &&
-                (!state.EntityManager.Exists(_debugTrackingEntity[0]) ||
-                !state.EntityManager.HasComponent<LifetimeComponent>(_debugTrackingEntity[0])))
+            if (_debugHashMap)
             {
-                _debugTrackingEntity[0] = Entity.Null;
-            }
-
-            JobHandle youngestPickJob = state.Dependency;
-            if (_debugTrackingEntity[0] == Entity.Null)
-            {
-                _debugDeathTime[0] = 0;
-                var pickYoungestJob = new PickYoungest()
+                // check if debug tracking entity is dead
+                if (_debugTrackingEntity[0] != Entity.Null &&
+                    (!state.EntityManager.Exists(_debugTrackingEntity[0]) ||
+                    !state.EntityManager.HasComponent<LifetimeComponent>(_debugTrackingEntity[0])))
                 {
-                    YoungestEntity = _debugTrackingEntity,
-                    MaxDeathTime = _debugDeathTime
-                };
-                
-                state.Dependency = youngestPickJob = pickYoungestJob.Schedule(boidQuery, state.Dependency);
+                    _debugTrackingEntity[0] = Entity.Null;
+                }
+
+                if (_debugTrackingEntity[0] == Entity.Null)
+                {
+                    _debugDeathTime[0] = 0;
+                    var pickYoungestJob = new PickYoungest()
+                    {
+                        YoungestEntity = _debugTrackingEntity,
+                        MaxDeathTime = _debugDeathTime
+                    };
+                    
+                    state.Dependency = pickYoungestJob.Schedule(boidQuery, state.Dependency);
+                }
             }
             
             
@@ -93,7 +97,6 @@ namespace Boids.Domain
                 
                 var steerBoidsJob = new SteerBoids
                 {
-                    DebugTrackingEntity = _debugTrackingEntity,
                     DeltaTime = dt,
                     BoidVariant = boidConfig,
                     SpatialHashDefinition = spatialHashDefinition,
@@ -101,23 +104,25 @@ namespace Boids.Domain
                 };
                 state.Dependency = steerBoidsJob.ScheduleParallel(boidQuery, state.Dependency);
 
-                youngestPickJob.Complete(); // required to get out data from _debugTrackingEntity 
-                state.Dependency.Complete(); // required to query LocalTransform
-                var youngest = _debugTrackingEntity[0];
-                var debugCenter = SystemAPI.GetComponent<LocalTransform>(youngest).Position.xy;
-                spatialHashDefinition.GetMinMaxBuckets(debugCenter, boidConfig.MaxNeighborDistance, out var minBucket, out var maxBucket);
-
-                var debugFlagLookup = SystemAPI.GetComponentLookup<DebugFlagComponent>(isReadOnly: false);
-                
-                var job = new FlagAllInBuckets
+                if (_debugHashMap)
                 {
-                    DebugFlagLookup = debugFlagLookup,
-                    MinBucket = minBucket,
-                    MaxBucket = maxBucket,
-                    SpatialMap = spatialMap
-                };
-                
-                state.Dependency = job.Schedule(state.Dependency);
+                    state.Dependency.Complete(); // required to query LocalTransform
+                    var youngest = _debugTrackingEntity[0];
+                    var debugCenter = SystemAPI.GetComponent<LocalTransform>(youngest).Position.xy;
+                    spatialHashDefinition.GetMinMaxBuckets(debugCenter, boidConfig.MaxNeighborDistance, out var minBucket, out var maxBucket);
+
+                    var debugFlagLookup = SystemAPI.GetComponentLookup<DebugFlagComponent>(isReadOnly: false);
+                    
+                    var job = new FlagAllInBuckets
+                    {
+                        DebugFlagLookup = debugFlagLookup,
+                        MinBucket = minBucket,
+                        MaxBucket = maxBucket,
+                        SpatialMap = spatialMap
+                    };
+                    
+                    state.Dependency = job.Schedule(state.Dependency);
+                }
                 
                 boidQuery.AddDependency(state.Dependency);
                 boidQuery.ResetFilter();
@@ -197,19 +202,13 @@ namespace Boids.Domain
             public SpatialHashDefinition SpatialHashDefinition;
             
             [ReadOnly] public NativeParallelMultiHashMap<int2, OtherBoidData> SpatialMap;
-            [ReadOnly] public NativeArray<Entity> DebugTrackingEntity;
 
             private void Execute(
                 ref PhysicsVelocity velocity, 
                 ref LocalTransform presumedWorld,
-                ref DebugFlagComponent debugFlag,
                 in BoidState boidState,
                 in Entity entity)
             {
-                var amDebug = DebugTrackingEntity[0] == entity;
-
-                if (amDebug) debugFlag.SetFlag(FlagType.Primary);
-                
                 var myPos = presumedWorld.Position.xy;
                 var myVelocity = velocity.Linear.xy;
                 var maxRadius = BoidVariant.MaxNeighborDistance;
@@ -286,7 +285,7 @@ namespace Boids.Domain
                 if (distance < boidSettings.cohesionRadius)
                 {
                     _cohesionCount++;
-                    _cohesion += toNeighbor;
+                    _cohesion += otherBoid.Position;
                 }
             }
 
@@ -309,8 +308,7 @@ namespace Boids.Domain
                     _cohesion -= position;
                 }
                 else _cohesion = Vector2.zero;
-
-
+                
                 var targetForward = _separation * boidSettings.separationWeight +
                                     _alignment * boidSettings.alignmentWeight +
                                     _cohesion * boidSettings.cohesionWeight;

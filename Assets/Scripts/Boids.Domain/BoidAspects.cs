@@ -35,7 +35,7 @@ namespace Boids.Domain
             
             ecb.AddComponent(_entity, boidState);
             ecb.AddComponent(_entity, lifetime);
-            ecb.AddComponent(_entity, new DebugFlagComponent());
+            //ecb.AddComponent(_entity, new DebugFlagComponent());
             ecb.RemoveComponent<BoidSpawnData>(_entity);
         }
     }
