@@ -4,7 +4,7 @@ namespace Boids.Domain.DebugFlags
 {
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(BoidSystemGroup))]
-    [UpdateBefore(typeof(BoidSteerSystem))]
+    [UpdateBefore(typeof(BoidJobs.BoidSteerSystem))]
     public partial struct DebugUnflagSystem : ISystem
     {
         public void OnUpdate(ref SystemState state)
