@@ -1,4 +1,5 @@
 ﻿using Boids.Domain.DebugFlags;
+using Boids.Domain.Goals;
 using Boids.Domain.Lifetime;
 using Boids.Domain.Obstacles;
 using Unity.Burst;
@@ -55,6 +56,11 @@ namespace Boids.Domain.BoidJobs
 
             var obstacleQuery = SystemAPI.QueryBuilder()
                 .WithAll<Obstacle, LocalToWorld>()
+                .Build();
+            
+            var goalsQuery = SystemAPI.QueryBuilder()
+                .WithAllRW<GoalCount>()
+                .WithAll<Goal, LocalToWorld>()
                 .Build();
             
             var world = state.WorldUnmanaged;
@@ -129,6 +135,13 @@ namespace Boids.Domain.BoidJobs
                 };
                 var initialObstacleDependency = initialObstacleJob.ScheduleParallel(obstacleQuery, state.Dependency);
 
+                var countGoalsJob = new CountGoalsJob()
+                {
+                    SpatialHashDefinition = spatialHashDefinition,
+                    BoidBuckets = spatialBoids,
+                };
+                var countGoalsDependency = countGoalsJob.ScheduleParallel(goalsQuery, initialBoidMapDependency);
+                
                 state.Dependency = initialBoidMapDependency;
                 state.Dependency.Complete();
                 
@@ -150,7 +163,7 @@ namespace Boids.Domain.BoidJobs
                 var initialCopyFence = JobHandle.CombineDependencies(initialObstacleDependency, initialBoidMapDependency);
                 var obstacleMapDependency = populateObstacleHashMapJob.Schedule(spaceKeys.Length, 64, initialObstacleDependency);
 
-                var preSteerFence = JobHandle.CombineDependencies(initialCopyFence, obstacleMapDependency);
+                var preSteerFence = JobHandle.CombineDependencies(initialCopyFence, obstacleMapDependency, countGoalsDependency);
                 
                 state.Dependency = preSteerFence;
                 
