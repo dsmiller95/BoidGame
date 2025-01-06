@@ -27,7 +27,7 @@ namespace Boids.Domain
             _seedOffset += 1;
             var rng = Random.CreateFromIndex(_seedOffset);
             var time = (float)state.WorldUnmanaged.Time.ElapsedTime;
-            var dt = (float)state.WorldUnmanaged.Time.ElapsedTime;
+            var dt = state.WorldUnmanaged.Time.DeltaTime;
             
             var boidQuery = SystemAPI.QueryBuilder()
                 .WithAll<Boid, BoidState>()
@@ -119,7 +119,7 @@ namespace Boids.Domain
 
                         var toNeighbor = otherBoidData.Position - myPos;
                         float distanceSq = math.lengthsq(toNeighbor);
-                        if (distanceSq < maxRadiusSq || distanceSq < 0.0001f) // ignore self at almost 0-dist
+                        if (distanceSq < maxRadiusSq || distanceSq <= 0.0001f) // ignore self at almost 0-dist
                         {
                             continue;
                         }
@@ -165,8 +165,6 @@ namespace Boids.Domain
                     //separationAdjustment = separationAdjustment * separationAdjustment;
                     //separationAdjustment = Mathf.Clamp01(separationAdjustment);
                     separation += fromNeighborNormalized * (0.5f + separationAdjustment * 0.5f);
-                    
-                    separation += toNeighbor / math.length(toNeighbor);
                 }
 
                 if (distance < boidSettings.alignmentRadius)
@@ -208,13 +206,14 @@ namespace Boids.Domain
                                     cohesion * boidSettings.cohesionWeight;
                 
                 var nextHeading = linearVelocity + deltaTime * (targetForward - linearVelocity);
-                nextHeading = ClampMagnitude(nextHeading, boidSettings.minSpeed, boidSettings.maxSpeed);
-                return nextHeading;
+                var nextHeadingClamped = ClampMagnitude(nextHeading, boidSettings.minSpeed, boidSettings.maxSpeed);
+                return nextHeadingClamped;
             }
             
             private float2 ClampMagnitude(float2 heading, float min, float max)
             {
                 var mag = math.length(heading);
+                if (mag < 0.0001f) return heading;
                 if (mag < min) return (heading / mag) * min;
                 if (mag > max) return (heading / mag) * max;
                 return heading;
