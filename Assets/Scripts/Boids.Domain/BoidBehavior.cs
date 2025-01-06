@@ -37,7 +37,6 @@ namespace Boids.Domain
     [Serializable]
     public struct BoidState : IComponentData
     {
-        public float deathTime;
     }
 
     public class BoidBehavior : MonoBehaviour

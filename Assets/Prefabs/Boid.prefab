@@ -145,7 +145,7 @@ MonoBehaviour:
     alignmentWeight: 1
     cohesionRadius: 6
     cohesionWeight: 1
-    lifetimeSeconds: 40
+    lifetimeSeconds: 10
     randomMagnitude: 0.28
 --- !u!54 &5000036880073727084
 Rigidbody:

@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using Boids.Domain.Lifetime;
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using UnityEngine;
@@ -25,10 +26,14 @@ namespace Boids.Domain
             deathTime *= rng.NextFloat(0.9f, 1.1f);
             var boidState = new BoidState()
             {
-                deathTime = deathTime,
+            };
+            var lifetime = new LifetimeComponent()
+            {
+                deathTime = deathTime
             };
             
             ecb.AddComponent(_entity, boidState);
+            ecb.AddComponent(_entity, lifetime);
             ecb.RemoveComponent<BoidSpawnData>(_entity);
         }
     }
