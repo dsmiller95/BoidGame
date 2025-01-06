@@ -11,7 +11,7 @@ namespace Boids.Domain.DebugFlags
         {
             foreach (var flag in SystemAPI.Query<RefRW<DebugFlagComponent>>())
             {
-                flag.ValueRW.isFlagged = false;
+                flag.ValueRW.flag = FlagType.None;
             }
         }
     }

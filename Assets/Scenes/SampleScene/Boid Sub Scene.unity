@@ -152,7 +152,7 @@ MonoBehaviour:
   boidPrefab: {fileID: 7760226954748115280, guid: ea715ca325d485043b8b56650c723894, type: 3}
   timePerSpawn: 0.05
   targetBoidCount: 100
-  spawnSize: {x: 5, y: 5}
+  spawnSize: {x: 100, y: 100}
 --- !u!4 &1152753005
 Transform:
   m_ObjectHideFlags: 0

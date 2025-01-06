@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using System;
+using Unity.Entities;
 using UnityEngine;
 
 namespace Boids.Domain.DebugFlags
@@ -20,14 +21,14 @@ namespace Boids.Domain.DebugFlags
         {
             private void Execute(in DebugFlagComponent flag, SpriteRenderer spriteRenderer)
             {
-                if (flag.isFlagged)
+                var color = flag.flag switch
                 {
-                    spriteRenderer.color = Color.red;
-                }
-                else
-                {
-                    spriteRenderer.color = Color.white;
-                }
+                    FlagType.None => Color.white,
+                    FlagType.Secondary => Color.red,
+                    FlagType.Primary => Color.magenta,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                spriteRenderer.color = color;
             }
         }
     }

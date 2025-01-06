@@ -3,6 +3,7 @@ using Boids.Domain.Lifetime;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
@@ -51,6 +52,8 @@ namespace Boids.Domain
             {
                 _debugTrackingEntity[0] = Entity.Null;
             }
+
+            JobHandle youngestPickJob = state.Dependency;
             if (_debugTrackingEntity[0] == Entity.Null)
             {
                 _debugDeathTime[0] = 0;
@@ -60,7 +63,7 @@ namespace Boids.Domain
                     MaxDeathTime = _debugDeathTime
                 };
                 
-                state.Dependency = pickYoungestJob.Schedule(boidQuery, state.Dependency);
+                state.Dependency = youngestPickJob = pickYoungestJob.Schedule(boidQuery, state.Dependency);
             }
             
             
@@ -98,6 +101,24 @@ namespace Boids.Domain
                 };
                 state.Dependency = steerBoidsJob.ScheduleParallel(boidQuery, state.Dependency);
 
+                youngestPickJob.Complete(); // required to get out data from _debugTrackingEntity 
+                state.Dependency.Complete(); // required to query LocalTransform
+                var youngest = _debugTrackingEntity[0];
+                var debugCenter = SystemAPI.GetComponent<LocalTransform>(youngest).Position.xy;
+                spatialHashDefinition.GetMinMaxBuckets(debugCenter, boidConfig.MaxNeighborDistance, out var minBucket, out var maxBucket);
+
+                var debugFlagLookup = SystemAPI.GetComponentLookup<DebugFlagComponent>(isReadOnly: false);
+                
+                var job = new FlagAllInBuckets
+                {
+                    DebugFlagLookup = debugFlagLookup,
+                    MinBucket = minBucket,
+                    MaxBucket = maxBucket,
+                    SpatialMap = spatialMap
+                };
+                
+                state.Dependency = job.Schedule(state.Dependency);
+                
                 boidQuery.AddDependency(state.Dependency);
                 boidQuery.ResetFilter();
             }
@@ -110,14 +131,14 @@ namespace Boids.Domain
             
             public NativeParallelMultiHashMap<int2, OtherBoidData>.ParallelWriter SpatialMapWriter;
             
-            private void Execute(in PhysicsVelocity velocity, in LocalTransform presumedWorldTransform)
+            private void Execute(in PhysicsVelocity velocity, in LocalTransform presumedWorldTransform, in Entity entity)
             {
-                var boidData = OtherBoidData.From(velocity, presumedWorldTransform);
+                var boidData = OtherBoidData.From(velocity, presumedWorldTransform, entity);
                 var cell = SpatialHashDefinition.GetCell(presumedWorldTransform.Position.xy);
                 SpatialMapWriter.Add(cell, boidData);
             }
         }
-
+        
         [BurstCompile]
         private partial struct PickYoungest : IJobEntity
         {
@@ -132,6 +153,40 @@ namespace Boids.Domain
                     YoungestEntity[0] = entity;
                 }
             }
+        }
+
+
+
+        [BurstCompile]
+        private struct FlagAllInBuckets : IJob
+        {
+            public int2 MinBucket;
+            public int2 MaxBucket;
+            
+            public ComponentLookup<DebugFlagComponent> DebugFlagLookup;
+            [ReadOnly] public NativeParallelMultiHashMap<int2, OtherBoidData> SpatialMap;
+
+            public void Execute()
+            {
+                for (int x = MinBucket.x; x <= MaxBucket.x; x++)
+                {
+                    for (int y = MinBucket.y; y <= MaxBucket.y; y++)
+                    {
+                        var bucket = new int2(x, y);
+                        if (!SpatialMap.TryGetFirstValue(bucket, out var otherBoidData, out var it))
+                        {
+                            continue;
+                        }
+
+                        do
+                        {
+                            var refRw = DebugFlagLookup.GetRefRWOptional(otherBoidData.Entity);
+                            if (refRw.IsValid) refRw.ValueRW.SetFlag(FlagType.Secondary);
+                        } while (SpatialMap.TryGetNextValue(out otherBoidData, ref it));
+                    }
+                }
+            }
+            
         }
 
         [BurstCompile]
@@ -152,8 +207,8 @@ namespace Boids.Domain
                 in Entity entity)
             {
                 var amDebug = DebugTrackingEntity[0] == entity;
-                
-                if(amDebug) debugFlag.isFlagged = true;
+
+                if (amDebug) debugFlag.SetFlag(FlagType.Primary);
                 
                 var myPos = presumedWorld.Position.xy;
                 var myVelocity = velocity.Linear.xy;
@@ -279,13 +334,15 @@ namespace Boids.Domain
         {
             public float2 Position;
             public float2 Velocity;
+            public Entity Entity;
             
-            public static OtherBoidData From(in PhysicsVelocity velocity, in LocalTransform presumedWorld)
+            public static OtherBoidData From(in PhysicsVelocity velocity, in LocalTransform presumedWorld, in Entity entity)
             {
                 return new OtherBoidData
                 {
                     Position = presumedWorld.Position.xy,
-                    Velocity = velocity.Linear.xy
+                    Velocity = velocity.Linear.xy,
+                    Entity = entity
                 };
             }
         }
