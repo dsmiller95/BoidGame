@@ -103,7 +103,7 @@ namespace Boids.Domain.BoidJobs
 
             if (uniqueBoidTypes.Length > 3)
             {
-                Debug.LogError("More than 3 boid variants. will be inneficient");
+                Debug.LogWarning("More than 3 boid variants. will be inneficient");
             }
 
             var obstacleCount = obstacleQuery.CalculateEntityCount();
@@ -142,13 +142,13 @@ namespace Boids.Domain.BoidJobs
                 };
                 var initialObstacleDependency = initialObstacleJob.ScheduleParallel(obstacleQuery, state.Dependency);
 
+                lastEcbWriter.Complete();
                 var consumeGoals = new ConsumeGoalsJob()
                 {
                     SpatialHashDefinition = spatialHashDefinition,
                     BoidBuckets = spatialBoids,
                     CommandBuffer = ecb.AsParallelWriter()
                 };
-                lastEcbWriter.Complete();
                 var consumeGoalsDependency = lastEcbWriter = consumeGoals.ScheduleParallel(goalsQuery, initialBoidMapDependency);
                 
                 state.Dependency = initialBoidMapDependency;

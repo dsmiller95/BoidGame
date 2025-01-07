@@ -89,7 +89,7 @@ namespace Boids.Domain.BoidJobs
             _awayFromBounds = relativePositionClamped - relativePosition;
         }
         
-        public float2 GetTargetForward(in Boid boidSettings, in float2 linearVelocity, in float2 position, in float deltaTime)
+        public float2 GetTargetForward(in Boid boidSettings, in float2 linearVelocity, in float2 position)
         {
             if(_separationCount > 0)
             {

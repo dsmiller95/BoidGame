@@ -54,9 +54,12 @@ namespace Boids.Domain.BoidJobs
             // var relativeObstaclePosition = obstacle - myPos;
             // accumulator.AccumulateObstacle(relativeObstaclePosition);
                 
-            var targetForward = accumulator.GetTargetForward(BoidVariant, myVelocity, myPos, DeltaTime);
+            var targetForward = accumulator.GetTargetForward(BoidVariant, myVelocity, myPos);
+            var targetForwardNormalized = math.normalizesafe(targetForward);
+            var extraForce = targetForwardNormalized * BoidVariant.acceleration;
                 
             var nextHeadingUnclamped = myVelocity + DeltaTime * (targetForward - myVelocity);
+            nextHeadingUnclamped += math.normalizesafe(nextHeadingUnclamped) * DeltaTime * BoidVariant.acceleration;
             var nextHeading = ClampMagnitude(nextHeadingUnclamped, BoidVariant.minSpeed, BoidVariant.maxSpeed);
                 
             var rotation = math.atan2(nextHeading.y, nextHeading.x);
