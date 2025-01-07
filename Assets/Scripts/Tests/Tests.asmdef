@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "Unity.Mathematics",
         "Boids.Domain",
-        "Unity.Collections"
+        "Unity.Collections",
+        "Unity.Transforms"
     ],
     "includePlatforms": [
         "Editor"

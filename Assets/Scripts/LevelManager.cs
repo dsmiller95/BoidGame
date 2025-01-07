@@ -28,7 +28,7 @@ namespace DefaultNamespace
         
         private void Awake()
         {
-            if (levels.Any(x => x.subScene.enabled))
+            if (levels.Skip(1).Any(x => x.subScene.enabled))
             {
                 Log.Error("expected all levels to begin disabled");
             }

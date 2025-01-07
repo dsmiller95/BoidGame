@@ -11,6 +11,7 @@ namespace Tests
     public class ObstacleFunctionTest
     {
         
+        [Category("Expensive")]
         [Theory]
         [TestCase("010_reg", 10, 100, 10f, 16f)]
         [TestCase("020_reg",20, 200, 10f, 16f)]
