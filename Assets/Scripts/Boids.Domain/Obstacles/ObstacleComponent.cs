@@ -22,16 +22,25 @@ namespace Boids.Domain.Obstacles
         public ObstacleType variant;
         public float obstacleRadius;
         public float obstacleHardSurfaceRadius;
-        public float RadiusSq => obstacleRadius * obstacleRadius;
         public float obstacleHardSurfaceRadiusFraction => obstacleHardSurfaceRadius / obstacleRadius;
 
-        // public float GetDistanceInsideSurface(
-        //     in float2 obstacleCenter,
-        //     in float2 queryPoint)
-        // {
-        //     var distance = math.length(position) - obstacleRadius;
-        //     return math.max(distance, 0);
-        // }
+        /// <summary>
+        /// Get the distance from the center of the obstacle.
+        /// </summary>
+        /// <param name="queryRelativeToCenter">the query point relative to the center of this obstacle</param>
+        /// <returns>A value in [0..1) if inside the obstacle radius, or [1..) if outside</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public readonly float GetNormalizedDistance(in float2 queryRelativeToCenter)
+        {
+            if (variant is not ObstacleType.SphereRepel)
+            {
+                throw new NotImplementedException("Only SphereRepel is supported");
+            }
+            
+            var distance = math.length(queryRelativeToCenter);
+            var normalizedDistance = distance / obstacleRadius;
+            return normalizedDistance;
+        }
     }
 
     [Serializable]

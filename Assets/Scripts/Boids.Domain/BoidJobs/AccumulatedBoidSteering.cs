@@ -68,14 +68,17 @@ namespace Boids.Domain.BoidJobs
                 throw new NotImplementedException("Different obstacles not implemented");
             }
             
-            var relativeObstaclePosition = obstacleCellData.Position - position;
-            var distance = math.length(relativeObstaclePosition);
-            var normalizedDistanceFromCenter = distance / obstacleCellData.Obstacle.obstacleRadius;
-            if (distance > 0.00001f && normalizedDistanceFromCenter < this._nearestObstacleDistanceNormalizedFromCenter)
+            //var relativeObstaclePosition = obstacleCellData.Position - position;
+            var relativeToObstacle = position - obstacleCellData.Position;
+            var obstacleDistance = obstacleCellData.Obstacle
+                .GetNormalizedDistance(relativeToObstacle);
+            // var distance = math.length(relativeObstaclePosition);
+            // var normalizedDistanceFromCenter = distance / obstacleCellData.Obstacle.obstacleRadius;
+            if (obstacleDistance > 0.00001f && obstacleDistance < this._nearestObstacleDistanceNormalizedFromCenter)
             {
-                this._nearestObstacleRelative = relativeObstaclePosition;
+                this._nearestObstacleRelative = -relativeToObstacle;
                 this._nearestObstacle = obstacleCellData.Obstacle;
-                this._nearestObstacleDistanceNormalizedFromCenter = normalizedDistanceFromCenter;
+                this._nearestObstacleDistanceNormalizedFromCenter = obstacleDistance;
             }
         }
         

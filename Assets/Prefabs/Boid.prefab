@@ -50,13 +50,13 @@ MonoBehaviour:
     initialSpeed: 5
     maxSpeed: 20
     minSpeed: 4
-    acceleration: 15
+    acceleration: 20
     separationRadius: 3
     separationWeight: 1.5
     alignmentRadius: 5
     alignmentWeight: 1
     cohesionRadius: 6
-    cohesionWeight: 1
+    cohesionWeight: 1.25
     obstacleAvoidanceWeight: 2
     obstacleAvoidanceConstantRepellent: 5
     boundsAvoidanceWeight: 8
