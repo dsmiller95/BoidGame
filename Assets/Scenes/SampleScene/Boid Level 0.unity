@@ -241,7 +241,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swarmOwner: {fileID: 0}
   boidPrefab: {fileID: 7760226954748115280, guid: ea715ca325d485043b8b56650c723894, type: 3}
-  timePerSpawn: 0.01
+  timePerSpawn: 1.5
+  boidGroupSize: 50
   targetBoidCount: 10000
   spawnSize: {x: 10, y: 10}
 --- !u!4 &1152753005
@@ -355,10 +356,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1688805877764602052, guid: eb07853f1b26eac438410f157c3426dc, type: 3}
-      propertyPath: decayPerSecond
-      value: 30
-      objectReference: {fileID: 0}
     - target: {fileID: 2767075929349691855, guid: eb07853f1b26eac438410f157c3426dc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 20

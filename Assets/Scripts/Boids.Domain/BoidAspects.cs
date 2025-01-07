@@ -23,7 +23,7 @@ namespace Boids.Domain
 
             _velocity.ValueRW.Linear = new float3(targetHeading * _boidSpawn.initialSpeed, 0);
             
-            var deathTime = Time.fixedTime + _boidSpawn.lifetimeSeconds;
+            var deathTime = time + _boidSpawn.lifetimeSeconds;
             deathTime *= rng.NextFloat(0.9f, 1.1f);
             var boidState = new BoidState()
             {

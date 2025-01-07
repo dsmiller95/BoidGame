@@ -40,17 +40,18 @@ public partial struct BoidSpawnSystem : ISystem
             boidSpawnerState.ValueRW.TimeSinceLastSpawn = timeSinceLast;
 
             var headroom = boidSpawner.ValueRO.MaxBoids - totalBoidCount;
-            var toSpawn = math.floor(boidSpawnerState.ValueRO.TimeSinceLastSpawn / boidSpawner.ValueRO.TimePerSpawn);
+            var toSpawn = math.floor(boidSpawnerState.ValueRO.TimeSinceLastSpawn / boidSpawner.ValueRO.TimePerSpawnGroup);
             toSpawn = math.min(toSpawn, headroom);
             if(toSpawn <= 0) continue;
             
-            boidSpawnerState.ValueRW.TimeSinceLastSpawn -= toSpawn * boidSpawner.ValueRO.TimePerSpawn;
+            boidSpawnerState.ValueRW.TimeSinceLastSpawn -= toSpawn * boidSpawner.ValueRO.TimePerSpawnGroup;
             
             var spawnCenter = boidSpawnerLocalToWorld.ValueRO.Position;
+            toSpawn *= boidSpawner.ValueRO.GroupSize;
             for (int i = 0; i < toSpawn; i++)
             {
                 var spawned = ecb.Instantiate(boidSpawner.ValueRO.Prefab);
-                var spawnPoint = spawnCenter + new float3(boidSpawner.ValueRO.GetRelativeSpawn(rng), 0);
+                var spawnPoint = spawnCenter + new float3(boidSpawner.ValueRO.GetRelativeSpawn(ref rng), 0);
                 var localToWorld = LocalTransform.FromPosition(spawnPoint);
                 ecb.SetComponent(spawned, localToWorld);
                 //ecb.RemoveComponent<LocalTransform>(spawned);

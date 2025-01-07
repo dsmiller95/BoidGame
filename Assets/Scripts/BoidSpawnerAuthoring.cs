@@ -12,17 +12,18 @@ public struct BoidSpawner : IComponentData
 {
     public Entity Prefab;
     public Vector2 SpawnSize;
-    public float TimePerSpawn;
+    public float TimePerSpawnGroup;
     public int MaxBoids;
+    public int GroupSize;
 
     [Pure]
     public float MaxTimeAccumulate(float deltaTime)
     {
-        return math.max(TimePerSpawn, deltaTime);
+        return math.max(TimePerSpawnGroup, deltaTime);
     }
 
     [Pure]
-    public float2 GetRelativeSpawn(Unity.Mathematics.Random rng)
+    public float2 GetRelativeSpawn(ref Random rng)
     {
         return rng.NextFloat2(-SpawnSize / 2, SpawnSize / 2);
     }
@@ -40,6 +41,7 @@ public class BoidSpawnerAuthoring : MonoBehaviour
     
     [Range(0.001f, 10f)]
     public float timePerSpawn = 0.5f;
+    public int boidGroupSize = 50;
     public int targetBoidCount = 1000;
     
     public Vector2 spawnSize;
@@ -55,8 +57,9 @@ public class BoidSpawnerAuthoring : MonoBehaviour
             {
                 Prefab = GetEntity(authoring.boidPrefab, TransformUsageFlags.Renderable),
                 SpawnSize = authoring.spawnSize,
-                TimePerSpawn = Mathf.Max(0.001f, authoring.timePerSpawn),
-                MaxBoids = authoring.targetBoidCount
+                TimePerSpawnGroup = Mathf.Max(0.001f, authoring.timePerSpawn),
+                MaxBoids = authoring.targetBoidCount,
+                GroupSize = authoring.boidGroupSize,
             });
             AddComponent(entity, new BoidSpawnerState
             {

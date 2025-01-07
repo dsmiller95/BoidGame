@@ -1101,7 +1101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swarmOwner: {fileID: 0}
   boidPrefab: {fileID: 7760226954748115280, guid: ea715ca325d485043b8b56650c723894, type: 3}
-  timePerSpawn: 0.01
+  timePerSpawn: 1.5
+  boidGroupSize: 50
   targetBoidCount: 10000
   spawnSize: {x: 10, y: 10}
 --- !u!4 &1152753005
@@ -1695,6 +1696,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1152753005}
+  - {fileID: 2435486352286014172}
   - {fileID: 3713884006633420253}
   - {fileID: 321290674}
   - {fileID: 746718294}
@@ -1713,6 +1715,5 @@ SceneRoots:
   - {fileID: 729540381}
   - {fileID: 1527946506}
   - {fileID: 102438439}
-  - {fileID: 2435486352286014172}
   - {fileID: 362279972}
   - {fileID: 1690171}

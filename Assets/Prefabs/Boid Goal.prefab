@@ -189,5 +189,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 1.8
-  required: 1000
+  required: 256
+  decayPerSecond: 10
   scaleForProgress: {fileID: 3153808187228042024}
