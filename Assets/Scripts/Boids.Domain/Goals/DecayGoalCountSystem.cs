@@ -17,10 +17,14 @@ namespace Boids.Domain.Goals
                      SystemAPI.Query<RefRO<Goal>, RefRW<GoalCount>>())
             {
                 var decayAmount = deltaTime * goal.ValueRO.decayPerSecond;
-                var fullDecay = goalCount.ValueRW.partialCount - decayAmount;
-                var intDecay = (int)math.floor(fullDecay);
-                goalCount.ValueRW.count += intDecay;
-                goalCount.ValueRW.partialCount = fullDecay - intDecay;
+                var count = goalCount.ValueRO;
+                var fullDecay = count.partialCount + decayAmount;
+                int intDecay = (int)math.floor(fullDecay);
+                
+                count.count = math.max(0, count.count - intDecay);
+                count.partialCount = fullDecay - intDecay;
+                
+                goalCount.ValueRW = count;
             }
         }
     }
