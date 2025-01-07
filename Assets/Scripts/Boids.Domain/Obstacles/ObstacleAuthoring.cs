@@ -21,6 +21,11 @@ namespace Boids.Domain.Obstacles
                     obstacleRadius = authoring.obstacleRadius,
                     obstacleHardSurfaceRadius = authoring.hardSurfaceRadius,
                 });
+                var spriteRenderer = GetComponent<SpriteRenderer>();
+                AddComponent(entity, new OriginalColor
+                {
+                    Color = spriteRenderer.color.ToFloat4()
+                });
             }
         }
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace Boids.Domain.Obstacles
 {
@@ -39,5 +41,10 @@ namespace Boids.Domain.Obstacles
                 obstacleHardSurfaceRadius = this.obstacleHardSurfaceRadius * linearScale,
             };
         }
+    }
+    
+    public struct OriginalColor : IComponentData
+    {
+        public float4 Color;
     }
 }
