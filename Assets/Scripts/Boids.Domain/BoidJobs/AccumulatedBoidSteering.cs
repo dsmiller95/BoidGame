@@ -63,7 +63,7 @@ namespace Boids.Domain.BoidJobs
         public void AccumulateObstacleCell(in ObstacleCellData obstacleCellData, in float2 position)
         {
             if (!obstacleCellData.IsValid) return;
-            if (obstacleCellData.Obstacle.variant is not ObstacleType.SphereRepel)
+            if (obstacleCellData.Obstacle.variant is not ObstacleType.Repel)
             {
                 throw new NotImplementedException("Different obstacles not implemented");
             }

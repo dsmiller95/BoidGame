@@ -8,8 +8,12 @@ namespace Boids.Domain.Obstacles
     public enum ObstacleType
     {
         None = 0,
-        SphereRepel,
-        //SphereAttract,
+        Repel,
+    }
+
+    public enum ObstacleShape
+    {
+        Sphere,
     }
     
     public struct ObstacleDisabledFlag : IComponentData
@@ -20,6 +24,7 @@ namespace Boids.Domain.Obstacles
     public struct Obstacle
     {
         public ObstacleType variant;
+        public ObstacleShape shape;
         public float obstacleRadius;
         public float obstacleHardSurfaceRadiusFraction;
 
@@ -31,7 +36,7 @@ namespace Boids.Domain.Obstacles
         /// <exception cref="NotImplementedException"></exception>
         public readonly float GetNormalizedDistance(in float2 queryRelativeToCenter)
         {
-            if (variant is not ObstacleType.SphereRepel)
+            if (shape is not ObstacleShape.Sphere)
             {
                 throw new NotImplementedException("Only SphereRepel is supported");
             }
@@ -51,6 +56,7 @@ namespace Boids.Domain.Obstacles
     public struct ObstacleComponent : IComponentData
     {
         public ObstacleType variant;
+        public ObstacleShape shape;
         public float obstacleRadius;
         public float obstacleHardSurfaceRadius;
 
@@ -59,6 +65,7 @@ namespace Boids.Domain.Obstacles
             return new Obstacle
             {
                 variant = this.variant,
+                shape = this.shape,
                 obstacleRadius = this.obstacleRadius * linearScale,
                 obstacleHardSurfaceRadiusFraction = this.obstacleHardSurfaceRadius / this.obstacleRadius,
             };

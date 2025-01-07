@@ -9,6 +9,7 @@ namespace Boids.Domain.Obstacles
         [Range(1f, 30f)]
         public float obstacleRadius = 1f;
         public float hardSurfaceRadius = 0.8f;
+        public ObstacleShape shape = ObstacleShape.Sphere;
         public bool draggable = false;
         
         private class ObstacleBaker : Baker<ObstacleAuthoring>
@@ -18,7 +19,8 @@ namespace Boids.Domain.Obstacles
                 var entity = GetEntity(TransformUsageFlags.Renderable);
                 AddComponent(entity, new ObstacleComponent()
                 {
-                    variant = ObstacleType.SphereRepel,
+                    variant = ObstacleType.Repel,
+                    shape = authoring.shape,
                     obstacleRadius = authoring.obstacleRadius,
                     obstacleHardSurfaceRadius = authoring.hardSurfaceRadius,
                 });
