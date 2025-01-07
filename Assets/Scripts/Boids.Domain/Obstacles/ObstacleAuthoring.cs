@@ -16,6 +16,16 @@ namespace Boids.Domain.Obstacles
     {
         public ObstacleType variant;
         public float obstacleRadius;
+        public float obstacleHardSurfaceRadius;
+
+        public readonly Obstacle AdjustForScale(float linearScale)
+        {
+            var res = this;
+            res.obstacleRadius *= linearScale;
+            res.obstacleHardSurfaceRadius *= linearScale;
+            return res;
+        }
+        
         public float RadiusSq => obstacleRadius * obstacleRadius;
     }
     
@@ -23,6 +33,7 @@ namespace Boids.Domain.Obstacles
     {
         [Range(1f, 30f)]
         public float obstacleRadius = 1f;
+        public float hardSurfaceRadius = 0.8f;
         
         private class ObstacleBaker : Baker<ObstacleAuthoring>
         {
@@ -32,7 +43,8 @@ namespace Boids.Domain.Obstacles
                 AddComponent(entity, new Obstacle
                 {
                     variant = ObstacleType.SphereRepel,
-                    obstacleRadius = authoring.obstacleRadius
+                    obstacleRadius = authoring.obstacleRadius,
+                    obstacleHardSurfaceRadius = authoring.hardSurfaceRadius,
                 });
             }
         }
@@ -42,6 +54,8 @@ namespace Boids.Domain.Obstacles
             Gizmos.color = Color.red;
             var radius = obstacleRadius * this.transform.lossyScale.x;
             Gizmos.DrawWireSphere(transform.position, radius);
+            var hardRadius = hardSurfaceRadius * this.transform.lossyScale.x;
+            Gizmos.DrawWireSphere(transform.position, hardRadius);
         }
     }
 }

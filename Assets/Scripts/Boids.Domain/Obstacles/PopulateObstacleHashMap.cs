@@ -8,6 +8,9 @@ using Unity.Transforms;
 
 namespace Boids.Domain.BoidJobs
 {
+    /// <summary>
+    /// Data for a cell in the hashmap containing the closest obstacle to the center of that cell
+    /// </summary>
     internal struct ObstacleCellData
     {
         public Obstacle Obstacle;

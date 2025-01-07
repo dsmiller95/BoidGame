@@ -101,3 +101,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacleRadius: 2.2
+  hardSurfaceRadius: 1.5

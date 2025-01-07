@@ -89,7 +89,7 @@ namespace Boids.Domain.BoidJobs
             _awayFromBounds = relativePositionClamped - relativePosition;
         }
         
-        public float2 GetTargetForward(in Boid boidSettings, in float2 linearVelocity, in float2 position)
+        public (float2 heading, bool hardSurface) GetTargetForward(in Boid boidSettings, in float2 linearVelocity, in float2 position)
         {
             if(_separationCount > 0)
             {
@@ -111,23 +111,36 @@ namespace Boids.Domain.BoidJobs
 
             var fromObstacle = -_nearestObstacleRelative;
             var avoidObstacleSteering = float2.zero;
+            bool hitHardObstacle = false;
             if (HasObstacle)
             {
                 var toObstacle = -fromObstacle;
                 var awayFromObstacleNormal = math.normalizesafe(fromObstacle);
                 avoidObstacleSteering = toObstacle + awayFromObstacleNormal * _nearestObstacle.obstacleRadius;
                 avoidObstacleSteering += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
+                hitHardObstacle = _nearestObstacleDistance < _nearestObstacle.obstacleHardSurfaceRadius;
+                if (hitHardObstacle)
+                {
+                    // reflect away from the hard surface
+                    var reflectedHeading = math.reflect(linearVelocity, fromObstacle);
+                    var reflectedAwayFromObstacle = math.dot(reflectedHeading, fromObstacle) > 0;
+                    reflectedHeading = math.select(linearVelocity, reflectedHeading , reflectedAwayFromObstacle);
+                    var resultHeading = reflectedHeading + avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight;
+                    return (resultHeading, true);
+                }
             }
 
             var flockingHeading = _separation * boidSettings.separationWeight +
                                   _alignment * boidSettings.alignmentWeight +
                                   _cohesion * boidSettings.cohesionWeight;
             
-            var targetForward =  flockingHeading +
-                                avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight +
-                                _awayFromBounds * boidSettings.boundsAvoidanceWeight;
+            
+            var targetForward = 
+                math.select(new float2(), flockingHeading, !hitHardObstacle) +
+                avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight +
+                _awayFromBounds * boidSettings.boundsAvoidanceWeight;
 
-            return targetForward;
+            return (targetForward, hitHardObstacle);
         }
     }
 }
