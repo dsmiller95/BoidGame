@@ -22,7 +22,6 @@ namespace Boids.Domain.OnClick
         protected override void OnUpdate()
         {
             if (!Input.GetMouseButtonDown(0)) return;
-            Debug.Log("Mouse clicked in job");
             if(Camera.main is not {} mainCamera) return;
             
             var worldPoint = mainCamera.ScreenToWorldPoint(Input.mousePosition);

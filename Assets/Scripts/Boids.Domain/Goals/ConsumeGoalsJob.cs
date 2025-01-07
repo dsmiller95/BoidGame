@@ -11,12 +11,14 @@ namespace Boids.Domain.Goals
     // invoked as part of the boid steer system. may want to expose the hashmap generated
     //  in the steering system to other systems?
     [BurstCompile]
-    internal partial struct CountGoalsJob : IJobEntity
+    internal partial struct ConsumeGoalsJob : IJobEntity
     {
         public SpatialHashDefinition SpatialHashDefinition;
+        public EntityCommandBuffer.ParallelWriter CommandBuffer;
         [ReadOnly] public NativeParallelMultiHashMap<int2, OtherBoidData> BoidBuckets;
         
         public void Execute(
+            [EntityIndexInQuery] int entityIndexInQuery,
             ref GoalCount count,
             in LocalToWorld localToWorld,
             in Goal goalConfig)
@@ -34,18 +36,33 @@ namespace Boids.Domain.Goals
                 for (int y = minBucket.y; y <= maxBucket.y; y++)
                 {
                     var bucket = new int2(x, y);
-                    var bucketCenter = SpatialHashDefinition.GetCenterOfCell(bucket);
-                    var distanceSq = math.lengthsq(myPos - bucketCenter);
-                    if (distanceSq > myRadiusSq)
-                    {
-                        continue;
-                    }
-
-                    totalCount += math.select(0, BoidBuckets.CountValuesForKey(bucket), distanceSq <= myRadiusSq);
+                    ConsumeCell(bucket, entityIndexInQuery, myPos, myRadiusSq, ref totalCount);
                 }
             }
             
             count.count += totalCount;
+        }
+        
+        private void ConsumeCell(in int2 bucket, in int sortKey,
+            in float2 goalPos, in float myRadiusSq, ref int totalCount)
+        {
+            if (!BoidBuckets.TryGetFirstValue(bucket, out var otherBoidData, out var it))
+            {
+                return;
+            }
+
+            do
+            {
+                float2 toBoid = otherBoidData.Position - goalPos;
+                var distanceSq = math.lengthsq(toBoid);
+                if (distanceSq > myRadiusSq)
+                {
+                    continue;
+                }
+
+                CommandBuffer.DestroyEntity(sortKey, otherBoidData.Entity);
+                totalCount++;
+            } while (BoidBuckets.TryGetNextValue(out otherBoidData, ref it));
         }
     }
 }

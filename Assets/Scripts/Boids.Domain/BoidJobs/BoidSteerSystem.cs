@@ -24,6 +24,7 @@ namespace Boids.Domain.BoidJobs
         private bool _debugHashMap;
         private bool _debugObstacles;
         
+        
         public void OnCreate(ref SystemState state)
         {
             _seedOffset = 9724;
@@ -90,6 +91,8 @@ namespace Boids.Domain.BoidJobs
 
 
             
+            var ecb = new EntityCommandBuffer(world.UpdateAllocator.ToAllocator);
+            JobHandle lastEcbWriter = default;
             
             
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<Boid> uniqueBoidTypes, world.UpdateAllocator.ToAllocator);
@@ -135,12 +138,14 @@ namespace Boids.Domain.BoidJobs
                 };
                 var initialObstacleDependency = initialObstacleJob.ScheduleParallel(obstacleQuery, state.Dependency);
 
-                var countGoalsJob = new CountGoalsJob()
+                var consumeGoals = new ConsumeGoalsJob()
                 {
                     SpatialHashDefinition = spatialHashDefinition,
                     BoidBuckets = spatialBoids,
+                    CommandBuffer = ecb.AsParallelWriter()
                 };
-                var countGoalsDependency = countGoalsJob.ScheduleParallel(goalsQuery, initialBoidMapDependency);
+                lastEcbWriter.Complete();
+                var consumeGoalsDependency = lastEcbWriter = consumeGoals.ScheduleParallel(goalsQuery, initialBoidMapDependency);
                 
                 state.Dependency = initialBoidMapDependency;
                 state.Dependency.Complete();
@@ -163,7 +168,7 @@ namespace Boids.Domain.BoidJobs
                 var initialCopyFence = JobHandle.CombineDependencies(initialObstacleDependency, initialBoidMapDependency);
                 var obstacleMapDependency = populateObstacleHashMapJob.Schedule(spaceKeys.Length, 64, initialObstacleDependency);
 
-                var preSteerFence = JobHandle.CombineDependencies(initialCopyFence, obstacleMapDependency, countGoalsDependency);
+                var preSteerFence = JobHandle.CombineDependencies(initialCopyFence, obstacleMapDependency, consumeGoalsDependency);
                 
                 state.Dependency = preSteerFence;
                 
@@ -210,6 +215,8 @@ namespace Boids.Domain.BoidJobs
                 boidQuery.AddDependency(state.Dependency);
                 boidQuery.ResetFilter();
             }
+            lastEcbWriter.Complete();
+            ecb.Playback(state.EntityManager);
         }
 
         

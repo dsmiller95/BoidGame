@@ -9,6 +9,7 @@ namespace Boids.Domain.Goals
     public struct Goal : IComponentData
     {
         public float radius;
+        public float consumptionRadius => radius;
         public int required;
     }
     
