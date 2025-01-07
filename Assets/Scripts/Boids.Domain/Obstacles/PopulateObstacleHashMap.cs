@@ -16,12 +16,14 @@ namespace Boids.Domain.BoidJobs
         public Obstacle Obstacle;
         public float2 Position;
         public float Distance;
+        public float NormalizedDistanceFromCenter;
 
         public bool IsValid => Distance < float.MaxValue;
         
         public static ObstacleCellData Empty => new ObstacleCellData
         {
             Distance = float.MaxValue,
+            NormalizedDistanceFromCenter = float.MaxValue
         };
         
         public void Accumulate(in Obstacle obstacle, in float2 obstaclePos, in float2 cellCenter)
@@ -34,11 +36,13 @@ namespace Boids.Domain.BoidJobs
             }
             
             var distance = math.sqrt(sqDistance);
-            if (distance >= Distance) return;
+            var normalizedDistanceFromCenter = distance / obstacle.obstacleRadius;
+            if (normalizedDistanceFromCenter >= NormalizedDistanceFromCenter) return;
             
             Obstacle = obstacle;
             Position = obstaclePos;
             Distance = distance;
+            NormalizedDistanceFromCenter = normalizedDistanceFromCenter;
         }
     }
 

@@ -11,6 +11,7 @@ namespace Boids.Domain.Goals
         public float radius;
         public float consumptionRadius => radius;
         public int required;
+        public float decayPerSecond;
     }
     
     [Serializable]
@@ -23,6 +24,7 @@ namespace Boids.Domain.Goals
     public struct GoalCount : IComponentData
     {
         public int count;
+        public float partialCount;
     }
     
     public class GoalAuthoring : MonoBehaviour
@@ -30,6 +32,7 @@ namespace Boids.Domain.Goals
         [Range(1f, 30f)]
         public float radius = 1f;
         public int required = 100;
+        public int decayPerSecond = 10;
         public GameObject scaleForProgress = null!;
 
         private void Awake()
@@ -50,6 +53,7 @@ namespace Boids.Domain.Goals
                 {
                     radius = authoring.radius,
                     required = authoring.required,
+                    decayPerSecond = authoring.decayPerSecond,
                 });
                 AddComponent(entity, new GoalCount());
                 var scaleChildEntity = GetEntity(authoring.scaleForProgress, TransformUsageFlags.Dynamic);

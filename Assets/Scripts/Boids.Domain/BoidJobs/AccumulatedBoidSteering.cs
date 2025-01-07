@@ -19,6 +19,7 @@ namespace Boids.Domain.BoidJobs
         private Obstacle _nearestObstacle;
         private float2 _nearestObstacleRelative;
         private float _nearestObstacleDistance;
+        private float _nearestObstacleDistanceNormalizedFromCenter;
         private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
             _nearestObstacle.variant != ObstacleType.None &&
             _nearestObstacleDistance < _nearestObstacle.obstacleRadius;
@@ -30,7 +31,8 @@ namespace Boids.Domain.BoidJobs
 
         public static AccumulatedBoidSteering Empty => new()
         {
-            _nearestObstacleDistance = float.MaxValue
+            _nearestObstacleDistance = float.MaxValue,
+            _nearestObstacleDistanceNormalizedFromCenter = float.MaxValue,
         };
             
         public void Accumulate(in Boid boidSettings, in OtherBoidData otherBoid, in float2 toNeighbor, in float distance)
@@ -70,11 +72,13 @@ namespace Boids.Domain.BoidJobs
             
             var relativeObstaclePosition = obstacleCellData.Position - position;
             var distance = math.length(relativeObstaclePosition);
-            if (distance < this._nearestObstacleDistance && distance > 0.00001f)
+            var normalizedDistanceFromCenter = distance / obstacleCellData.Obstacle.obstacleRadius;
+            if (distance > 0.00001f && normalizedDistanceFromCenter < this._nearestObstacleDistanceNormalizedFromCenter)
             {
                 this._nearestObstacleRelative = relativeObstaclePosition;
                 this._nearestObstacleDistance = distance;
                 this._nearestObstacle = obstacleCellData.Obstacle;
+                this._nearestObstacleDistanceNormalizedFromCenter = normalizedDistanceFromCenter;
             }
         }
         
