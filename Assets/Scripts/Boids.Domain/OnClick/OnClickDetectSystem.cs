@@ -8,17 +8,9 @@ using UnityEngine;
 namespace Boids.Domain.OnClick
 {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    public partial class InputSystemGroup : ComponentSystemGroup
-    {
-        
-    }
-    
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateBefore(typeof(InputSystemGroup))]
     public partial class OnClickDetectSystem : SystemBase 
     {
-        
-        
         protected override void OnUpdate()
         {
             if (!Input.GetMouseButtonDown(0)) return;

@@ -40,6 +40,11 @@ namespace Boids.Domain.Obstacles
             var normalizedDistance = distance / obstacleRadius;
             return normalizedDistance;
         }
+        
+        public readonly bool IsInsideHardSurface(in float normalizedDistance)
+        {
+            return normalizedDistance < obstacleHardSurfaceRadiusFraction;
+        }
     }
 
     [Serializable]
