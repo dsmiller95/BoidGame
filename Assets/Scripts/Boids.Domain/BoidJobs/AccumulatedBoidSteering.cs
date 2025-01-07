@@ -18,11 +18,10 @@ namespace Boids.Domain.BoidJobs
 
         private Obstacle _nearestObstacle;
         private float2 _nearestObstacleRelative;
-        private float _nearestObstacleDistance;
         private float _nearestObstacleDistanceNormalizedFromCenter;
         private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
             _nearestObstacle.variant != ObstacleType.None &&
-            _nearestObstacleDistance < _nearestObstacle.obstacleRadius;
+            _nearestObstacleDistanceNormalizedFromCenter < 1;
 
         private float2 _awayFromBounds;
         
@@ -31,7 +30,6 @@ namespace Boids.Domain.BoidJobs
 
         public static AccumulatedBoidSteering Empty => new()
         {
-            _nearestObstacleDistance = float.MaxValue,
             _nearestObstacleDistanceNormalizedFromCenter = float.MaxValue,
         };
             
@@ -76,7 +74,6 @@ namespace Boids.Domain.BoidJobs
             if (distance > 0.00001f && normalizedDistanceFromCenter < this._nearestObstacleDistanceNormalizedFromCenter)
             {
                 this._nearestObstacleRelative = relativeObstaclePosition;
-                this._nearestObstacleDistance = distance;
                 this._nearestObstacle = obstacleCellData.Obstacle;
                 this._nearestObstacleDistanceNormalizedFromCenter = normalizedDistanceFromCenter;
             }
@@ -122,7 +119,7 @@ namespace Boids.Domain.BoidJobs
                 var awayFromObstacleNormal = math.normalizesafe(fromObstacle);
                 avoidObstacleSteering = toObstacle + awayFromObstacleNormal * _nearestObstacle.obstacleRadius;
                 avoidObstacleSteering += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
-                hitHardObstacle = _nearestObstacleDistance < _nearestObstacle.obstacleHardSurfaceRadius;
+                hitHardObstacle = _nearestObstacleDistanceNormalizedFromCenter < _nearestObstacle.obstacleHardSurfaceRadiusFraction;
                 if (hitHardObstacle)
                 {
                     // reflect away from the hard surface

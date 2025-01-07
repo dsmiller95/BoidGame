@@ -15,14 +15,12 @@ namespace Boids.Domain.BoidJobs
     {
         public Obstacle Obstacle;
         public float2 Position;
-        public float Distance;
         public float NormalizedDistanceFromCenter;
 
-        public bool IsValid => Distance < float.MaxValue;
+        public bool IsValid => NormalizedDistanceFromCenter < float.MaxValue;
         
         public static ObstacleCellData Empty => new ObstacleCellData
         {
-            Distance = float.MaxValue,
             NormalizedDistanceFromCenter = float.MaxValue
         };
         
@@ -41,7 +39,6 @@ namespace Boids.Domain.BoidJobs
             
             Obstacle = obstacle;
             Position = obstaclePos;
-            Distance = distance;
             NormalizedDistanceFromCenter = normalizedDistanceFromCenter;
         }
     }

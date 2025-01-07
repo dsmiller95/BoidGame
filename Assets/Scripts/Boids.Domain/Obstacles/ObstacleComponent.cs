@@ -23,6 +23,15 @@ namespace Boids.Domain.Obstacles
         public float obstacleRadius;
         public float obstacleHardSurfaceRadius;
         public float RadiusSq => obstacleRadius * obstacleRadius;
+        public float obstacleHardSurfaceRadiusFraction => obstacleHardSurfaceRadius / obstacleRadius;
+
+        // public float GetDistanceInsideSurface(
+        //     in float2 obstacleCenter,
+        //     in float2 queryPoint)
+        // {
+        //     var distance = math.length(position) - obstacleRadius;
+        //     return math.max(distance, 0);
+        // }
     }
 
     [Serializable]
