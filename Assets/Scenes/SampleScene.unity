@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &107802729
+--- !u!1 &304124372
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,64 +127,51 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 107802730}
-  - component: {fileID: 107802731}
-  - component: {fileID: 107802732}
+  - component: {fileID: 304124373}
+  - component: {fileID: 304124374}
   m_Layer: 0
-  m_Name: BoidSpawner
+  m_Name: Boid Sub Scene level 0 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &107802730
+--- !u!4 &304124373
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107802729}
+  m_GameObject: {fileID: 304124372}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2106004837}
+  m_Father: {fileID: 1152753004}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &107802731
+--- !u!114 &304124374
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107802729}
+  m_GameObject: {fileID: 304124372}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d68467c15554024a94362ca247b2c13, type: 3}
+  m_Script: {fileID: 11500000, guid: 45a335734b1572644a6a5d09d87adc65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swarmOwner: {fileID: 107802732}
-  boidPrefab: {fileID: 7760226954748115280, guid: ea715ca325d485043b8b56650c723894, type: 3}
-  timePerSpawn: 0.01
-  targetBoidCount: 1000
-  spawnSize: {x: 5, y: 5}
---- !u!114 &107802732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107802729}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e5df2b80bc44865b0e6f8c5bd1f1dc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  config:
-    drawDebugRays: 0
-    hashGridSize: {x: 3, y: 3}
-    framesPerFullUpdate: 4
+  _SceneAsset: {fileID: 102900000, guid: 70c5f590c5b3ffe4490fa9202280bab8, type: 3}
+  _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  AutoLoadScene: 1
+  _SceneGUID:
+    Value:
+      x: 157244423
+      y: 1325349724
+      z: 43708564
+      w: 2343241762
 --- !u!1 &341138650
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +183,7 @@ GameObject:
   - component: {fileID: 341138651}
   - component: {fileID: 341138652}
   m_Layer: 0
-  m_Name: Boid Sub Scene
+  m_Name: Boid Sub Scene level 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -231,7 +218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _SceneAsset: {fileID: 102900000, guid: f59cc0b312945e64a81c043e3aad3e4f, type: 3}
   _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  AutoLoadScene: 1
+  AutoLoadScene: 0
   _SceneGUID:
     Value:
       x: 990693727
@@ -568,9 +555,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 341138651}
+  - {fileID: 1699019411}
+  - {fileID: 304124373}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2106004836
+--- !u!1 &1699019410
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -578,36 +567,56 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2106004837}
+  - component: {fileID: 1699019411}
+  - component: {fileID: 1699019412}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Boid Sub Scene level 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2106004837
+  m_IsActive: 1
+--- !u!4 &1699019411
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106004836}
+  m_GameObject: {fileID: 1699019410}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 107802730}
-  m_Father: {fileID: 0}
+  m_Children: []
+  m_Father: {fileID: 1152753004}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1699019412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1699019410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45a335734b1572644a6a5d09d87adc65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _SceneAsset: {fileID: 102900000, guid: 0f0e1304ef16ca648941b3fc60f32da6, type: 3}
+  _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  AutoLoadScene: 0
+  _SceneGUID:
+    Value:
+      x: 1077010672
+      y: 1185702398
+      z: 3476755608
+      w: 1792163590
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
-  - {fileID: 2106004837}
   - {fileID: 1152753004}
   - {fileID: 1087709528}

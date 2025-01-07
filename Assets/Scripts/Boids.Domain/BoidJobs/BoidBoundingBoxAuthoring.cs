@@ -30,7 +30,7 @@ namespace Boids.Domain.BoidJobs
             }
         }
         
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(center,extents * 2);

@@ -67,7 +67,14 @@ namespace Boids.Domain.BoidJobs
             var boundsQuery = SystemAPI.QueryBuilder()
                 .WithAll<BoidBoundingBox>()
                 .Build();
-            var boundsSingleton = boundsQuery.GetSingleton<BoidBoundingBox>();
+            if(!boundsQuery.TryGetSingleton(out BoidBoundingBox boundsSingleton))
+            {
+                boundsSingleton = new BoidBoundingBox()
+                {
+                    min = new float2(-10000, -10000),
+                    max = new float2(10000, 10000),
+                };
+            }
             
             var world = state.WorldUnmanaged;
 
