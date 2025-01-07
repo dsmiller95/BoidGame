@@ -21,8 +21,7 @@ namespace Boids.Domain.Obstacles
     {
         public ObstacleType variant;
         public float obstacleRadius;
-        public float obstacleHardSurfaceRadius;
-        public float obstacleHardSurfaceRadiusFraction => obstacleHardSurfaceRadius / obstacleRadius;
+        public float obstacleHardSurfaceRadiusFraction;
 
         /// <summary>
         /// Get the distance from the center of the obstacle.
@@ -56,7 +55,7 @@ namespace Boids.Domain.Obstacles
             {
                 variant = this.variant,
                 obstacleRadius = this.obstacleRadius * linearScale,
-                obstacleHardSurfaceRadius = this.obstacleHardSurfaceRadius * linearScale,
+                obstacleHardSurfaceRadiusFraction = this.obstacleHardSurfaceRadius / this.obstacleRadius,
             };
         }
     }
