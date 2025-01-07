@@ -17,7 +17,7 @@ namespace Boids.Domain
         
         public void Initialize(ref Unity.Mathematics.Random rng, EntityCommandBuffer ecb, float time)
         {
-            var cycleDir = new float2(math.sin(time), math.cos(time));
+            var cycleDir = new float2(math.sin(_boidSpawn.spawnAngle), math.cos(_boidSpawn.spawnAngle));
             var randDir = rng.NextFloat2Direction();
             var targetHeading = math.lerp(cycleDir, randDir, _boidSpawn.randomMagnitude);
 

@@ -41,7 +41,9 @@ namespace Boids.Domain
     public struct BoidSpawnData : ISharedComponentData
     {
         public float initialSpeed;
+        // TODO: put this on the spawner
         public float randomMagnitude;
+        public float spawnAngle;
         public float lifetimeSeconds;
     }
     
@@ -87,6 +89,8 @@ namespace Boids.Domain
         
             [Range(0, 1)]
             public float randomMagnitude = 0.1f;
+            [Range(0, 7)]
+            public float spawnAngle = 0.0f;
 
         }
     
@@ -140,11 +144,13 @@ namespace Boids.Domain
                 {
                     initialSpeed = authoring.config.initialSpeed,
                     randomMagnitude = authoring.config.randomMagnitude,
-                    lifetimeSeconds = authoring.config.lifetimeSeconds
+                    lifetimeSeconds = authoring.config.lifetimeSeconds,
+                    spawnAngle = authoring.config.spawnAngle,
                 });
             }
         }
     
+        
         private void Awake()
         {
             _rigidbody2D = GetComponent<Rigidbody2D>();

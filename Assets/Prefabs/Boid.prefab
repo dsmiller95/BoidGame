@@ -50,7 +50,7 @@ MonoBehaviour:
     initialSpeed: 5
     maxSpeed: 20
     minSpeed: 4
-    acceleration: 10
+    acceleration: 15
     separationRadius: 3
     separationWeight: 1.5
     alignmentRadius: 5
@@ -59,9 +59,10 @@ MonoBehaviour:
     cohesionWeight: 1
     obstacleAvoidanceWeight: 2
     obstacleAvoidanceConstantRepellent: 5
-    boundsAvoidanceWeight: 2
+    boundsAvoidanceWeight: 8
     lifetimeSeconds: 30
-    randomMagnitude: 1
+    randomMagnitude: 0
+    spawnAngle: 3.1415
 --- !u!54 &5000036880073727084
 Rigidbody:
   m_ObjectHideFlags: 0
