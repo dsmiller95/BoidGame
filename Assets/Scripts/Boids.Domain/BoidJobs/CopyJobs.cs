@@ -12,7 +12,7 @@ namespace Boids.Domain.BoidJobs
     {
         public NativeArray<float2> ObstaclePositions;
         public NativeArray<Obstacle> Obstacles;
-        void Execute([EntityIndexInQuery] int entityIndexInQuery, in LocalToWorld localToWorld, in Obstacle obstacle)
+        void Execute([EntityIndexInQuery] int entityIndexInQuery, in LocalToWorld localToWorld, in ObstacleComponent obstacle)
         {
             ObstaclePositions[entityIndexInQuery] = localToWorld.Position.xy;
             var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();

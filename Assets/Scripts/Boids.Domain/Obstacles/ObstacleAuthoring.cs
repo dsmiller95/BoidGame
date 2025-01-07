@@ -10,9 +10,18 @@ namespace Boids.Domain.Obstacles
         SphereRepel,
         //SphereAttract,
     }
+
+    [Serializable]
+    public struct Obstacle
+    {
+        public ObstacleType variant;
+        public float obstacleRadius;
+        public float obstacleHardSurfaceRadius;
+        public float RadiusSq => obstacleRadius * obstacleRadius;
+    }
     
     [Serializable]
-    public struct Obstacle : IComponentData
+    public struct ObstacleComponent : IComponentData
     {
         public ObstacleType variant;
         public float obstacleRadius;
@@ -20,13 +29,13 @@ namespace Boids.Domain.Obstacles
 
         public readonly Obstacle AdjustForScale(float linearScale)
         {
-            var res = this;
-            res.obstacleRadius *= linearScale;
-            res.obstacleHardSurfaceRadius *= linearScale;
-            return res;
+            return new Obstacle
+            {
+                variant = this.variant,
+                obstacleRadius = this.obstacleRadius * linearScale,
+                obstacleHardSurfaceRadius = this.obstacleHardSurfaceRadius * linearScale,
+            };
         }
-        
-        public float RadiusSq => obstacleRadius * obstacleRadius;
     }
     
     public class ObstacleAuthoring : MonoBehaviour
@@ -40,7 +49,7 @@ namespace Boids.Domain.Obstacles
             public override void Bake(ObstacleAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.Renderable);
-                AddComponent(entity, new Obstacle
+                AddComponent(entity, new ObstacleComponent()
                 {
                     variant = ObstacleType.SphereRepel,
                     obstacleRadius = authoring.obstacleRadius,

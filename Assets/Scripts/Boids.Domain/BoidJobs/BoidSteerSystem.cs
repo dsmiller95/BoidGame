@@ -56,7 +56,7 @@ namespace Boids.Domain.BoidJobs
                 .Build();
 
             var obstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<Obstacle, LocalToWorld>()
+                .WithAll<ObstacleComponent, LocalToWorld>()
                 .Build();
             
             var goalsQuery = SystemAPI.QueryBuilder()
