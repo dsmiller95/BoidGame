@@ -15,6 +15,7 @@ namespace Boids.Domain.BoidJobs
         public float DeltaTime;
         public Boid BoidVariant;
         public SpatialHashDefinition SpatialHashDefinition;
+        public BoidBoundingBox BoidBounds;
 
         public bool DrawDebug;
             
@@ -44,6 +45,7 @@ namespace Boids.Domain.BoidJobs
                 }
             }
                 
+            accumulator.AccumulateBounds(BoidBounds, myPos);
             // var obstacle = ObstacleFunction.Default.GetObstacleFromField(myPos);
             // if (DrawDebug)
             // {

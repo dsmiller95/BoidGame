@@ -22,6 +22,8 @@ namespace Boids.Domain.BoidJobs
         private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
             _nearestObstacle.variant != ObstacleType.None &&
             _nearestObstacleDistance < _nearestObstacle.obstacleRadius;
+
+        private float2 _awayFromBounds;
         
         // private float2 _nearestTargetRelative;
         // private float _nearestTargetDistance;
@@ -75,7 +77,18 @@ namespace Boids.Domain.BoidJobs
                 this._nearestObstacle = obstacleCellData.Obstacle;
             }
         }
-
+        
+        public void AccumulateBounds(in BoidBoundingBox bounds, in float2 position)
+        {
+            var min = bounds.min;
+            var max = bounds.max;
+            var halfSize = (max - min) / 2;
+            var center = (max + min) / 2;
+            var relativePosition = position - center;
+            var relativePositionClamped = math.clamp(relativePosition, -halfSize, halfSize);
+            _awayFromBounds = relativePositionClamped - relativePosition;
+        }
+        
         public float2 GetTargetForward(in Boid boidSettings, in float2 linearVelocity, in float2 position, in float deltaTime)
         {
             if(_separationCount > 0)
@@ -111,7 +124,8 @@ namespace Boids.Domain.BoidJobs
                                   _cohesion * boidSettings.cohesionWeight;
             
             var targetForward =  flockingHeading +
-                                avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight;
+                                avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight +
+                                _awayFromBounds * boidSettings.boundsAvoidanceWeight;
 
             return targetForward;
         }

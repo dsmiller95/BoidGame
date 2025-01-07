@@ -63,6 +63,11 @@ namespace Boids.Domain.BoidJobs
                 .WithAllRW<GoalCount>()
                 .WithAll<Goal, LocalToWorld>()
                 .Build();
+
+            var boundsQuery = SystemAPI.QueryBuilder()
+                .WithAll<BoidBoundingBox>()
+                .Build();
+            var boundsSingleton = boundsQuery.GetSingleton<BoidBoundingBox>();
             
             var world = state.WorldUnmanaged;
 
@@ -93,8 +98,7 @@ namespace Boids.Domain.BoidJobs
             
             var ecb = new EntityCommandBuffer(world.UpdateAllocator.ToAllocator);
             JobHandle lastEcbWriter = default;
-            
-            
+
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<Boid> uniqueBoidTypes, world.UpdateAllocator.ToAllocator);
 
             if (uniqueBoidTypes.Length > 3)
@@ -179,6 +183,7 @@ namespace Boids.Domain.BoidJobs
                     SpatialHashDefinition = spatialHashDefinition,
                     SpatialBoids = spatialBoids,
                     SpatialObstacles = spatialObstacles,
+                    BoidBounds = boundsSingleton,
                     DrawDebug = _debugObstacles,
                 };
                 if (_debugObstacles)

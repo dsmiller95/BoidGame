@@ -24,6 +24,7 @@ namespace Boids.Domain
         public float obstacleAvoidanceWeight;
         public float obstacleAvoidanceConstantRepellent;
         
+        public float boundsAvoidanceWeight;
         
         
         public float2 bakedObstacle;
@@ -61,24 +62,21 @@ namespace Boids.Domain
             public float initialSpeed = 5f;
         
             public float maxSpeed = 2f;
-            public float maxForce = 3f;
             public float minSpeed = 1f;
-            public int maxNeighbors = 50;
 
-            public float SeparationRadiusSquared => separationRadius * separationRadius;
             public float separationRadius = 3;
             public float separationWeight = 1.5f;
         
-            public float AlignmentRadiusSquared => alignmentRadius * alignmentRadius;
             public float alignmentRadius = 5f;
             public float alignmentWeight = 1f;
         
-            public float CohesionRadiusSquared => cohesionRadius * cohesionRadius;
             public float cohesionRadius = 6f;
             public float cohesionWeight = 1f;
             
             public float obstacleAvoidanceWeight = 2f;
             public float obstacleAvoidanceConstantRepellent = 2f;
+            
+            public float boundsAvoidanceWeight = 2f;
             // [ra]
             // public float obstacleAvoidanceMaxDepth = f;
         
@@ -127,7 +125,7 @@ namespace Boids.Domain
                     alignmentWeight = authoring.config.alignmentWeight,
                     cohesionRadius = authoring.config.cohesionRadius,
                     cohesionWeight = authoring.config.cohesionWeight,
-                    //obstacleAvoidanceRadius = authoring.config.obstacleAvoidanceRadius,
+                    boundsAvoidanceWeight = authoring.config.boundsAvoidanceWeight,
                     obstacleAvoidanceWeight = authoring.config.obstacleAvoidanceWeight,
                     obstacleAvoidanceConstantRepellent = authoring.config.obstacleAvoidanceConstantRepellent,
                     
