@@ -48,9 +48,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config:
     initialSpeed: 5
-    maxSpeed: 20
+    maxSpeed: 10
     minSpeed: 4
-    acceleration: 20
+    acceleration: 5
     separationRadius: 3
     separationWeight: 1.5
     alignmentRadius: 5
