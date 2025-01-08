@@ -2,6 +2,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Boids.Domain.Obstacles
 {
@@ -19,7 +20,7 @@ namespace Boids.Domain.Obstacles
             obstacleEffectMultiplier = 1f,
             maxEffectMagnitude = 10f,
         };
-        public bool draggable = false;
+        [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         
         private class ObstacleBaker : Baker<ObstacleAuthoring>
         {
@@ -39,9 +40,10 @@ namespace Boids.Domain.Obstacles
                 {
                     Color = spriteRenderer.color.ToFloat4()
                 });
-                if (authoring.draggable)
+                if (authoring.playerOwned)
                 {
                     AddComponent(entity, new DraggableObstacle());
+                    AddComponent(entity, new ScoringObstacleFlag());
                 }
             }
         }

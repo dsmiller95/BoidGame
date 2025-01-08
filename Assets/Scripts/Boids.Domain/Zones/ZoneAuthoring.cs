@@ -64,7 +64,7 @@ namespace Boids.Domain.Zones
             }
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;
             Vector2 myCenter = transform.position;

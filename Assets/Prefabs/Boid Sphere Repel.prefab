@@ -108,4 +108,4 @@ MonoBehaviour:
     variant: 1
     obstacleEffectMultiplier: 1
     maxEffectMagnitude: 10
-  draggable: 0
+  playerOwned: 0
