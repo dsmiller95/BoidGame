@@ -10,6 +10,7 @@ namespace Boids.Domain.Obstacles
     {
         None = 0,
         Repel,
+        Attract,
     }
 
     public enum ObstacleShape
@@ -23,9 +24,17 @@ namespace Boids.Domain.Obstacles
     }
 
     [Serializable]
-    public struct Obstacle
+    public struct ObstacleVariantData
     {
         public ObstacleType variant;
+        public float obstacleEffectMultiplier;
+        public float maxEffectMagnitude;
+    }
+
+    [Serializable]
+    public struct Obstacle
+    {
+        public ObstacleVariantData variantData;
         public ObstacleShape shape;
         public float obstacleRadius;
         /// <summary>
@@ -78,12 +87,50 @@ namespace Boids.Domain.Obstacles
         {
             return normalizedDistance < obstacleHardSurfaceRadiusFraction;
         }
+
+        public readonly (float2 resultHeading, bool forceHeading) GetHeading(
+            in float2 relativeToObstacle,
+            in float normalizedDistanceFromMe,
+            in Boid boidSettings,
+            in float2 boidLinearVelocity)
+        {
+            var fromObstacle = relativeToObstacle;
+            var toObstacle = -fromObstacle;
+            var awayFromObstacleNormal = math.normalizesafe(fromObstacle);
+
+            float2 toSurfaceOfObstacle = toObstacle + awayFromObstacleNormal * obstacleRadius;
+            switch (this.variantData.variant)
+            {
+                case ObstacleType.Repel:
+                    toSurfaceOfObstacle += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
+                    var hardSurface = normalizedDistanceFromMe < obstacleHardSurfaceRadiusFraction;
+                    if (!hardSurface)
+                    {
+                        toSurfaceOfObstacle = toSurfaceOfObstacle.ClampMagnitude(variantData.maxEffectMagnitude);
+                        return (toSurfaceOfObstacle, false);
+                    }
+                    
+                    // reflect away from the hard surface
+                    var reflectedHeading = math.reflect(boidLinearVelocity, fromObstacle);
+                    var reflectedAwayFromObstacle = math.dot(reflectedHeading, fromObstacle) > 0;
+                    reflectedHeading = math.select(boidLinearVelocity, reflectedHeading , reflectedAwayFromObstacle);
+                    var resultHeading = reflectedHeading + toSurfaceOfObstacle * boidSettings.obstacleAvoidanceWeight;
+                    return (resultHeading, true);
+                case ObstacleType.Attract:
+                    float2 towardsObstacleSteering = -toSurfaceOfObstacle * variantData.obstacleEffectMultiplier;
+                    towardsObstacleSteering = towardsObstacleSteering.ClampMagnitude(variantData.maxEffectMagnitude);
+                    return (towardsObstacleSteering, false);
+                case ObstacleType.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 
     [Serializable]
     public struct ObstacleComponent : IComponentData
     {
-        public ObstacleType variant;
+        public ObstacleVariantData variantData;
         public ObstacleShape shape;
         public float obstacleRadius;
         public float obstacleSecondarySize;
@@ -100,7 +147,7 @@ namespace Boids.Domain.Obstacles
         {
             return new Obstacle
             {
-                variant = this.variant,
+                variantData = this.variantData,
                 shape = this.shape,
                 obstacleRadius = this.obstacleRadius * linearScale,
                 obstacleSecondarySize = this.obstacleSecondarySize * linearScale,

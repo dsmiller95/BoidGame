@@ -20,7 +20,7 @@ namespace Boids.Domain.BoidJobs
         private float2 _nearestObstacleRelative;
         private float _nearestObstacleDistanceNormalizedFromCenter;
         private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
-            _nearestObstacle.variant != ObstacleType.None &&
+            _nearestObstacle.variantData.variant != ObstacleType.None &&
             _nearestObstacleDistanceNormalizedFromCenter < 1;
 
         private float2 _awayFromBounds;
@@ -63,10 +63,6 @@ namespace Boids.Domain.BoidJobs
         public void AccumulateObstacleCell(in ObstacleCellData obstacleCellData, in float2 position)
         {
             if (!obstacleCellData.IsValid) return;
-            if (obstacleCellData.Obstacle.variant is not ObstacleType.Repel)
-            {
-                throw new NotImplementedException("Different obstacles not implemented");
-            }
             
             //var relativeObstaclePosition = obstacleCellData.Position - position;
             var relativeToObstacle = position - obstacleCellData.Position;
@@ -118,20 +114,16 @@ namespace Boids.Domain.BoidJobs
             bool hitHardObstacle = false;
             if (HasObstacle)
             {
-                var toObstacle = -fromObstacle;
-                var awayFromObstacleNormal = math.normalizesafe(fromObstacle);
-                avoidObstacleSteering = toObstacle + awayFromObstacleNormal * _nearestObstacle.obstacleRadius;
-                avoidObstacleSteering += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
-                hitHardObstacle = _nearestObstacleDistanceNormalizedFromCenter < _nearestObstacle.obstacleHardSurfaceRadiusFraction;
-                if (hitHardObstacle)
+                var (resultHeading, forceHeading) = _nearestObstacle.GetHeading(
+                    fromObstacle,
+                    _nearestObstacleDistanceNormalizedFromCenter,
+                    boidSettings,
+                    linearVelocity);
+                if (forceHeading)
                 {
-                    // reflect away from the hard surface
-                    var reflectedHeading = math.reflect(linearVelocity, fromObstacle);
-                    var reflectedAwayFromObstacle = math.dot(reflectedHeading, fromObstacle) > 0;
-                    reflectedHeading = math.select(linearVelocity, reflectedHeading , reflectedAwayFromObstacle);
-                    var resultHeading = reflectedHeading + avoidObstacleSteering * boidSettings.obstacleAvoidanceWeight;
                     return (resultHeading, true);
                 }
+                avoidObstacleSteering = resultHeading;
             }
 
             var flockingHeading = _separation * boidSettings.separationWeight +

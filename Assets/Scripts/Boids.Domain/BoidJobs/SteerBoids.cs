@@ -65,7 +65,7 @@ namespace Boids.Domain.BoidJobs
                 nextHeadingUnclamped,
                 targetForwardNormalized * math.length(myVelocity),
                 hardSurface);
-            var nextHeading = ClampMagnitude(nextHeadingUnclamped, BoidVariant.minSpeed, BoidVariant.maxSpeed);
+            var nextHeading = nextHeadingUnclamped.ClampMagnitude(BoidVariant.minSpeed, BoidVariant.maxSpeed);
                 
             var rotation = math.atan2(nextHeading.y, nextHeading.x);
             velocity.Linear = new float3(nextHeading, 0);
@@ -104,15 +104,6 @@ namespace Boids.Domain.BoidJobs
             }
             
             accumulator.AccumulateObstacleCell(obstacleData, myPos);
-        }
-        
-        private float2 ClampMagnitude(float2 heading, float min, float max)
-        {
-            var mag = math.length(heading);
-            if (mag < 0.0001f) return heading;
-            if (mag < min) return (heading / mag) * min;
-            if (mag > max) return (heading / mag) * max;
-            return heading;
         }
     }
 }

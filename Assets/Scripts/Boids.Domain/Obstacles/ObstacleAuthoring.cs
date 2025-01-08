@@ -12,6 +12,13 @@ namespace Boids.Domain.Obstacles
         public float obstacleSecondarySize = 1f;
         public float hardSurfaceRadius = 0.8f;
         public ObstacleShape shape = ObstacleShape.Sphere;
+
+        public ObstacleVariantData variantData = new ObstacleVariantData()
+        {
+            variant = ObstacleType.Repel,
+            obstacleEffectMultiplier = 1f,
+            maxEffectMagnitude = 10f,
+        };
         public bool draggable = false;
         
         private class ObstacleBaker : Baker<ObstacleAuthoring>
@@ -21,7 +28,7 @@ namespace Boids.Domain.Obstacles
                 var entity = GetEntity(TransformUsageFlags.Renderable);
                 AddComponent(entity, new ObstacleComponent()
                 {
-                    variant = ObstacleType.Repel,
+                    variantData = authoring.variantData,
                     shape = authoring.shape,
                     obstacleRadius = authoring.obstacleRadius,
                     obstacleSecondarySize = authoring.obstacleSecondarySize,
@@ -43,7 +50,7 @@ namespace Boids.Domain.Obstacles
         {
             var obstacleComponent = new ObstacleComponent()
             {
-                variant = ObstacleType.Repel,
+                variantData = variantData,
                 shape = shape,
                 obstacleRadius = obstacleRadius,
                 obstacleSecondarySize = obstacleSecondarySize,
