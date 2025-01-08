@@ -45,7 +45,7 @@ namespace Boids.Domain.GridSnap
         
         public float2 SnapToClosest(float2 position)
         {
-            return math.round(position / gridSize) * gridSize;
+            return Tiling.FindHexCenter(position, gridSize);
         }
     }
 
