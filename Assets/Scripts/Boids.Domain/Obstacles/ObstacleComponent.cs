@@ -200,7 +200,7 @@ namespace Boids.Domain.Obstacles
     {
         public ObstacleBehavior behavior;
         public ObstacleShapeDataDefinition shapeData;
-        public float obstacleHardSurfaceRadius;
+        public float obstacleHardSurfaceRadiusFraction;
 
         public readonly Obstacle GetWorldSpace(in LocalToWorld localToWorld)
         {
@@ -208,7 +208,7 @@ namespace Boids.Domain.Obstacles
             {
                 behavior = this.behavior,
                 shape = this.shapeData.GetWorldSpace(localToWorld),
-                obstacleHardSurfaceRadiusFraction = this.obstacleHardSurfaceRadius / this.shapeData.obstacleRadius,
+                obstacleHardSurfaceRadiusFraction = obstacleHardSurfaceRadiusFraction,
             };
         }
     }

@@ -11,6 +11,8 @@ namespace Boids.Domain.Obstacles
     public class ObstacleAuthoring : MonoBehaviour
     {
         public float hardSurfaceRadius = 0.8f;
+        [Range(0, 1)]
+        public float hardSurfaceRadiusFraction = 0.8f;
         
         [FormerlySerializedAs("variantData")] 
         public ObstacleBehavior behavior = new ObstacleBehavior()
@@ -27,6 +29,17 @@ namespace Boids.Domain.Obstacles
         };
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         
+        [SerializeField] private int gizmoDrawResolution = 20;
+
+        public static bool Migrate(ObstacleAuthoring component)
+        {
+            var hardFraction = component.hardSurfaceRadius / component.shapeData.obstacleRadius;
+            if (Mathf.Approximately(hardFraction, component.hardSurfaceRadiusFraction)) return false;
+            
+            component.hardSurfaceRadiusFraction = hardFraction;
+            return true;
+        }
+        
         private class ObstacleBaker : Baker<ObstacleAuthoring>
         {
             public override void Bake(ObstacleAuthoring authoring)
@@ -36,7 +49,7 @@ namespace Boids.Domain.Obstacles
                 {
                     behavior = authoring.behavior,
                     shapeData = authoring.shapeData,
-                    obstacleHardSurfaceRadius = authoring.hardSurfaceRadius,
+                    obstacleHardSurfaceRadiusFraction = authoring.hardSurfaceRadiusFraction,
                 });
                 var spriteRenderer = GetComponent<SpriteRenderer>();
                 AddComponent(entity, new OriginalColor
@@ -58,7 +71,7 @@ namespace Boids.Domain.Obstacles
             {
                 behavior = behavior,
                 shapeData = shapeData,
-                obstacleHardSurfaceRadius = hardSurfaceRadius,
+                obstacleHardSurfaceRadiusFraction = hardSurfaceRadiusFraction,
             };
             
             var localToWorld = new LocalToWorld
@@ -69,7 +82,7 @@ namespace Boids.Domain.Obstacles
             var maxExtent = obstacle.shape.MaximumExtent();
             var minLocal = -new Vector2(maxExtent, maxExtent);
             var maxLocal = new Vector2(maxExtent, maxExtent);
-            var resolution = new Vector2Int(20, 20);
+            var resolution = new Vector2Int(gizmoDrawResolution, gizmoDrawResolution);
             SampleSdfGizmos(minLocal, maxLocal, resolution, localPoint =>
             {
                 var normalizedDistance = obstacle.shape.GetNormalizedDistance(localPoint);
