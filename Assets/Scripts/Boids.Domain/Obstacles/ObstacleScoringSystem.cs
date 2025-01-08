@@ -8,22 +8,23 @@ namespace Boids.Domain.Obstacles
     [BurstCompile]
     public partial struct ObstacleScoringSystem : ISystem
     {
+        private EntityQuery _scoringObstacleQuery;
         public void OnCreate(ref SystemState state)
         {
             var world = state.WorldUnmanaged;
             world.EntityManager.AddComponentData(state.SystemHandle, new ScoredObstaclesData());
+            
+            _scoringObstacleQuery = new EntityQueryBuilder(state.WorldUpdateAllocator)
+                .WithAll<ScoringObstacleFlag>()
+                .WithEnabledObstacles()
+                .Build(ref state);
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            var scoringObstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<ScoringObstacleFlag>()
-                .WithNone<ObstacleDisabledFlag>()
-                .Build();
-
             var scoringObstacleData = new ScoredObstaclesData()
             {
-                totalScoringObstacles = scoringObstacleQuery.CalculateEntityCount()
+                totalScoringObstacles = _scoringObstacleQuery.CalculateEntityCount()
             };
             state.WorldUnmanaged.EntityManager.SetComponentData(state.SystemHandle, scoringObstacleData);
         }

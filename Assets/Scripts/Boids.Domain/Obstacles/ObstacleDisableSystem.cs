@@ -9,7 +9,7 @@ namespace Boids.Domain.Obstacles
 {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [BurstCompile]
-    public partial struct ObstacleEnableByZoneSystem : ISystem
+    public partial struct ObstacleDisableSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {

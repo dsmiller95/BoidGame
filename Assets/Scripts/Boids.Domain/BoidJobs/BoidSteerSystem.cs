@@ -23,7 +23,8 @@ namespace Boids.Domain.BoidJobs
         private NativeArray<float> _debugDeathTime;
         private bool _debugHashMap;
         private bool _debugObstacles;
-        
+
+        private EntityQuery _obstacleQuery;
         
         public void OnCreate(ref SystemState state)
         {
@@ -32,6 +33,11 @@ namespace Boids.Domain.BoidJobs
             _debugDeathTime = new NativeArray<float>(1, Allocator.Persistent);
             _debugHashMap = false;
             _debugObstacles = false;
+            
+            _obstacleQuery = new EntityQueryBuilder(state.WorldUpdateAllocator)
+                .WithAll<ObstacleComponent, LocalToWorld>()
+                .WithEnabledObstacles()
+                .Build(ref state);
         }
         
         public void OnDestroy(ref SystemState state)
@@ -53,11 +59,6 @@ namespace Boids.Domain.BoidJobs
                 .WithAllRW<PhysicsVelocity, LocalTransform>()
                 //.WithAllRW<DebugFlagComponent>()
                 .WithNone<BoidSpawnData>()
-                .Build();
-
-            var obstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<ObstacleComponent, LocalToWorld>()
-                .WithNone<ObstacleDisabledFlag>()
                 .Build();
             
             var goalsQuery = SystemAPI.QueryBuilder()
@@ -114,7 +115,7 @@ namespace Boids.Domain.BoidJobs
                 Debug.LogWarning("More than 3 boid variants. will be inneficient");
             }
 
-            var obstacleCount = obstacleQuery.CalculateEntityCount();
+            var obstacleCount = _obstacleQuery.CalculateEntityCount();
             
             foreach (Boid boidConfig in uniqueBoidTypes)
             {
@@ -149,7 +150,7 @@ namespace Boids.Domain.BoidJobs
                     Obstacles = copyObstacles,
                     ObstaclePositions = copyObstaclePositions
                 };
-                var initialObstacleDependency = initialObstacleJob.ScheduleParallel(obstacleQuery, state.Dependency);
+                var initialObstacleDependency = initialObstacleJob.ScheduleParallel(_obstacleQuery, state.Dependency);
 
                 lastEcbWriter.Complete();
                 var consumeGoals = new ConsumeGoalsJob()
@@ -225,7 +226,7 @@ namespace Boids.Domain.BoidJobs
                     state.Dependency = job.Schedule(state.Dependency);
                 }
                 
-                obstacleQuery.AddDependency(state.Dependency);
+                _obstacleQuery.AddDependency(state.Dependency);
                 boidQuery.AddDependency(state.Dependency);
                 boidQuery.ResetFilter();
             }

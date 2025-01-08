@@ -7,17 +7,24 @@ namespace Boids.Domain.Obstacles
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct ObstacleDisplaySystem : ISystem
     {
+        private EntityQuery _enabledObstacles;
+        private EntityQuery _disabledObstacles;
+        
+        public void OnCreate(ref SystemState state)
+        {
+            _enabledObstacles = new EntityQueryBuilder(state.WorldUpdateAllocator)
+                .WithAll<SpriteRenderer, ObstacleComponent, OriginalColor>()
+                .WithEnabledObstacles()
+                .Build(ref state);
+            
+            _disabledObstacles = new EntityQueryBuilder(state.WorldUpdateAllocator)
+                .WithAll<SpriteRenderer, ObstacleComponent, OriginalColor>()
+                .WithDisabledObstacles()
+                .Build(ref state);
+        }
+        
         public void OnUpdate(ref SystemState state)
         {
-            // consider adding change filtering on ObstacleDisabledFlag if this is a perf problem later
-            var enabledObstacles = SystemAPI.QueryBuilder()
-                .WithAll<SpriteRenderer, ObstacleComponent, OriginalColor>()
-                .WithNone<ObstacleDisabledFlag>()
-                .Build();
-            var disabledObstacles = SystemAPI.QueryBuilder()
-                .WithAll<SpriteRenderer, ObstacleComponent, OriginalColor, ObstacleDisabledFlag>()
-                .Build();
-
             var disabledColor = Color.gray;
             
             var enabledJob = new ApplyColorChange
@@ -31,8 +38,8 @@ namespace Boids.Domain.Obstacles
                 Amount = 0.7f,
             };
             
-            enabledJob.Run(enabledObstacles);
-            disabledJob.Run(disabledObstacles);
+            enabledJob.Run(_enabledObstacles);
+            disabledJob.Run(_disabledObstacles);
         }
 
         private partial struct ApplyColorChange : IJobEntity
