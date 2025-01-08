@@ -1,4 +1,5 @@
 ﻿using System;
+using Boids.Domain.GridSnap;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -44,6 +45,7 @@ namespace Boids.Domain.Obstacles
                 {
                     AddComponent(entity, new DraggableObstacle());
                     AddComponent(entity, new ScoringObstacleFlag());
+                    AddComponent(entity, new SnapMeToGridFlag());
                 }
             }
         }
