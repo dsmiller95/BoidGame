@@ -10,7 +10,6 @@ namespace Boids.Domain.Obstacles
 {
     public class ObstacleAuthoring : MonoBehaviour
     {
-        public float hardSurfaceRadius = 0.8f;
         [Range(0, 1)]
         public float hardSurfaceRadiusFraction = 0.8f;
         
@@ -33,11 +32,7 @@ namespace Boids.Domain.Obstacles
 
         public static bool Migrate(ObstacleAuthoring component)
         {
-            var hardFraction = component.hardSurfaceRadius / component.shapeData.obstacleRadius;
-            if (Mathf.Approximately(hardFraction, component.hardSurfaceRadiusFraction)) return false;
-            
-            component.hardSurfaceRadiusFraction = hardFraction;
-            return true;
+            return false;
         }
         
         private class ObstacleBaker : Baker<ObstacleAuthoring>
