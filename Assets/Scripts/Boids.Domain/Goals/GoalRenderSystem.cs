@@ -17,10 +17,9 @@ namespace Boids.Domain.Goals
             foreach (var (goal, goalCount, render) in 
                      SystemAPI.Query<RefRO<Goal>, RefRO<GoalCount>, RefRO<GoalRender>>())
             {
-                var required = goal.ValueRO.required;
-                var count = goalCount.ValueRO.count;
+                var completionPercent = goal.ValueRO.GetCompletionPercent(goalCount.ValueRO);
 
-                var volume = math.min(1, count / (float)required);
+                var volume = completionPercent;
                 var scale = math.sqrt(volume);
                 var newLocalTransform = LocalTransform.FromScale(scale);
                 ecb.SetComponent(render.ValueRO.scaleForProgress, newLocalTransform);

@@ -1,7 +1,7 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Boids.Domain.Goals
 {
@@ -12,6 +12,11 @@ namespace Boids.Domain.Goals
         public float consumptionRadius => radius;
         public int required;
         public float decayPerSecond;
+        
+        public readonly float GetCompletionPercent(in GoalCount count)
+        {
+            return math.clamp((float)count.count / required, 0, 1);
+        }
     }
     
     [Serializable]
