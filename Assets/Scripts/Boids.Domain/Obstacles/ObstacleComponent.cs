@@ -3,17 +3,18 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Boids.Domain.Obstacles
 {
-    public enum ObstacleType
+    public enum ObstacleBehaviorVariant
     {
         None = 0,
         Repel,
         Attract,
     }
 
-    public enum ObstacleShape
+    public enum ObstacleShapeVariant
     {
         Sphere,
         Beam,
@@ -24,17 +25,17 @@ namespace Boids.Domain.Obstacles
     }
 
     [Serializable]
-    public struct ObstacleVariantData
+    public struct ObstacleBehavior
     {
-        public ObstacleType variant;
+        public ObstacleBehaviorVariant variant;
         public float obstacleEffectMultiplier;
         public float maxEffectMagnitude;
     }
 
     [Serializable]
-    public struct ObstacleShapeData
+    public struct ObstacleShape
     {
-        public ObstacleShape shape;
+        public ObstacleShapeVariant shapeVariant;
         
         public float obstacleRadius;
         /// <inheritdoc cref="ObstacleShapeDataDefinition.obstacleSecondarySize"/>
@@ -43,57 +44,18 @@ namespace Boids.Domain.Obstacles
         /// unused for rotationally symmetric obstacles (spheres)
         /// </summary>
         public float obstacleRotation;
-    }
 
-    [Serializable]
-    public struct ObstacleShapeDataDefinition
-    {
-        public ObstacleShape shape;
-        
-        public float obstacleRadius;
         /// <summary>
-        /// for sphere, unused
-        /// for beam, the length of the beam
+        /// gets the maximum distance from the center which could be affected by this obstacle
         /// </summary>
-        public float obstacleSecondarySize;
-        
-        public readonly ObstacleShapeData GetWorldSpace(in LocalToWorld localToWorld)
+        /// <remarks>
+        /// The actual obstacle may be smaller, but will not be larger.
+        /// </remarks>
+        public float MaximumExtent()
         {
-            var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();
-            var rotation = math.Euler(localToWorld.Value.Rotation()).z;
-            return AdjustForScale(presumedLinearScale, rotation);
+            return obstacleRadius + obstacleSecondarySize;
         }
-        private readonly ObstacleShapeData AdjustForScale(float linearScale, float rotation)
-        {
-            return new ObstacleShapeData
-            {
-                shape = this.shape,
-                obstacleRadius = this.obstacleRadius * linearScale,
-                obstacleSecondarySize = this.obstacleSecondarySize * linearScale,
-                obstacleRotation = rotation,
-            };
-        }
-    }
-
-    [Serializable]
-    public struct Obstacle
-    {
-        public ObstacleVariantData variantData;
-        public ObstacleShapeData shapeData;
-        public readonly ObstacleShape shape => shapeData.shape;
-        public readonly float obstacleRadius => shapeData.obstacleRadius;
-        /// <summary>
-        /// for sphere, unused
-        /// for beam, the length of the beam
-        /// </summary>
-        public readonly float obstacleSecondarySize => shapeData.obstacleSecondarySize;
-        /// <summary>
-        /// unused for rotationally symmetric obstacles (spheres)
-        /// </summary>
-        public readonly float obstacleRotation => shapeData.obstacleRotation;
         
-        public float obstacleHardSurfaceRadiusFraction;
-
         /// <summary>
         /// Get the distance from the center of the obstacle.
         /// </summary>
@@ -110,17 +72,17 @@ namespace Boids.Domain.Obstacles
             var (dist, normal) = GetDistanceAndNormal(queryRelativeToCenter);
             return (dist / obstacleRadius, normal);
         }
-
+        
         private readonly (float, float2) GetDistanceAndNormal(in float2 relativeToCenter)
         {
-            switch (shape)
+            switch (shapeVariant)
             {
-                case ObstacleShape.Sphere:
+                case ObstacleShapeVariant.Sphere:
                     var len = math.length(relativeToCenter);
                     return (len, relativeToCenter.NormalizeSafeWithLen(len));
-                case ObstacleShape.Beam:
+                case ObstacleShapeVariant.Beam:
                     // 2d rotation
-                    var rotatedRelative = math.mul(float2x2.Rotate(-this.obstacleRotation), relativeToCenter);
+                    var rotatedRelative = math.mul(float2x2.Rotate(-obstacleRotation), relativeToCenter);
                     var distanceAlongBeam = math.abs(rotatedRelative.x);
                     var distanceAboveBeam = math.abs(rotatedRelative.y);
                     var distanceFromEnd = distanceAlongBeam - obstacleSecondarySize; 
@@ -140,13 +102,54 @@ namespace Boids.Domain.Obstacles
                         localSpaceNormal = math.normalizesafe(localFromEnd);
                         distance = math.sqrt(distanceFromEnd * distanceFromEnd + distanceAboveBeam * distanceAboveBeam);
                     }
-                    var worldSpaceNormal = math.mul(float2x2.Rotate(this.obstacleRotation), localSpaceNormal);
+                    var worldSpaceNormal = math.mul(float2x2.Rotate(obstacleRotation), localSpaceNormal);
                     return (distance, worldSpaceNormal);
                 default:
                     throw new NotImplementedException("Unknown obstacle shape");
             }
         }
+    }
+
+    [Serializable]
+    public struct ObstacleShapeDataDefinition
+    {
+        public ObstacleShapeVariant shapeVariant;
         
+        [Range(1f, 30f)]
+        public float obstacleRadius;
+        
+        /// <summary>
+        /// for sphere, unused
+        /// for beam, the length of the beam
+        /// </summary>
+        public float obstacleSecondarySize;
+        
+        public readonly ObstacleShape GetWorldSpace(in LocalToWorld localToWorld)
+        {
+            var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();
+            var rotation = math.Euler(localToWorld.Value.Rotation()).z;
+            return AdjustForScale(presumedLinearScale, rotation);
+        }
+        private readonly ObstacleShape AdjustForScale(float linearScale, float rotation)
+        {
+            return new ObstacleShape
+            {
+                shapeVariant = this.shapeVariant,
+                obstacleRadius = this.obstacleRadius * linearScale,
+                obstacleSecondarySize = this.obstacleSecondarySize * linearScale,
+                obstacleRotation = rotation,
+            };
+        }
+    }
+
+    [Serializable]
+    public struct Obstacle
+    {
+        public ObstacleBehavior behavior;
+        public ObstacleShape shape;
+
+        public float obstacleHardSurfaceRadiusFraction;
+
         public readonly bool IsInsideHardSurface(in float normalizedDistance)
         {
             return normalizedDistance < obstacleHardSurfaceRadiusFraction;
@@ -164,14 +167,14 @@ namespace Boids.Domain.Obstacles
             float distanceToSurface = 1 - normalizedDistanceFromMe;
 
             float2 upToSurfaceOfObstacle = awayFromObstacleNormal * distanceToSurface;
-            switch (this.variantData.variant)
+            switch (behavior.variant)
             {
-                case ObstacleType.Repel:
+                case ObstacleBehaviorVariant.Repel:
                     upToSurfaceOfObstacle += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
                     var hardSurface = normalizedDistanceFromMe < obstacleHardSurfaceRadiusFraction;
                     if (!hardSurface)
                     {
-                        upToSurfaceOfObstacle = upToSurfaceOfObstacle.ClampMagnitude(variantData.maxEffectMagnitude);
+                        upToSurfaceOfObstacle = upToSurfaceOfObstacle.ClampMagnitude(behavior.maxEffectMagnitude);
                         return (upToSurfaceOfObstacle, false);
                     }
                     
@@ -181,11 +184,11 @@ namespace Boids.Domain.Obstacles
                     reflectedHeading = math.select(boidLinearVelocity, reflectedHeading , reflectedAwayFromObstacle);
                     var resultHeading = reflectedHeading + upToSurfaceOfObstacle * boidSettings.obstacleAvoidanceWeight;
                     return (resultHeading, true);
-                case ObstacleType.Attract:
-                    float2 towardsObstacleSteering = -upToSurfaceOfObstacle * variantData.obstacleEffectMultiplier;
-                    towardsObstacleSteering = towardsObstacleSteering.ClampMagnitude(variantData.maxEffectMagnitude);
+                case ObstacleBehaviorVariant.Attract:
+                    float2 towardsObstacleSteering = -upToSurfaceOfObstacle * behavior.obstacleEffectMultiplier;
+                    towardsObstacleSteering = towardsObstacleSteering.ClampMagnitude(behavior.maxEffectMagnitude);
                     return (towardsObstacleSteering, false);
-                case ObstacleType.None:
+                case ObstacleBehaviorVariant.None:
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -195,20 +198,17 @@ namespace Boids.Domain.Obstacles
     [Serializable]
     public struct ObstacleComponent : IComponentData
     {
-        public ObstacleVariantData variantData;
+        public ObstacleBehavior behavior;
         public ObstacleShapeDataDefinition shapeData;
-        public readonly ObstacleShape shape => shapeData.shape;
-        public readonly float obstacleRadius => shapeData.obstacleRadius;
-        public readonly float obstacleSecondarySize => shapeData.obstacleSecondarySize;
         public float obstacleHardSurfaceRadius;
 
         public readonly Obstacle GetWorldSpace(in LocalToWorld localToWorld)
         {
             return new Obstacle
             {
-                variantData = this.variantData,
-                shapeData = this.shapeData.GetWorldSpace(localToWorld),
-                obstacleHardSurfaceRadiusFraction = this.obstacleHardSurfaceRadius / this.obstacleRadius,
+                behavior = this.behavior,
+                shape = this.shapeData.GetWorldSpace(localToWorld),
+                obstacleHardSurfaceRadiusFraction = this.obstacleHardSurfaceRadius / this.shapeData.obstacleRadius,
             };
         }
     }

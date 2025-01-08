@@ -40,7 +40,7 @@ namespace Boids.Domain.Obstacles
                     var obstaclePosition = obstacleLocalToWorld.ValueRO.Position.xy;
                     var obstacle = dragObstacleComponent.ValueRO.GetWorldSpace(obstacleLocalToWorld.ValueRO);
                     var relativeToObstacleCenter = dragBeginAt - obstaclePosition;
-                    var normalizedDistance = obstacle.GetNormalizedDistance(relativeToObstacleCenter);
+                    var normalizedDistance = obstacle.shape.GetNormalizedDistance(relativeToObstacleCenter);
                     if(normalizedDistance > closestDistance) continue;
                     closestDistance = normalizedDistance;
                     closestObstacleEntity = entity;

@@ -103,9 +103,13 @@ MonoBehaviour:
   obstacleRadius: 2.2
   obstacleSecondarySize: 2
   hardSurfaceRadius: 1.5
-  shape: 1
-  variantData:
+  shapeVariant: 1
+  behavior:
     variant: 1
     obstacleEffectMultiplier: 1
     maxEffectMagnitude: 10
+  shapeData:
+    shapeVariant: 1
+    obstacleRadius: 2.2
+    obstacleSecondarySize: 2
   playerOwned: 1

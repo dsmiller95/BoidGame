@@ -27,7 +27,7 @@ namespace Boids.Domain.BoidJobs
         public void Accumulate(in Obstacle obstacle, in float2 obstaclePos, in float2 cellCenter)
         {
             var cellRelativeToObstacle = cellCenter - obstaclePos;
-            var normalizedDistanceFromCenter = obstacle.GetNormalizedDistance(cellRelativeToObstacle);
+            var normalizedDistanceFromCenter = obstacle.shape.GetNormalizedDistance(cellRelativeToObstacle);
             if (normalizedDistanceFromCenter >= _normalizedDistanceFromCenter) return;
             
             Obstacle = obstacle;

@@ -10,23 +10,20 @@ namespace Boids.Domain.Obstacles
 {
     public class ObstacleAuthoring : MonoBehaviour
     {
-        [Range(1f, 30f)]
-        public float obstacleRadius = 1f;
-        public float obstacleSecondarySize = 1f;
         public float hardSurfaceRadius = 0.8f;
-        public ObstacleShape shape = ObstacleShape.Sphere;
-
-        public ObstacleVariantData variantData = new ObstacleVariantData()
+        
+        [FormerlySerializedAs("variantData")] 
+        public ObstacleBehavior behavior = new ObstacleBehavior()
         {
-            variant = ObstacleType.Repel,
+            variant = ObstacleBehaviorVariant.Repel,
             obstacleEffectMultiplier = 1f,
             maxEffectMagnitude = 10f,
         };
-        public ObstacleShapeDataDefinition shapeData => new ObstacleShapeDataDefinition()
+        public ObstacleShapeDataDefinition shapeData = new ObstacleShapeDataDefinition()
         {
-            shape = shape,
-            obstacleRadius = obstacleRadius,
-            obstacleSecondarySize = obstacleSecondarySize,
+            shapeVariant = ObstacleShapeVariant.Sphere,
+            obstacleRadius = 1f,
+            obstacleSecondarySize = 1f,
         };
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         
@@ -37,10 +34,8 @@ namespace Boids.Domain.Obstacles
                 var entity = GetEntity(TransformUsageFlags.Renderable);
                 AddComponent(entity, new ObstacleComponent()
                 {
-                    variantData = authoring.variantData,
-                    // shape = authoring.shape,
-                    // obstacleRadius = authoring.obstacleRadius,
-                    // obstacleSecondarySize = authoring.obstacleSecondarySize,
+                    behavior = authoring.behavior,
+                    shapeData = authoring.shapeData,
                     obstacleHardSurfaceRadius = authoring.hardSurfaceRadius,
                 });
                 var spriteRenderer = GetComponent<SpriteRenderer>();
@@ -61,7 +56,7 @@ namespace Boids.Domain.Obstacles
         {
             var obstacleComponent = new ObstacleComponent()
             {
-                variantData = variantData,
+                behavior = behavior,
                 shapeData = shapeData,
                 obstacleHardSurfaceRadius = hardSurfaceRadius,
             };
@@ -71,14 +66,13 @@ namespace Boids.Domain.Obstacles
                 Value = float4x4.TRS(float3.zero, this.transform.rotation, this.transform.lossyScale)
             };
             var obstacle = obstacleComponent.GetWorldSpace(localToWorld);
-            
-            var maxExtent = Mathf.Max(obstacle.obstacleRadius, obstacle.obstacleRadius + obstacle.obstacleSecondarySize);
+            var maxExtent = obstacle.shape.MaximumExtent();
             var minLocal = -new Vector2(maxExtent, maxExtent);
             var maxLocal = new Vector2(maxExtent, maxExtent);
             var resolution = new Vector2Int(20, 20);
             SampleSdfGizmos(minLocal, maxLocal, resolution, localPoint =>
             {
-                var normalizedDistance = obstacle.GetNormalizedDistance(localPoint);
+                var normalizedDistance = obstacle.shape.GetNormalizedDistance(localPoint);
                 if (normalizedDistance > 1) return null;
                 var color = Color.green;
                 if (obstacle.IsInsideHardSurface(normalizedDistance))
