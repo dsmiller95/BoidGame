@@ -7,12 +7,12 @@ namespace Boids.Domain.Obstacles
         public static EntityQueryBuilder WithEnabledObstacles(this EntityQueryBuilder builder)
         {
             return builder
-                .WithNone<ObstacleDisabledFlag>();
+                .WithNone<ObstacleDisabledFlag, Dragging>();
         }
         public static EntityQueryBuilder WithDisabledObstacles(this EntityQueryBuilder builder)
         {
             return builder
-                .WithAny<ObstacleDisabledFlag>();
+                .WithAny<ObstacleDisabledFlag, Dragging>();
         }
     }
 }

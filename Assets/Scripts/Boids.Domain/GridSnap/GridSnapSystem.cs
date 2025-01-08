@@ -30,7 +30,6 @@ namespace Boids.Domain.GridSnap
                 position = gridDefinition.SnapToClosest(position);
                 
                 transform.ValueRW = transform.ValueRW.WithPosition(new float3(position, 0));
-                Debug.Log("snapped thing to grid");
             }
         }
     }

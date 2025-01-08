@@ -6,8 +6,6 @@ namespace Boids.Domain.GridSnap
     [ExecuteAlways]
     public class GridSnapInEditor : MonoBehaviour
     {
-        public Vector2 gridSize = new Vector2(1f, 1f);
-
         // TODO: get from the GridSnapSystem? maybe?
         public GridDefinition gridDefinition = GridDefinition.Default;
         

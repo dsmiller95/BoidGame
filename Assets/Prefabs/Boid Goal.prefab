@@ -1,5 +1,61 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1568493447849523430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7260580087507204797}
+  - component: {fileID: 2672058525701983582}
+  m_Layer: 0
+  m_Name: Suction
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7260580087507204797
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568493447849523430}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2767075929349691855}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2672058525701983582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568493447849523430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hardSurfaceRadiusFraction: 0
+  behavior:
+    variant: 2
+    obstacleEffectMultiplier: 10
+    maxEffectMagnitude: 5
+  shapeData:
+    shapeVariant: 0
+    obstacleRadius: 3
+    obstacleSecondarySize: 1
+  playerOwned: 0
+  gizmoDrawResolution: 20
+  gizmosDrawTransparency: 0.7
 --- !u!1 &3153808187228042024
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,6 +154,7 @@ GameObject:
   - component: {fileID: 2767075929349691855}
   - component: {fileID: 4795108395549795242}
   - component: {fileID: 1688805877764602052}
+  - component: {fileID: 8921960972297920329}
   m_Layer: 0
   m_Name: Boid Goal
   m_TagString: Untagged
@@ -119,6 +176,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7586120276945596516}
+  - {fileID: 7260580087507204797}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4795108395549795242
@@ -192,3 +250,17 @@ MonoBehaviour:
   required: 256
   decayPerSecond: 10
   scaleForProgress: {fileID: 3153808187228042024}
+--- !u!114 &8921960972297920329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5942358059820003999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b483e47b89e4605938cea164fb6a147, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridDefinition:
+    gridSize: 10

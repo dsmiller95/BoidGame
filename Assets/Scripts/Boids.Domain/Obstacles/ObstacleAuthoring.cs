@@ -49,10 +49,14 @@ namespace Boids.Domain.Obstacles
                     obstacleHardSurfaceRadiusFraction = authoring.hardSurfaceRadiusFraction,
                 });
                 var spriteRenderer = GetComponent<SpriteRenderer>();
-                AddComponent(entity, new OriginalColor
+                if (spriteRenderer != null)
                 {
-                    Color = spriteRenderer.color.ToFloat4()
-                });
+                    // we may not render the obstacle
+                    AddComponent(entity, new OriginalColor
+                    {
+                        Color = spriteRenderer.color.ToFloat4()
+                    });
+                }
                 if (authoring.playerOwned)
                 {
                     AddComponent(entity, new DraggableObstacle());
