@@ -13,10 +13,7 @@ namespace Boids.Domain.GridSnap
         public void OnCreate(ref SystemState state)
         {
             var world = state.WorldUnmanaged;
-            var gridDefinition = new GridDefinition
-            {
-                gridSize = 10f
-            };
+            var gridDefinition = GridDefinition.Default;
             world.EntityManager.AddComponentData(state.SystemHandle, gridDefinition);
         }
 
@@ -41,6 +38,11 @@ namespace Boids.Domain.GridSnap
     [Serializable]
     public struct GridDefinition : IComponentData
     {
+        public static GridDefinition Default => new GridDefinition
+        {
+            gridSize = 10f
+        };
+        
         public float gridSize;
         
         public float2 SnapToClosest(float2 position)
