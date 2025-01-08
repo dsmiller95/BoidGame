@@ -136,6 +136,7 @@ namespace Boids.Domain.BoidJobs
                 var populateBoidHashMapJob = new PopulateBoidHashMap
                 {
                     SpatialHashDefinition = spatialHashDefinition,
+                    BoidVariant = boidConfig,
                     SpatialMapWriter = spatialBoids.AsParallelWriter()
                 };
                 var initialBoidMapDependency = populateBoidHashMapJob.ScheduleParallel(boidQuery, state.Dependency);

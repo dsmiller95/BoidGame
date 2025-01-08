@@ -51,6 +51,7 @@ MonoBehaviour:
     maxSpeed: 10
     minSpeed: 4
     acceleration: 5
+    simSpeedMultiplier: 8
     separationRadius: 3
     separationWeight: 1.5
     alignmentRadius: 5

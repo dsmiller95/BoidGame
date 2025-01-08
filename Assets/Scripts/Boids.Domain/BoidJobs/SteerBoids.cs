@@ -29,7 +29,7 @@ namespace Boids.Domain.BoidJobs
             in Entity entity)
         {
             var myPos = presumedWorld.Position.xy;
-            var myVelocity = velocity.Linear.xy;
+            var myVelocity = velocity.Linear.xy / BoidVariant.simSpeedMultiplier;
             var maxRadius = BoidVariant.MaxNeighborDistance;
             SpatialHashDefinition.GetMinMaxBuckets(myPos, maxRadius, out var minBucket, out var maxBucket);
 
@@ -57,9 +57,10 @@ namespace Boids.Domain.BoidJobs
             var (targetForward, hardSurface) = accumulator.GetTargetForward(BoidVariant, myVelocity, myPos);
             var targetForwardNormalized = math.normalizesafe(targetForward);
             var extraForce = targetForwardNormalized * BoidVariant.acceleration;
-                
-            var nextHeadingUnclamped = myVelocity + DeltaTime * (targetForward - myVelocity);
-            nextHeadingUnclamped += math.normalizesafe(nextHeadingUnclamped) * DeltaTime * BoidVariant.acceleration;
+            
+            var adjutstedDeltaTime = DeltaTime * BoidVariant.simSpeedMultiplier;
+            var nextHeadingUnclamped = myVelocity + adjutstedDeltaTime * (targetForward - myVelocity);
+            nextHeadingUnclamped += math.normalizesafe(nextHeadingUnclamped) * adjutstedDeltaTime * BoidVariant.acceleration;
             
             nextHeadingUnclamped = math.select(
                 nextHeadingUnclamped,
@@ -68,7 +69,7 @@ namespace Boids.Domain.BoidJobs
             var nextHeading = nextHeadingUnclamped.ClampMagnitude(BoidVariant.minSpeed, BoidVariant.maxSpeed);
                 
             var rotation = math.atan2(nextHeading.y, nextHeading.x);
-            velocity.Linear = new float3(nextHeading, 0);
+            velocity.Linear = new float3(nextHeading, 0) * BoidVariant.simSpeedMultiplier;
             presumedWorld = presumedWorld.WithRotation(quaternion.Euler(0, 0, rotation));
         }
 

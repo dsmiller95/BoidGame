@@ -15,6 +15,7 @@ namespace Boids.Domain
         public float maxSpeed;
         public float minSpeed;
         public float acceleration;
+        public float simSpeedMultiplier;
         
         public float separationRadius;
         public float separationWeight;
@@ -68,6 +69,7 @@ namespace Boids.Domain
             public float maxSpeed = 2f;
             public float minSpeed = 1f;
             public float acceleration = 1f;
+            public float simSpeedMultiplier = 1f;
 
             public float separationRadius = 3;
             public float separationWeight = 1.5f;
@@ -127,6 +129,7 @@ namespace Boids.Domain
                     maxSpeed = authoring.config.maxSpeed,
                     minSpeed = authoring.config.minSpeed,
                     acceleration = authoring.config.acceleration,
+                    simSpeedMultiplier = authoring.config.simSpeedMultiplier,
                     
                     separationRadius = authoring.config.separationRadius,
                     separationWeight = authoring.config.separationWeight,
