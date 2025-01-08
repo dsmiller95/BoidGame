@@ -18,11 +18,13 @@ public partial struct BoidSpawnSystem : ISystem
         _boidQuery = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<Boid>()
             .Build(ref state);
+        _seedOffset = 1;
     }
     
     public void OnUpdate(ref SystemState state)
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
+        // randomize boid spawn positions between frames
         _seedOffset += 1;
         
         var rng = Random.CreateFromIndex(_seedOffset);
