@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9145836004314635187}
   - component: {fileID: 3673743807244670062}
   m_Layer: 0
-  m_Name: Boid Obstacle
+  m_Name: Boid Sphere Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101,4 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacleRadius: 2.2
+  obstacleSecondarySize: 1
   hardSurfaceRadius: 1.5
+  shape: 0
+  draggable: 0

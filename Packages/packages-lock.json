@@ -7,6 +7,13 @@
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
+    "com.dman.math": {
+      "version": "0.1.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.dman.simple-json-save-system": {
       "version": "https://github.com/dsmiller95/SimpleSave.git?path=Assets/com.dman.simple-json-save-system",
       "depth": 0,

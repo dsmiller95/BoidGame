@@ -38,8 +38,7 @@ namespace Boids.Domain.Obstacles
                         .WithEntityAccess())
                 {
                     var obstaclePosition = obstacleLocalToWorld.ValueRO.Position.xy;
-                    var linearScale = obstacleLocalToWorld.ValueRO.Value.GetPresumedLinearScale();
-                    var obstacle = dragObstacleComponent.ValueRO.AdjustForScale(linearScale);
+                    var obstacle = dragObstacleComponent.ValueRO.GetWorldSpace(obstacleLocalToWorld.ValueRO);
                     var relativeToObstacleCenter = dragBeginAt - obstaclePosition;
                     var normalizedDistance = obstacle.GetNormalizedDistance(relativeToObstacleCenter);
                     if(normalizedDistance > closestDistance) continue;

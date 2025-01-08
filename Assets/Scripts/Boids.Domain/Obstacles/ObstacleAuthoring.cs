@@ -1,5 +1,6 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Boids.Domain.Obstacles
@@ -8,6 +9,7 @@ namespace Boids.Domain.Obstacles
     {
         [Range(1f, 30f)]
         public float obstacleRadius = 1f;
+        public float obstacleSecondarySize = 1f;
         public float hardSurfaceRadius = 0.8f;
         public ObstacleShape shape = ObstacleShape.Sphere;
         public bool draggable = false;
@@ -22,6 +24,7 @@ namespace Boids.Domain.Obstacles
                     variant = ObstacleType.Repel,
                     shape = authoring.shape,
                     obstacleRadius = authoring.obstacleRadius,
+                    obstacleSecondarySize = authoring.obstacleSecondarySize,
                     obstacleHardSurfaceRadius = authoring.hardSurfaceRadius,
                 });
                 var spriteRenderer = GetComponent<SpriteRenderer>();
@@ -38,11 +41,57 @@ namespace Boids.Domain.Obstacles
 
         private void OnDrawGizmosSelected()
         {
-            Gizmos.color = Color.red;
-            var radius = obstacleRadius * this.transform.lossyScale.x;
-            Gizmos.DrawWireSphere(transform.position, radius);
-            var hardRadius = hardSurfaceRadius * this.transform.lossyScale.x;
-            Gizmos.DrawWireSphere(transform.position, hardRadius);
+            var obstacleComponent = new ObstacleComponent()
+            {
+                variant = ObstacleType.Repel,
+                shape = shape,
+                obstacleRadius = obstacleRadius,
+                obstacleSecondarySize = obstacleSecondarySize,
+                obstacleHardSurfaceRadius = hardSurfaceRadius,
+            };
+            var linearScale = this.transform.lossyScale.x;
+            var rotation = this.transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+            var obstacle = obstacleComponent.AdjustForScale(linearScale, rotation);
+            
+            var maxExtent = Mathf.Max(obstacle.obstacleRadius, obstacle.obstacleRadius + obstacle.obstacleSecondarySize);
+            var minLocal = -new Vector2(maxExtent, maxExtent);
+            var maxLocal = new Vector2(maxExtent, maxExtent);
+            var resolution = new Vector2Int(20, 20);
+            SampleSdfGizmos(minLocal, maxLocal, resolution, localPoint =>
+            {
+                var normalizedDistance = obstacle.GetNormalizedDistance(localPoint);
+                if (normalizedDistance > 1) return null;
+                var color = Color.green;
+                if (obstacle.IsInsideHardSurface(normalizedDistance))
+                {
+                    color = Color.red;
+                }
+
+                //color.b = normalizedDistance;
+                
+                return Color.Lerp(color, Color.clear, 0.3f);
+            });
+        }
+
+        private void SampleSdfGizmos(
+            Vector2 minLocal, Vector2 maxLocal,
+            Vector2Int resolution, Func<float2, Color?> sample)
+        {
+            var step = (maxLocal - minLocal) / resolution;
+            for (var x = 0; x < resolution.x; x++)
+            {
+                for (var y = 0; y < resolution.y; y++)
+                {
+                    var localPoint = new Vector2(x, y) * step + minLocal;
+                    var color = sample(localPoint);
+                    if (color.HasValue)
+                    {
+                        var worldPoint = transform.position + (Vector3)localPoint;
+                        Gizmos.color = color.Value;
+                        Gizmos.DrawCube(worldPoint, step);
+                    }
+                }
+            }
         }
     }
 }

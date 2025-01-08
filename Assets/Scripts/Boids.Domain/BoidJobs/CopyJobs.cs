@@ -15,8 +15,7 @@ namespace Boids.Domain.BoidJobs
         void Execute([EntityIndexInQuery] int entityIndexInQuery, in LocalToWorld localToWorld, in ObstacleComponent obstacle)
         {
             ObstaclePositions[entityIndexInQuery] = localToWorld.Position.xy;
-            var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();
-            Obstacles[entityIndexInQuery] = obstacle.AdjustForScale(presumedLinearScale);
+            Obstacles[entityIndexInQuery] = obstacle.GetWorldSpace(localToWorld);
         }
     }
 }
