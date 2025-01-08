@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hardSurfaceRadius: 1.5
+  hardSurfaceRadiusFraction: 0.6818182
   behavior:
     variant: 1
     obstacleEffectMultiplier: 1
@@ -111,6 +112,7 @@ MonoBehaviour:
     obstacleRadius: 2.2
     obstacleSecondarySize: 2
   playerOwned: 1
+  gizmoDrawResolution: 20
 --- !u!114 &8661441557384765509
 MonoBehaviour:
   m_ObjectHideFlags: 0

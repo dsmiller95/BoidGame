@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hardSurfaceRadius: 1.5
+  hardSurfaceRadiusFraction: 0.6818182
   behavior:
     variant: 1
     obstacleEffectMultiplier: 1
