@@ -296,7 +296,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 220317169}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45a335734b1572644a6a5d09d87adc65, type: 3}
   m_Name: 
@@ -1311,8 +1311,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
-  - label: Debug
-    subScene: {fileID: 220317171}
   - label: 'Gentle Nudge
 
       Par 2'
@@ -1325,6 +1323,8 @@ MonoBehaviour:
 
       Par ???'
     subScene: {fileID: 341138652}
+  - label: Debug
+    subScene: {fileID: 220317171}
   currentLevel: 0
   levelName:
     m_PersistentCalls:
