@@ -1311,6 +1311,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
+  - label: Debug
+    subScene: {fileID: 220317171}
   - label: 'Gentle Nudge
 
       Par 2'
@@ -1323,8 +1325,6 @@ MonoBehaviour:
 
       Par ???'
     subScene: {fileID: 341138652}
-  - label: Debug
-    subScene: {fileID: 220317171}
   currentLevel: 0
   levelName:
     m_PersistentCalls:

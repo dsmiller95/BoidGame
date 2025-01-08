@@ -114,11 +114,11 @@ namespace Boids.Domain.Obstacles
             in Boid boidSettings,
             in float2 boidLinearVelocity)
         {
-            var fromObstacle = relativeToObstacle;
-            var toObstacle = -fromObstacle;
             var awayFromObstacleNormal = normalFromObstacle;//math.normalizesafe(fromObstacle);
 
-            float2 upToSurfaceOfObstacle = toObstacle + awayFromObstacleNormal * obstacleRadius;
+            float distanceToSurface = 1 - normalizedDistanceFromMe;
+
+            float2 upToSurfaceOfObstacle = awayFromObstacleNormal * distanceToSurface;
             switch (this.variantData.variant)
             {
                 case ObstacleType.Repel:
@@ -131,8 +131,8 @@ namespace Boids.Domain.Obstacles
                     }
                     
                     // reflect away from the hard surface
-                    var reflectedHeading = math.reflect(boidLinearVelocity, fromObstacle);
-                    var reflectedAwayFromObstacle = math.dot(reflectedHeading, fromObstacle) > 0;
+                    var reflectedHeading = math.reflect(boidLinearVelocity, awayFromObstacleNormal);
+                    var reflectedAwayFromObstacle = math.dot(reflectedHeading, awayFromObstacleNormal) > 0;
                     reflectedHeading = math.select(boidLinearVelocity, reflectedHeading , reflectedAwayFromObstacle);
                     var resultHeading = reflectedHeading + upToSurfaceOfObstacle * boidSettings.obstacleAvoidanceWeight;
                     return (resultHeading, true);

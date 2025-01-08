@@ -118,6 +118,7 @@ namespace Boids.Domain.BoidJobs
             {
                 var (resultHeading, forceHeading) = _nearestObstacle.GetHeading(
                     fromObstacle,
+                    _nearastObstacleNormal,
                     _nearestObstacleDistanceNormalizedFromCenter,
                     boidSettings,
                     linearVelocity);
