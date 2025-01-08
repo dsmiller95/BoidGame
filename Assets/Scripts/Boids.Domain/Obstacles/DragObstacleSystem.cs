@@ -105,7 +105,8 @@ namespace Boids.Domain.Obstacles
     
     public struct DraggableObstacle : IComponentData
     {
-        
+        // local space
+        //public float dragRadius;
     }
     
     public struct Dragging : IComponentData

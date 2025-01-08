@@ -32,20 +32,65 @@ namespace Boids.Domain.Obstacles
     }
 
     [Serializable]
-    public struct Obstacle
+    public struct ObstacleShapeData
     {
-        public ObstacleVariantData variantData;
         public ObstacleShape shape;
+        
+        public float obstacleRadius;
+        /// <inheritdoc cref="ObstacleShapeDataDefinition.obstacleSecondarySize"/>
+        public float obstacleSecondarySize;
+        /// <summary>
+        /// unused for rotationally symmetric obstacles (spheres)
+        /// </summary>
+        public float obstacleRotation;
+    }
+
+    [Serializable]
+    public struct ObstacleShapeDataDefinition
+    {
+        public ObstacleShape shape;
+        
         public float obstacleRadius;
         /// <summary>
         /// for sphere, unused
         /// for beam, the length of the beam
         /// </summary>
         public float obstacleSecondarySize;
+        
+        public readonly ObstacleShapeData GetWorldSpace(in LocalToWorld localToWorld)
+        {
+            var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();
+            var rotation = math.Euler(localToWorld.Value.Rotation()).z;
+            return AdjustForScale(presumedLinearScale, rotation);
+        }
+        private readonly ObstacleShapeData AdjustForScale(float linearScale, float rotation)
+        {
+            return new ObstacleShapeData
+            {
+                shape = this.shape,
+                obstacleRadius = this.obstacleRadius * linearScale,
+                obstacleSecondarySize = this.obstacleSecondarySize * linearScale,
+                obstacleRotation = rotation,
+            };
+        }
+    }
+
+    [Serializable]
+    public struct Obstacle
+    {
+        public ObstacleVariantData variantData;
+        public ObstacleShapeData shapeData;
+        public readonly ObstacleShape shape => shapeData.shape;
+        public readonly float obstacleRadius => shapeData.obstacleRadius;
+        /// <summary>
+        /// for sphere, unused
+        /// for beam, the length of the beam
+        /// </summary>
+        public readonly float obstacleSecondarySize => shapeData.obstacleSecondarySize;
         /// <summary>
         /// unused for rotationally symmetric obstacles (spheres)
         /// </summary>
-        public float obstacleRotation;
+        public readonly float obstacleRotation => shapeData.obstacleRotation;
         
         public float obstacleHardSurfaceRadiusFraction;
 
@@ -151,27 +196,18 @@ namespace Boids.Domain.Obstacles
     public struct ObstacleComponent : IComponentData
     {
         public ObstacleVariantData variantData;
-        public ObstacleShape shape;
-        public float obstacleRadius;
-        public float obstacleSecondarySize;
+        public ObstacleShapeDataDefinition shapeData;
+        public readonly ObstacleShape shape => shapeData.shape;
+        public readonly float obstacleRadius => shapeData.obstacleRadius;
+        public readonly float obstacleSecondarySize => shapeData.obstacleSecondarySize;
         public float obstacleHardSurfaceRadius;
 
         public readonly Obstacle GetWorldSpace(in LocalToWorld localToWorld)
         {
-            var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();
-            var obstacleRotation = math.Euler(localToWorld.Value.Rotation()).z;
-            return AdjustForScale(presumedLinearScale, obstacleRotation);
-        }
-        
-        public readonly Obstacle AdjustForScale(float linearScale, float rotation)
-        {
             return new Obstacle
             {
                 variantData = this.variantData,
-                shape = this.shape,
-                obstacleRadius = this.obstacleRadius * linearScale,
-                obstacleSecondarySize = this.obstacleSecondarySize * linearScale,
-                obstacleRotation = rotation,
+                shapeData = this.shapeData.GetWorldSpace(localToWorld),
                 obstacleHardSurfaceRadiusFraction = this.obstacleHardSurfaceRadius / this.obstacleRadius,
             };
         }

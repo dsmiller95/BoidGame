@@ -104,4 +104,8 @@ MonoBehaviour:
   obstacleSecondarySize: 2
   hardSurfaceRadius: 1.5
   shape: 1
-  draggable: 1
+  variantData:
+    variant: 1
+    obstacleEffectMultiplier: 1
+    maxEffectMagnitude: 10
+  playerOwned: 1

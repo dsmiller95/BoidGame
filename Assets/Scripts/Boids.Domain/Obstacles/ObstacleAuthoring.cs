@@ -2,6 +2,7 @@
 using Boids.Domain.GridSnap;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -21,6 +22,12 @@ namespace Boids.Domain.Obstacles
             obstacleEffectMultiplier = 1f,
             maxEffectMagnitude = 10f,
         };
+        public ObstacleShapeDataDefinition shapeData => new ObstacleShapeDataDefinition()
+        {
+            shape = shape,
+            obstacleRadius = obstacleRadius,
+            obstacleSecondarySize = obstacleSecondarySize,
+        };
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         
         private class ObstacleBaker : Baker<ObstacleAuthoring>
@@ -31,9 +38,9 @@ namespace Boids.Domain.Obstacles
                 AddComponent(entity, new ObstacleComponent()
                 {
                     variantData = authoring.variantData,
-                    shape = authoring.shape,
-                    obstacleRadius = authoring.obstacleRadius,
-                    obstacleSecondarySize = authoring.obstacleSecondarySize,
+                    // shape = authoring.shape,
+                    // obstacleRadius = authoring.obstacleRadius,
+                    // obstacleSecondarySize = authoring.obstacleSecondarySize,
                     obstacleHardSurfaceRadius = authoring.hardSurfaceRadius,
                 });
                 var spriteRenderer = GetComponent<SpriteRenderer>();
@@ -55,14 +62,15 @@ namespace Boids.Domain.Obstacles
             var obstacleComponent = new ObstacleComponent()
             {
                 variantData = variantData,
-                shape = shape,
-                obstacleRadius = obstacleRadius,
-                obstacleSecondarySize = obstacleSecondarySize,
+                shapeData = shapeData,
                 obstacleHardSurfaceRadius = hardSurfaceRadius,
             };
-            var linearScale = this.transform.lossyScale.x;
-            var rotation = this.transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
-            var obstacle = obstacleComponent.AdjustForScale(linearScale, rotation);
+            
+            var localToWorld = new LocalToWorld
+            {
+                Value = float4x4.TRS(float3.zero, this.transform.rotation, this.transform.lossyScale)
+            };
+            var obstacle = obstacleComponent.GetWorldSpace(localToWorld);
             
             var maxExtent = Mathf.Max(obstacle.obstacleRadius, obstacle.obstacleRadius + obstacle.obstacleSecondarySize);
             var minLocal = -new Vector2(maxExtent, maxExtent);
