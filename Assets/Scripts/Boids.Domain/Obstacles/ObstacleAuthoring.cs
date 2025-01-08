@@ -29,6 +29,8 @@ namespace Boids.Domain.Obstacles
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         
         [SerializeField] private int gizmoDrawResolution = 20;
+        [Range(0, 1)]
+        [SerializeField] private float gizmosDrawTransparency = .7f;
 
         public static bool Migrate(ObstacleAuthoring component)
         {
@@ -90,7 +92,7 @@ namespace Boids.Domain.Obstacles
 
                 //color.b = normalizedDistance;
                 
-                return Color.Lerp(color, Color.clear, 0.3f);
+                return Color.Lerp(Color.clear, color, gizmosDrawTransparency);
             });
         }
 

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3673743807244670062}
   - component: {fileID: 5650978141399803862}
   m_Layer: 0
-  m_Name: Boid Sphere Repel
+  m_Name: Boid Sphere Repel Hard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2ddd8f86ebb4371439e6d2291e2d878a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7026c2e5c4c8cbc4390c22c7c60a91d4, type: 3}
   m_Color: {r: 0.97185934, g: 1, b: 0.2028302, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -101,8 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardSurfaceRadius: 1.5
-  hardSurfaceRadiusFraction: 0.6818182
+  hardSurfaceRadiusFraction: 0.7
   behavior:
     variant: 1
     obstacleEffectMultiplier: 1
@@ -112,7 +111,8 @@ MonoBehaviour:
     obstacleRadius: 2.2
     obstacleSecondarySize: 1
   playerOwned: 0
-  gizmoDrawResolution: 80
+  gizmoDrawResolution: 20
+  gizmosDrawTransparency: 0
 --- !u!114 &5650978141399803862
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 076746f923ac5184faf94f6fe47d9f4c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ad92ddf71676e5045bc275720ad39dcc, type: 3}
   m_Color: {r: 0.97185934, g: 1, b: 0.2028302, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -101,8 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb7e0ad4a748b992b5577e882c8bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardSurfaceRadius: 1.5
-  hardSurfaceRadiusFraction: 0.6818182
+  hardSurfaceRadiusFraction: 0.7
   behavior:
     variant: 1
     obstacleEffectMultiplier: 1
@@ -113,6 +112,7 @@ MonoBehaviour:
     obstacleSecondarySize: 2
   playerOwned: 1
   gizmoDrawResolution: 20
+  gizmosDrawTransparency: 0.7
 --- !u!114 &8661441557384765509
 MonoBehaviour:
   m_ObjectHideFlags: 0
