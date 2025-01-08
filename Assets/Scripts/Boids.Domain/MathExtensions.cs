@@ -47,5 +47,14 @@ namespace Boids.Domain
             }
             return vector;
         }
+
+        public static float2 NormalizeSafeWithLen(this float2 vector, float len, float2 defaultValue = new float2())
+        {
+            if(len < Epsilon)
+            {
+                return defaultValue;
+            }
+            return vector / len;
+        }
     }
 }

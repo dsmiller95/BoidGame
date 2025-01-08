@@ -18,6 +18,7 @@ namespace Boids.Domain.BoidJobs
 
         private Obstacle _nearestObstacle;
         private float2 _nearestObstacleRelative;
+        private float2 _nearastObstacleNormal;
         private float _nearestObstacleDistanceNormalizedFromCenter;
         private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
             _nearestObstacle.variantData.variant != ObstacleType.None &&
@@ -66,14 +67,15 @@ namespace Boids.Domain.BoidJobs
             
             //var relativeObstaclePosition = obstacleCellData.Position - position;
             var relativeToObstacle = position - obstacleCellData.Position;
-            var obstacleDistance = obstacleCellData.Obstacle
-                .GetNormalizedDistance(relativeToObstacle);
+            var (obstacleDistance, obstacleNormal) = obstacleCellData.Obstacle
+                .GetNormalizedDistanceAndNormal(relativeToObstacle);
             // var distance = math.length(relativeObstaclePosition);
             // var normalizedDistanceFromCenter = distance / obstacleCellData.Obstacle.obstacleRadius;
             if (obstacleDistance > 0.00001f && obstacleDistance < this._nearestObstacleDistanceNormalizedFromCenter)
             {
                 this._nearestObstacleRelative = -relativeToObstacle;
                 this._nearestObstacle = obstacleCellData.Obstacle;
+                this._nearastObstacleNormal = obstacleNormal;
                 this._nearestObstacleDistanceNormalizedFromCenter = obstacleDistance;
             }
         }

@@ -57,15 +57,22 @@ namespace Boids.Domain.Obstacles
         /// <exception cref="NotImplementedException"></exception>
         public readonly float GetNormalizedDistance(in float2 queryRelativeToCenter)
         {
-            return GetDistance(queryRelativeToCenter) / obstacleRadius;
+            var (dist, _) = GetDistanceAndNormal(queryRelativeToCenter);
+            return dist / obstacleRadius;
+        }
+        public readonly (float, float2) GetNormalizedDistanceAndNormal(in float2 queryRelativeToCenter)
+        {
+            var (dist, normal) = GetDistanceAndNormal(queryRelativeToCenter);
+            return (dist / obstacleRadius, normal);
         }
 
-        private readonly float GetDistance(in float2 relativeToCenter)
+        private readonly (float, float2) GetDistanceAndNormal(in float2 relativeToCenter)
         {
             switch (shape)
             {
                 case ObstacleShape.Sphere:
-                    return math.length(relativeToCenter);
+                    var len = math.length(relativeToCenter);
+                    return (len, relativeToCenter.NormalizeSafeWithLen(len));
                 case ObstacleShape.Beam:
                     // 2d rotation
                     var rotatedRelative = math.mul(float2x2.Rotate(-this.obstacleRotation), relativeToCenter);
@@ -73,11 +80,23 @@ namespace Boids.Domain.Obstacles
                     var distanceAboveBeam = math.abs(rotatedRelative.y);
                     var distanceFromEnd = distanceAlongBeam - obstacleSecondarySize; 
                     
+                    float2 localSpaceNormal;
+                    float distance;
                     if (distanceFromEnd <= 0)
                     {
-                        return distanceAboveBeam;
+                        localSpaceNormal = new float2(0, math.sign(rotatedRelative.y));
+                        distance = distanceAboveBeam;
+                        //return (distanceAboveBeam, worldSpaceNormal);
                     }
-                    return math.sqrt(distanceFromEnd * distanceFromEnd + distanceAboveBeam * distanceAboveBeam);
+                    else
+                    {
+                        var localFromEnd = new float2(distanceFromEnd, distanceAboveBeam);
+                        localFromEnd *= math.sign(relativeToCenter);
+                        localSpaceNormal = math.normalizesafe(localFromEnd);
+                        distance = math.sqrt(distanceFromEnd * distanceFromEnd + distanceAboveBeam * distanceAboveBeam);
+                    }
+                    var worldSpaceNormal = math.mul(float2x2.Rotate(this.obstacleRotation), localSpaceNormal);
+                    return (distance, worldSpaceNormal);
                 default:
                     throw new NotImplementedException("Unknown obstacle shape");
             }
@@ -90,34 +109,35 @@ namespace Boids.Domain.Obstacles
 
         public readonly (float2 resultHeading, bool forceHeading) GetHeading(
             in float2 relativeToObstacle,
+            in float2 normalFromObstacle,
             in float normalizedDistanceFromMe,
             in Boid boidSettings,
             in float2 boidLinearVelocity)
         {
             var fromObstacle = relativeToObstacle;
             var toObstacle = -fromObstacle;
-            var awayFromObstacleNormal = math.normalizesafe(fromObstacle);
+            var awayFromObstacleNormal = normalFromObstacle;//math.normalizesafe(fromObstacle);
 
-            float2 toSurfaceOfObstacle = toObstacle + awayFromObstacleNormal * obstacleRadius;
+            float2 upToSurfaceOfObstacle = toObstacle + awayFromObstacleNormal * obstacleRadius;
             switch (this.variantData.variant)
             {
                 case ObstacleType.Repel:
-                    toSurfaceOfObstacle += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
+                    upToSurfaceOfObstacle += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
                     var hardSurface = normalizedDistanceFromMe < obstacleHardSurfaceRadiusFraction;
                     if (!hardSurface)
                     {
-                        toSurfaceOfObstacle = toSurfaceOfObstacle.ClampMagnitude(variantData.maxEffectMagnitude);
-                        return (toSurfaceOfObstacle, false);
+                        upToSurfaceOfObstacle = upToSurfaceOfObstacle.ClampMagnitude(variantData.maxEffectMagnitude);
+                        return (upToSurfaceOfObstacle, false);
                     }
                     
                     // reflect away from the hard surface
                     var reflectedHeading = math.reflect(boidLinearVelocity, fromObstacle);
                     var reflectedAwayFromObstacle = math.dot(reflectedHeading, fromObstacle) > 0;
                     reflectedHeading = math.select(boidLinearVelocity, reflectedHeading , reflectedAwayFromObstacle);
-                    var resultHeading = reflectedHeading + toSurfaceOfObstacle * boidSettings.obstacleAvoidanceWeight;
+                    var resultHeading = reflectedHeading + upToSurfaceOfObstacle * boidSettings.obstacleAvoidanceWeight;
                     return (resultHeading, true);
                 case ObstacleType.Attract:
-                    float2 towardsObstacleSteering = -toSurfaceOfObstacle * variantData.obstacleEffectMultiplier;
+                    float2 towardsObstacleSteering = -upToSurfaceOfObstacle * variantData.obstacleEffectMultiplier;
                     towardsObstacleSteering = towardsObstacleSteering.ClampMagnitude(variantData.maxEffectMagnitude);
                     return (towardsObstacleSteering, false);
                 case ObstacleType.None:
