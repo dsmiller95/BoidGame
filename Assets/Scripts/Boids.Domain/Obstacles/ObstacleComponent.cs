@@ -90,7 +90,7 @@ namespace Boids.Domain.Obstacles
     public struct ObstacleComponent : IComponentData
     {
         public ObstacleBehavior behavior;
-        public ObstacleShapeDataDefinition shapeData;
+        public ShapeDataDefinition shapeData;
         public float obstacleHardSurfaceRadiusFraction;
 
         public readonly Obstacle GetWorldSpace(in LocalToWorld localToWorld)

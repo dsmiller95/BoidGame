@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Boids.Domain.Obstacles
 {
 
-    public enum ObstacleShapeVariant : int
+    public enum ShapeVariant : int
     {
         Sphere = 0,
         Beam = 1,
@@ -81,7 +81,7 @@ namespace Boids.Domain.Obstacles
     public struct ObstacleShape
     {
         [FieldOffset(0)]
-        public ObstacleShapeVariant shapeVariant;
+        public ShapeVariant shapeVariant;
         
         [FieldOffset(4)]
         public float obstacleRadius;
@@ -108,11 +108,11 @@ namespace Boids.Domain.Obstacles
         {
             switch (shapeVariant)
             {
-                case ObstacleShapeVariant.Sphere:
+                case ShapeVariant.Sphere:
                     return obstacleRadius;
-                case ObstacleShapeVariant.Beam:
+                case ShapeVariant.Beam:
                     return obstacleRadius + math.length(beamVariant.beamRelativeEnd);
-                case ObstacleShapeVariant.Square:
+                case ShapeVariant.Square:
                     return obstacleRadius;
                 default:
                     throw new NotImplementedException("Unknown obstacle shape");
@@ -143,9 +143,9 @@ namespace Boids.Domain.Obstacles
 
             return shapeVariant switch
             {
-                ObstacleShapeVariant.Sphere => GetNormal(circleVariant, pos, epsilon),
-                ObstacleShapeVariant.Beam => GetNormal(beamVariant, pos, epsilon),
-                ObstacleShapeVariant.Square => GetNormal(squareVariant, pos, epsilon),
+                ShapeVariant.Sphere => GetNormal(circleVariant, pos, epsilon),
+                ShapeVariant.Beam => GetNormal(beamVariant, pos, epsilon),
+                ShapeVariant.Square => GetNormal(squareVariant, pos, epsilon),
                 _ => throw new NotImplementedException("Unknown obstacle shape")
             };
         }
@@ -163,11 +163,11 @@ namespace Boids.Domain.Obstacles
         {
             switch (shapeVariant)
             {
-                case ObstacleShapeVariant.Sphere:
+                case ShapeVariant.Sphere:
                     return this.circleVariant.GetDistance(relativeToCenter);
-                case ObstacleShapeVariant.Beam:
+                case ShapeVariant.Beam:
                     return beamVariant.GetDistance(relativeToCenter);
-                case ObstacleShapeVariant.Square:
+                case ShapeVariant.Square:
                     return squareVariant.GetDistance(relativeToCenter);
                 default:
                     throw new NotImplementedException("Unknown obstacle shape");
@@ -177,10 +177,10 @@ namespace Boids.Domain.Obstacles
     
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]
-    public struct ObstacleShapeDataDefinition
+    public struct ShapeDataDefinition
     {
         [FieldOffset(0)]
-        public ObstacleShapeVariant shapeVariant;
+        public ShapeVariant shapeVariant;
         
         [FieldOffset(4)]
         [Range(1f, 30f)]
@@ -210,13 +210,13 @@ namespace Boids.Domain.Obstacles
             };
             switch (shapeVariant)
             {
-                case ObstacleShapeVariant.Sphere:
+                case ShapeVariant.Sphere:
                     resultShape.circleVariant = this.circleVariant.AdjustForScale(linearScale, rotation);
                     break;
-                case ObstacleShapeVariant.Beam:
+                case ShapeVariant.Beam:
                     resultShape.beamVariant = this.beamVariant.AdjustForScale(linearScale, rotation);
                     break;
-                case ObstacleShapeVariant.Square:
+                case ShapeVariant.Square:
                     resultShape.squareVariant = this.squareVariant.AdjustForScale(linearScale, rotation);
                     break;
                 default:

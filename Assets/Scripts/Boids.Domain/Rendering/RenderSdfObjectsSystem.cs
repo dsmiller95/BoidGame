@@ -10,14 +10,16 @@ using UnityEngine;
 
 namespace Boids.Domain.Rendering
 {
+    
     [Serializable]
     public struct SDFObjectData : IComponentData
     {
         public float radius;
         public float hardRadiusFraction;
+        // TODO: public float annularRadius;
         public float2 center;
         public float4 color;
-            
+        
         public SdfVariantData shapeVariant;
     }
 
@@ -37,6 +39,15 @@ namespace Boids.Domain.Rendering
         public BeamVariant beamVariant;
         [FieldOffset(4)]
         public SquareVariant squareVariant;
+
+        public static SdfVariantData FromShape(ObstacleShape shape)
+        {
+            return new SdfVariantData()
+            {
+                shapeType = (int)shape.shapeVariant,
+                variantData = shape.variantData
+            };
+        }
     }
     
     [RequireMatchingQueriesForUpdate]

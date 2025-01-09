@@ -21,9 +21,9 @@ namespace Boids.Domain.Obstacles
             obstacleEffectMultiplier = 1f,
             maxEffectMagnitude = 10f,
         };
-        public ObstacleShapeDataDefinition shapeData = new ObstacleShapeDataDefinition()
+        public ShapeDataDefinition shapeData = new ShapeDataDefinition()
         {
-            shapeVariant = ObstacleShapeVariant.Sphere,
+            shapeVariant = ShapeVariant.Sphere,
             obstacleRadius = 1f
         };
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
