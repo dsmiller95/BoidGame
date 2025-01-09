@@ -52,23 +52,91 @@ Shader "Unlit/FullScreenSDF 2"
             // enum defining shape types
             const int SPHERE = 0;
             const int BEAM = 1;
+            const int SQUARE = 2;
+            
+            struct SdfVariantData
+            {
+                int shapeType;
+                float4 unionData;
+            };
             
             struct SDFObjectData
             {
-                int shapeType;
-                float4 color;
                 float radius;
-                float secondaryRadius;
-                float rotation;
                 float2 center;
+                float4 color;
+
+                SdfVariantData variantData;
             };
+            
+            struct BeamVariant
+            {
+                float2 beamRelativeEnd;
+            };
+            BeamVariant AsBeamVariant(SdfVariantData variantData)
+            {
+                BeamVariant b;
+                b.beamRelativeEnd = variantData.unionData.xy;
+                return b;
+            }
+
+            struct SquareVariant
+            {
+                float2 corner;
+            };
+            SquareVariant AsSquareVariant(SdfVariantData variantData)
+            {
+                SquareVariant s;
+                s.corner = variantData.unionData.xy;
+                return s;
+            }
+
+            struct CircleVariant
+            {
+                
+            };
+            CircleVariant AsCircleVariant(SdfVariantData variantData)
+            {
+                CircleVariant c;
+                return c;
+            }
 
             StructuredBuffer<SDFObjectData> _SDFObjects;
             int _SDFObjectCount;
 
-            float GetNormalizedDistanceFromCenter(float2 relPos, float radius)
+            float GetDistanceFromCenter(float2 relPos, SdfVariantData variantData)
             {
-                return length(relPos) / radius;
+                int st = variantData.shapeType;
+
+                if (st == SPHERE)
+                {
+                    CircleVariant circle = AsCircleVariant(variantData);
+                    return length(relPos);
+                }
+                else //if (st == BEAM) this comparison doesn't work for some reason
+                {
+                    BeamVariant beam = AsBeamVariant(variantData);
+                    float2 a = float2(0, 0);
+                    float2 b = beam.beamRelativeEnd;
+                    float2 p = relPos;
+                    
+                    float2 ba = b - a;
+                    float2 pa = p - a;
+                    float h = clamp(dot(pa, ba) / dot(ba, ba), 0, 1);
+                    return length(pa - h * ba);
+                }
+                if (st == SQUARE)
+                {
+                    SquareVariant square = AsSquareVariant(variantData);
+                    return 1;
+                }
+                return 10000;
+            }
+            
+            float GetNormalizedDistanceFromCenter(float2 relPos, float radius, SdfVariantData variantData)
+            {
+                float dist = GetDistanceFromCenter(relPos, variantData);
+                return dist / radius;
             }
 
             v2f vert(appdata v)
@@ -113,7 +181,7 @@ Shader "Unlit/FullScreenSDF 2"
                 {
                     SDFObjectData obj = _SDFObjects[i];
                     float2 relPos = uv - obj.center;
-                    float dist = GetNormalizedDistanceFromCenter(relPos, obj.radius);
+                    float dist = GetNormalizedDistanceFromCenter(relPos, obj.radius, obj.variantData);
 
                     if (dist < 1 && dist < minDist)
                     {

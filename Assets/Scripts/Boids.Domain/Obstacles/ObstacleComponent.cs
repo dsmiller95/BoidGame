@@ -13,12 +13,6 @@ namespace Boids.Domain.Obstacles
         Repel,
         Attract,
     }
-
-    public enum ObstacleShapeVariant
-    {
-        Sphere = 0,
-        Beam = 1,
-    }
     
     public struct ObstacleDisabledFlag : IComponentData
     {
@@ -33,120 +27,11 @@ namespace Boids.Domain.Obstacles
     }
 
     [Serializable]
-    public struct ObstacleShape
-    {
-        public ObstacleShapeVariant shapeVariant;
-        
-        public float obstacleRadius;
-        /// <inheritdoc cref="ObstacleShapeDataDefinition.obstacleSecondarySize"/>
-        public float obstacleSecondarySize;
-        /// <summary>
-        /// unused for rotationally symmetric obstacles (spheres)
-        /// </summary>
-        public float obstacleRotation;
-
-        /// <summary>
-        /// gets the maximum distance from the center which could be affected by this obstacle
-        /// </summary>
-        /// <remarks>
-        /// The actual obstacle may be smaller, but will not be larger.
-        /// </remarks>
-        public float MaximumExtent()
-        {
-            return obstacleRadius + obstacleSecondarySize;
-        }
-        
-        /// <summary>
-        /// Get the distance from the center of the obstacle.
-        /// </summary>
-        /// <param name="queryRelativeToCenter">the query point relative to the center of this obstacle</param>
-        /// <returns>A value in [0..1) if inside the obstacle radius, or [1..) if outside</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public readonly float GetNormalizedDistance(in float2 queryRelativeToCenter)
-        {
-            var (dist, _) = GetDistanceAndNormal(queryRelativeToCenter);
-            return dist / obstacleRadius;
-        }
-        public readonly (float, float2) GetNormalizedDistanceAndNormal(in float2 queryRelativeToCenter)
-        {
-            var (dist, normal) = GetDistanceAndNormal(queryRelativeToCenter);
-            return (dist / obstacleRadius, normal);
-        }
-        
-        private readonly (float, float2) GetDistanceAndNormal(in float2 relativeToCenter)
-        {
-            switch (shapeVariant)
-            {
-                case ObstacleShapeVariant.Sphere:
-                    var len = math.length(relativeToCenter);
-                    return (len, relativeToCenter.NormalizeSafeWithLen(len));
-                case ObstacleShapeVariant.Beam:
-                    // 2d rotation
-                    var rotatedRelative = math.mul(float2x2.Rotate(-obstacleRotation), relativeToCenter);
-                    var distanceAlongBeam = math.abs(rotatedRelative.x);
-                    var distanceAboveBeam = math.abs(rotatedRelative.y);
-                    var distanceFromEnd = distanceAlongBeam - obstacleSecondarySize; 
-                    
-                    float2 localSpaceNormal;
-                    float distance;
-                    if (distanceFromEnd <= 0)
-                    {
-                        localSpaceNormal = new float2(0, math.sign(rotatedRelative.y));
-                        distance = distanceAboveBeam;
-                        //return (distanceAboveBeam, worldSpaceNormal);
-                    }
-                    else
-                    {
-                        var localFromEnd = new float2(distanceFromEnd, distanceAboveBeam);
-                        localFromEnd *= math.sign(relativeToCenter);
-                        localSpaceNormal = math.normalizesafe(localFromEnd);
-                        distance = math.sqrt(distanceFromEnd * distanceFromEnd + distanceAboveBeam * distanceAboveBeam);
-                    }
-                    var worldSpaceNormal = math.mul(float2x2.Rotate(obstacleRotation), localSpaceNormal);
-                    return (distance, worldSpaceNormal);
-                default:
-                    throw new NotImplementedException("Unknown obstacle shape");
-            }
-        }
-    }
-
-    [Serializable]
     public struct ObstacleRender : IComponentData
     {
         public float4 color;
     }
 
-    [Serializable]
-    public struct ObstacleShapeDataDefinition
-    {
-        public ObstacleShapeVariant shapeVariant;
-        
-        [Range(1f, 30f)]
-        public float obstacleRadius;
-        
-        /// <summary>
-        /// for sphere, unused
-        /// for beam, the length of the beam
-        /// </summary>
-        public float obstacleSecondarySize;
-        
-        public readonly ObstacleShape GetWorldSpace(in LocalToWorld localToWorld)
-        {
-            var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();
-            var rotation = math.Euler(localToWorld.Value.Rotation()).z;
-            return AdjustForScale(presumedLinearScale, rotation);
-        }
-        private readonly ObstacleShape AdjustForScale(float linearScale, float rotation)
-        {
-            return new ObstacleShape
-            {
-                shapeVariant = this.shapeVariant,
-                obstacleRadius = this.obstacleRadius * linearScale,
-                obstacleSecondarySize = this.obstacleSecondarySize * linearScale,
-                obstacleRotation = rotation,
-            };
-        }
-    }
 
     [Serializable]
     public struct Obstacle

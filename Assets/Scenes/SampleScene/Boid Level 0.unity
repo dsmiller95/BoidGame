@@ -543,13 +543,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3673743807244670062, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
+      propertyPath: shapeData.shapeVariant
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3813160163993543383, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_Name
       value: Boid Beam Obstacle
       objectReference: {fileID: 0}
     - target: {fileID: 3964514647153594225, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -40
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 3964514647153594225, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalPosition.y
@@ -585,6 +589,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3964514647153594225, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8661441557384765509, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9145836004314635187, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

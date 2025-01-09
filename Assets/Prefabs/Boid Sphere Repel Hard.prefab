@@ -109,7 +109,14 @@ MonoBehaviour:
   shapeData:
     shapeVariant: 0
     obstacleRadius: 2.2
-    obstacleSecondarySize: 1
+    beamVariant:
+      beamRelativeEnd:
+        x: 0
+        y: 0
+    squareVariant:
+      corner:
+        x: 0
+        y: 0
   playerOwned: 0
   gizmoDrawResolution: 20
   gizmosDrawTransparency: 0

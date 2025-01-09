@@ -23,8 +23,7 @@ namespace Boids.Domain.Obstacles
         public ObstacleShapeDataDefinition shapeData = new ObstacleShapeDataDefinition()
         {
             shapeVariant = ObstacleShapeVariant.Sphere,
-            obstacleRadius = 1f,
-            obstacleSecondarySize = 1f,
+            obstacleRadius = 1f
         };
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         

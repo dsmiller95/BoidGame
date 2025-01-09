@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Boids.Domain.Obstacles;
 using Dman.Utilities;
 using Dman.Utilities.Logger;
@@ -44,21 +45,38 @@ namespace Boids.Domain.Rendering
             );
         }
         
-        [System.Serializable]
+        [Serializable]
         public struct SDFObjectData
         {
-            public ObstacleShapeVariant shapeType;
-            public float4 color;
             public float radius;
-            public float secondaryRadius;
-            public float rotation;
             public float2 center;
+            public float4 color;
+            
+            public SdfVariantData shapeVariant;
+        }
+
+        
+        [Serializable]
+        [StructLayout(LayoutKind.Explicit)]
+        public struct SdfVariantData
+        {
+            [FieldOffset(0)]
+            public int shapeType;
+            
+            [FieldOffset(4)]
+            public FixedBytes16 variantData;
+            [FieldOffset(4)]
+            public BeamVariant beamVariant;
+            [FieldOffset(4)]
+            public CircleVariant circleVariant;
+            [FieldOffset(4)]
+            public SquareVariant squareVariant;
         }
     }
     
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
-    [ExecuteAlways]
+    [WorldSystemFilter(WorldSystemFilterFlags.Editor | WorldSystemFilterFlags.Default)]
     public partial class RenderObstaclesSdfSystem : SystemBase
     {
 
@@ -116,12 +134,14 @@ namespace Boids.Domain.Rendering
                 var obstacle = obstacleComponent.GetWorldSpace(localToWorld);
                 OutSdfData[entityIndexInQuery] = new RenderSdfSettings.SDFObjectData
                 {
-                    shapeType = obstacle.shape.shapeVariant,
-                    color = obstacleRender.color,
                     radius = obstacle.shape.obstacleRadius,
-                    secondaryRadius = obstacle.shape.obstacleSecondarySize,
-                    rotation = obstacle.shape.obstacleRotation,
-                    center = localToWorld.Position.xy
+                    color = obstacleRender.color,
+                    center = localToWorld.Position.xy,
+                    shapeVariant = new RenderSdfSettings.SdfVariantData()
+                    {
+                        shapeType = (int)obstacle.shape.shapeVariant,
+                        variantData = obstacle.shape.variantData
+                    }
                 };
             }
         }
