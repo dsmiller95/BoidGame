@@ -16,11 +16,24 @@ namespace Boids.Domain.Rendering
     {
         public float radius;
         public float hardRadiusFraction;
-        // TODO: public float annularRadius;
+        public float annularRadius;
         public float2 center;
         public float4 color;
         
         public SdfVariantData shapeVariant;
+
+        public static SDFObjectData FromShape(ObstacleShape shape, float hardSurface, float4 color, float2 worldCenter)
+        {
+            return new SDFObjectData
+            {
+                radius = shape.obstacleRadius,
+                hardRadiusFraction = hardSurface,
+                annularRadius = shape.annularRadius,
+                color = color,
+                center = worldCenter,
+                shapeVariant = SdfVariantData.FromShape(shape)
+            };
+        }
     }
 
         

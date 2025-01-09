@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Boids.Domain.Obstacles
 {
@@ -85,35 +86,39 @@ namespace Boids.Domain.Obstacles
         
         [FieldOffset(4)]
         public float obstacleRadius;
-        
+
         [FieldOffset(8)]
+        public float annularRadius;
+
+        [FieldOffset(12)]
         public FixedBytes16 variantData;
         
-        [FieldOffset(8)]
+        [FieldOffset(12)]
         public BeamVariant beamVariant;
         
-        [FieldOffset(8)]
+        [FieldOffset(12)]
         public CircleVariant circleVariant;
         
-        [FieldOffset(8)]
+        [FieldOffset(12)]
         public SquareVariant squareVariant;
 
         /// <summary>
         /// gets the maximum distance from the center which could be affected by this obstacle
         /// </summary>
         /// <remarks>
-        /// The actual obstacle may be smaller, but will not be larger.
+        /// The actual obstacle may be smaller, but will not be larger. Currently used only for util rendering.
         /// </remarks>
         public float MaximumExtent()
         {
+            var baseExtent = obstacleRadius + annularRadius;
             switch (shapeVariant)
             {
                 case ShapeVariant.Sphere:
-                    return obstacleRadius;
+                    return baseExtent;
                 case ShapeVariant.Beam:
-                    return obstacleRadius + math.length(beamVariant.beamRelativeEnd);
+                    return baseExtent + math.length(beamVariant.beamRelativeEnd);
                 case ShapeVariant.Square:
-                    return obstacleRadius;
+                    return baseExtent;
                 default:
                     throw new NotImplementedException("Unknown obstacle shape");
             }
@@ -161,6 +166,17 @@ namespace Boids.Domain.Obstacles
 
         private readonly float GetDistance(in float2 relativeToCenter)
         {
+            var dist = GetSdfFromVariant(relativeToCenter);
+            if (annularRadius > 0)
+            {
+                dist = math.abs(dist) - annularRadius;
+            }
+
+            return dist;
+        }
+        
+        private readonly float GetSdfFromVariant(in float2 relativeToCenter)
+        {
             switch (shapeVariant)
             {
                 case ShapeVariant.Sphere:
@@ -187,12 +203,15 @@ namespace Boids.Domain.Obstacles
         public float obstacleRadius;
         
         [FieldOffset(8)]
+        public float annularRadius;
+        
+        [FieldOffset(12)]
         public BeamVariant beamVariant;
         
-        [FieldOffset(8)]
+        [FieldOffset(12)]
         public CircleVariant circleVariant;
         
-        [FieldOffset(8)]
+        [FieldOffset(12)]
         public SquareVariant squareVariant;
         
         public readonly ObstacleShape GetWorldSpace(in LocalToWorld localToWorld)
@@ -207,6 +226,7 @@ namespace Boids.Domain.Obstacles
             {
                 shapeVariant = this.shapeVariant,
                 obstacleRadius = this.obstacleRadius * linearScale,
+                annularRadius = this.annularRadius * linearScale,
             };
             switch (shapeVariant)
             {

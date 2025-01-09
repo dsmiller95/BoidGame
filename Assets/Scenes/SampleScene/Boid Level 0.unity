@@ -311,6 +311,14 @@ PrefabInstance:
       propertyPath: playerOwned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3673743807244670062, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
+      propertyPath: gizmosDrawTransparency
+      value: 0.795
+      objectReference: {fileID: 0}
+    - target: {fileID: 3673743807244670062, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
+      propertyPath: shapeData.annularRadius
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3813160163993543383, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
       propertyPath: m_Name
       value: Boid Obstacle (1)
@@ -452,7 +460,8 @@ MonoBehaviour:
   plainObject:
     shape:
       shapeVariant: 1
-      obstacleRadius: 4.9
+      obstacleRadius: 1
+      annularRadius: 9.8
       beamVariant:
         beamRelativeEnd:
           x: 0

@@ -17,14 +17,13 @@ namespace Boids.Domain.Rendering
                      SystemAPI.Query<RefRW<SDFObjectData>, RefRO<SdfPlainObject>, RefRO<LocalToWorld>>())
             {
                 var shape = plainObject.ValueRO.shape.GetWorldSpace(localToWorld.ValueRO);
-                objectData.ValueRW = new SDFObjectData
-                {
-                    radius = shape.obstacleRadius,
-                    hardRadiusFraction = plainObject.ValueRO.hardRadiusFraction,
-                    color = plainObject.ValueRO.color.ToFloat4(),
-                    center = localToWorld.ValueRO.Position.xy,
-                    shapeVariant = SdfVariantData.FromShape(shape)
-                };
+                
+                objectData.ValueRW = SDFObjectData.FromShape(
+                    shape,
+                    plainObject.ValueRO.hardRadiusFraction,
+                    plainObject.ValueRO.color.ToFloat4(),
+                    localToWorld.ValueRO.Position.xy
+                );
             }
         }
     }

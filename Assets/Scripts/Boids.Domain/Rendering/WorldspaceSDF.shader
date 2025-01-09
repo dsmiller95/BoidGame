@@ -64,6 +64,7 @@ Shader "Unlit/FullScreenSDF 2"
             {
                 float radius;
                 float hardRadiusFraction;
+                float annularRadius;
                 float2 center;
                 float4 color;
 
@@ -133,11 +134,26 @@ Shader "Unlit/FullScreenSDF 2"
                 }
                 return 10000;
             }
-            
-            float GetNormalizedDistanceFromCenter(float2 relPos, float radius, SdfVariantData variantData)
+
+            float GetDistance(
+                float2 relPos,
+                SDFObjectData objectData)
             {
-                float dist = GetDistanceFromCenter(relPos, variantData);
-                return dist / radius;
+                
+                float dist = GetDistanceFromCenter(relPos, objectData.variantData);
+                if (objectData.annularRadius > 0)
+                {
+                    dist = abs(dist) - objectData.annularRadius;
+                }
+                return dist;
+            }
+            
+            float GetNormalizedDistanceFromCenter(
+                float2 relPos,
+                SDFObjectData objectData)
+            {
+                float dist = GetDistance(relPos, objectData);
+                return dist / objectData.radius;
             }
 
             v2f vert(appdata v)
@@ -183,7 +199,7 @@ Shader "Unlit/FullScreenSDF 2"
                 {
                     SDFObjectData obj = _SDFObjects[i];
                     float2 relPos = uv - obj.center;
-                    float dist = GetNormalizedDistanceFromCenter(relPos, obj.radius, obj.variantData);
+                    float dist = GetNormalizedDistanceFromCenter(relPos, obj);
 
                     if (dist < 1 && dist < minDist)
                     {

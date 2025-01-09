@@ -20,18 +20,13 @@ namespace Boids.Domain.Rendering
                      SystemAPI.Query<RefRW<SDFObjectData>, RefRO<LocalToWorld>, RefRO<ObstacleComponent>, RefRO<ObstacleRender>>())
             {
                 var obstacle = obstacleComponent.ValueRO.GetWorldSpace(localToWorld.ValueRO);
-                objectData.ValueRW = new SDFObjectData
-                {
-                    radius = obstacle.shape.obstacleRadius,
-                    hardRadiusFraction = obstacle.obstacleHardSurfaceRadiusFraction,
-                    color = obstacleRender.ValueRO.color,
-                    center = localToWorld.ValueRO.Position.xy,
-                    shapeVariant = new SdfVariantData()
-                    {
-                        shapeType = (int)obstacle.shape.shapeVariant,
-                        variantData = obstacle.shape.variantData
-                    }
-                };
+                var shape = obstacle.shape;
+                objectData.ValueRW = SDFObjectData.FromShape(
+                    shape,
+                    obstacle.obstacleHardSurfaceRadiusFraction,
+                    obstacleRender.ValueRO.color,
+                    localToWorld.ValueRO.Position.xy
+                );
             }
         }
     }
