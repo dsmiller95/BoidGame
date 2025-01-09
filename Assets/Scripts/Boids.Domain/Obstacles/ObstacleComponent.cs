@@ -47,13 +47,12 @@ namespace Boids.Domain.Obstacles
         }
 
         public readonly (float2 resultHeading, bool forceHeading) GetHeading(
-            in float2 relativeToObstacle,
             in float2 normalFromObstacle,
             in float normalizedDistanceFromMe,
             in Boid boidSettings,
             in float2 boidLinearVelocity)
         {
-            var awayFromObstacleNormal = normalFromObstacle;//math.normalizesafe(fromObstacle);
+            var awayFromObstacleNormal = normalFromObstacle;
 
             float distanceToSurface = 1 - normalizedDistanceFromMe;
 

@@ -157,18 +157,29 @@ namespace Boids.Domain.Obstacles
             };
         }
         
-        private readonly float2 GetNormal<T>(in T variant, in float2 pos, float epsilon) where T : ISdfDefinition
-        {
-            var dX = variant.GetDistance(pos + new float2(epsilon, 0)) 
-                     - variant.GetDistance(pos - new float2(epsilon, 0));
-            var dY = variant.GetDistance(pos + new float2(0, epsilon))
-                        - variant.GetDistance(pos - new float2(0, epsilon));
-            return math.normalizesafe(new float2(dX, dY));
-        }
-
         private readonly float GetDistance(in float2 relativeToCenter)
         {
-            var dist = GetSdfFromVariant(relativeToCenter);
+            return shapeVariant switch
+            {
+                ShapeVariant.Sphere => GetDistance(circleVariant, relativeToCenter),
+                ShapeVariant.Beam => GetDistance(beamVariant, relativeToCenter),
+                ShapeVariant.Square => GetDistance(squareVariant, relativeToCenter),
+                _ => throw new NotImplementedException("Unknown obstacle shape")
+            };
+        }
+        
+        private readonly float2 GetNormal<T>(in T variant, in float2 pos, float epsilon) where T : ISdfDefinition
+        {
+            var dX = GetDistance(variant, pos + new float2(epsilon, 0)) 
+                     - GetDistance(variant,pos - new float2(epsilon, 0));
+            var dY = GetDistance(variant,pos + new float2(0, epsilon))
+                     - GetDistance(variant,pos - new float2(0, epsilon));
+            return math.normalizesafe(new float2(dX, dY));
+        }
+        
+        private readonly float GetDistance<T>(in T variant, in float2 relativeToCenter) where T : ISdfDefinition
+        {
+            var dist = variant.GetDistance(relativeToCenter);
             if (annularRadius > 0)
             {
                 dist = dist - obstacleRadius;
@@ -177,21 +188,6 @@ namespace Boids.Domain.Obstacles
             }
 
             return dist;
-        }
-        
-        private readonly float GetSdfFromVariant(in float2 relativeToCenter)
-        {
-            switch (shapeVariant)
-            {
-                case ShapeVariant.Sphere:
-                    return this.circleVariant.GetDistance(relativeToCenter);
-                case ShapeVariant.Beam:
-                    return beamVariant.GetDistance(relativeToCenter);
-                case ShapeVariant.Square:
-                    return squareVariant.GetDistance(relativeToCenter);
-                default:
-                    throw new NotImplementedException("Unknown obstacle shape");
-            }
         }
     }
     

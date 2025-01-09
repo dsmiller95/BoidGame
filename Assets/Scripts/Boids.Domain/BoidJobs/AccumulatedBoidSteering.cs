@@ -17,7 +17,6 @@ namespace Boids.Domain.BoidJobs
         private int _cohesionCount;
 
         private Obstacle _nearestObstacle;
-        private float2 _nearestObstacleRelative;
         private float2 _nearastObstacleNormal;
         private float _nearestObstacleDistanceNormalizedFromCenter;
         private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
@@ -72,7 +71,6 @@ namespace Boids.Domain.BoidJobs
             // var normalizedDistanceFromCenter = distance / obstacleCellData.Obstacle.obstacleRadius;
             if (obstacleDistance > 0.00001f && obstacleDistance < this._nearestObstacleDistanceNormalizedFromCenter)
             {
-                this._nearestObstacleRelative = -relativeToObstacle;
                 this._nearestObstacle = obstacleCellData.Obstacle;
                 this._nearastObstacleNormal = obstacleNormal;
                 this._nearestObstacleDistanceNormalizedFromCenter = obstacleDistance;
@@ -110,13 +108,11 @@ namespace Boids.Domain.BoidJobs
             }
             else _cohesion = Vector2.zero;
 
-            var fromObstacle = -_nearestObstacleRelative;
             var avoidObstacleSteering = float2.zero;
             bool hitHardObstacle = false;
             if (HasObstacle)
             {
                 var (resultHeading, forceHeading) = _nearestObstacle.GetHeading(
-                    fromObstacle,
                     _nearastObstacleNormal,
                     _nearestObstacleDistanceNormalizedFromCenter,
                     boidSettings,
