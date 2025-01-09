@@ -1,5 +1,6 @@
 ﻿using System;
 using Boids.Domain.GridSnap;
+using Boids.Domain.Rendering;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -57,6 +58,10 @@ namespace Boids.Domain.Obstacles
                         Color = originalColor,
                     });
                     AddComponent(entity, new ObstacleRender()
+                    {
+                        color = originalColor,
+                    });
+                    AddComponent(entity, new SDFObjectData()
                     {
                         color = originalColor,
                     });
