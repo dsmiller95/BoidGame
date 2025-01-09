@@ -49,6 +49,7 @@ namespace Boids.Domain.Rendering
         public struct SDFObjectData
         {
             public float radius;
+            public float hardRadiusFraction;
             public float2 center;
             public float4 color;
             
@@ -135,6 +136,7 @@ namespace Boids.Domain.Rendering
                 OutSdfData[entityIndexInQuery] = new RenderSdfSettings.SDFObjectData
                 {
                     radius = obstacle.shape.obstacleRadius,
+                    hardRadiusFraction = obstacle.obstacleHardSurfaceRadiusFraction,
                     color = obstacleRender.color,
                     center = localToWorld.Position.xy,
                     shapeVariant = new RenderSdfSettings.SdfVariantData()

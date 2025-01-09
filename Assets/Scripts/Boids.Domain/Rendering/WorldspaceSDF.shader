@@ -63,6 +63,7 @@ Shader "Unlit/FullScreenSDF 2"
             struct SDFObjectData
             {
                 float radius;
+                float hardRadiusFraction;
                 float2 center;
                 float4 color;
 
@@ -174,6 +175,7 @@ Shader "Unlit/FullScreenSDF 2"
 
 
                 float minDist = 1e9;
+                float hardRadiusFraction = 1e9;
                 float4 finalColor = _BackgroundColor;
 
                 //[unroll]
@@ -187,11 +189,15 @@ Shader "Unlit/FullScreenSDF 2"
                     {
                         minDist = dist;
                         finalColor = obj.color;
+                        hardRadiusFraction = obj.hardRadiusFraction;
                     }
                 }
                 if (minDist < 1)
                 {
-                    finalColor.a = 1 - minDist;
+                    if (minDist > hardRadiusFraction)
+                    {
+                        finalColor.a = 1 - minDist;
+                    }
                 }
                 
                 return finalColor;

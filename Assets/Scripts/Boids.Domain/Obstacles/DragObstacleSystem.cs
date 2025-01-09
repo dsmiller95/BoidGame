@@ -47,7 +47,7 @@ namespace Boids.Domain.Obstacles
                     closestObstacle = obstacle;
                     closestObstaclePosition = obstaclePosition;
                 }
-                if (closestDistance < float.MaxValue && closestObstacle.IsInsideHardSurface(closestDistance))
+                if (closestDistance <= 1)
                 {
                     var draggin = new Dragging
                     {
