@@ -16,8 +16,8 @@ namespace Boids.Domain.Obstacles
 
     public enum ObstacleShapeVariant
     {
-        Sphere,
-        Beam,
+        Sphere = 0,
+        Beam = 1,
     }
     
     public struct ObstacleDisabledFlag : IComponentData
@@ -108,6 +108,12 @@ namespace Boids.Domain.Obstacles
                     throw new NotImplementedException("Unknown obstacle shape");
             }
         }
+    }
+
+    [Serializable]
+    public struct ObstacleRender : IComponentData
+    {
+        public float4 color;
     }
 
     [Serializable]

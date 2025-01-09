@@ -52,9 +52,14 @@ namespace Boids.Domain.Obstacles
                 if (spriteRenderer != null)
                 {
                     // we may not render the obstacle
+                    var originalColor = spriteRenderer.color.ToFloat4();
                     AddComponent(entity, new OriginalColor
                     {
-                        Color = spriteRenderer.color.ToFloat4()
+                        Color = originalColor,
+                    });
+                    AddComponent(entity, new ObstacleRender()
+                    {
+                        color = originalColor,
                     });
                 }
                 if (authoring.playerOwned)
