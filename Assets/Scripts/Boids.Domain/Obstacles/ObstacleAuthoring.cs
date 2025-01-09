@@ -40,7 +40,7 @@ namespace Boids.Domain.Obstacles
         {
             public override void Bake(ObstacleAuthoring authoring)
             {
-                var entity = GetEntity(TransformUsageFlags.Renderable);
+                var entity = GetEntity(TransformUsageFlags.Renderable | TransformUsageFlags.Dynamic);
                 AddComponent(entity, new ObstacleComponent()
                 {
                     behavior = authoring.behavior,
