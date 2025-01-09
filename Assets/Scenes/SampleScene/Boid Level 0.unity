@@ -317,7 +317,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3673743807244670062, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
       propertyPath: shapeData.annularRadius
-      value: 0
+      value: 1.43
+      objectReference: {fileID: 0}
+    - target: {fileID: 3673743807244670062, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
+      propertyPath: shapeData.obstacleRadius
+      value: 8.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3673743807244670062, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
+      propertyPath: hardSurfaceRadiusFraction
+      value: 0.921
       objectReference: {fileID: 0}
     - target: {fileID: 3813160163993543383, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
       propertyPath: m_Name
@@ -439,7 +447,7 @@ Transform:
   m_GameObject: {fileID: 486455896}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.47, y: 10.06, z: 0}
+  m_LocalPosition: {x: -0.8, y: 10.06, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -460,8 +468,8 @@ MonoBehaviour:
   plainObject:
     shape:
       shapeVariant: 1
-      obstacleRadius: 1
-      annularRadius: 9.8
+      obstacleRadius: 16.3
+      annularRadius: 3.66
       beamVariant:
         beamRelativeEnd:
           x: 0

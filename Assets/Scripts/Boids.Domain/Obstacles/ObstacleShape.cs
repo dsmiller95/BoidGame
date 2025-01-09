@@ -124,6 +124,8 @@ namespace Boids.Domain.Obstacles
             }
         }
         
+        
+        
         /// <summary>
         /// Get the distance from the center of the obstacle.
         /// </summary>
@@ -169,7 +171,9 @@ namespace Boids.Domain.Obstacles
             var dist = GetSdfFromVariant(relativeToCenter);
             if (annularRadius > 0)
             {
+                dist = dist - obstacleRadius;
                 dist = math.abs(dist) - annularRadius;
+                dist = dist + obstacleRadius;
             }
 
             return dist;

@@ -143,7 +143,9 @@ Shader "Unlit/FullScreenSDF 2"
                 float dist = GetDistanceFromCenter(relPos, objectData.variantData);
                 if (objectData.annularRadius > 0)
                 {
+                    dist = dist - objectData.radius;
                     dist = abs(dist) - objectData.annularRadius;
+                    dist = dist + objectData.radius;
                 }
                 return dist;
             }
