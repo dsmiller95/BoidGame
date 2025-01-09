@@ -28,8 +28,14 @@ namespace DefaultNamespace
         
         private void Awake()
         {
+            foreach (Level level in levels)
+            {
+                level.subScene.enabled = false;
+            }
+            
             if (levels.Skip(1).Any(x => x.subScene.enabled))
             {
+                
                 Log.Error("expected all levels to begin disabled");
             }
         }
@@ -54,6 +60,7 @@ namespace DefaultNamespace
             
             Debug.Log($"loading level: {levels[levelIndex].label}");
             levelName.Invoke(levels[levelIndex].label);
+            
             
             levels[currentLevel].subScene.enabled = false;
             levels[levelIndex].subScene.enabled = true;
