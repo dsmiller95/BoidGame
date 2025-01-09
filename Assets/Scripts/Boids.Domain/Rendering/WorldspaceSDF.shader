@@ -50,9 +50,9 @@ Shader "Unlit/FullScreenSDF 2"
 
 
             // enum defining shape types
-            const int SPHERE = 0;
-            const int BEAM = 1;
-            const int SQUARE = 2;
+            static int SPHERE = 0;
+            static int BEAM = 1;
+            static int SQUARE = 2;
             
             struct SdfVariantData
             {
@@ -113,7 +113,7 @@ Shader "Unlit/FullScreenSDF 2"
                     CircleVariant circle = AsCircleVariant(variantData);
                     return length(relPos);
                 }
-                else //if (st == BEAM) this comparison doesn't work for some reason
+                if (st == BEAM)
                 {
                     BeamVariant beam = AsBeamVariant(variantData);
                     float2 a = float2(0, 0);
@@ -193,7 +193,9 @@ Shader "Unlit/FullScreenSDF 2"
                 {
                     finalColor.a = 1 - minDist;
                 }
+                
                 return finalColor;
+                
             }
             ENDCG
         }
