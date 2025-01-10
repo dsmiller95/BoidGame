@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 304124373}
   - component: {fileID: 304124374}
   m_Layer: 0
-  m_Name: Gentle Nudge par 1
+  m_Name: subscene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,15 +163,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a335734b1572644a6a5d09d87adc65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _SceneAsset: {fileID: 102900000, guid: ce97ccafcfaeb2b468e2dcd166263dc3, type: 3}
+  _SceneAsset: {fileID: 102900000, guid: 0bfd6ab5a2388a342be43dd5be9417f8, type: 3}
   _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   AutoLoadScene: 1
   _SceneGUID:
     Value:
-      x: 4207704556
-      y: 1261169404
-      z: 499986054
-      w: 1020486246
+      x: 1537662896
+      y: 1135117098
+      z: 1574129330
+      w: 2406566379
 --- !u!1001 &1945617095
 PrefabInstance:
   m_ObjectHideFlags: 0

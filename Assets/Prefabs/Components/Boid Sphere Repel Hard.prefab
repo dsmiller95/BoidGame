@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3964514647153594225}
   - component: {fileID: 9145836004314635187}
   - component: {fileID: 3673743807244670062}
-  - component: {fileID: 5650978141399803862}
+  - component: {fileID: 7477229079847491875}
   m_Layer: 0
   m_Name: Boid Sphere Repel Hard
   m_TagString: Untagged
@@ -109,18 +109,20 @@ MonoBehaviour:
   shapeData:
     shapeVariant: 0
     obstacleRadius: 2.2
+    annularRadius: 0
     beamVariant:
       beamRelativeEnd:
         x: 0
         y: 0
-    squareVariant:
+    boxVariant:
       corner:
         x: 0
         y: 0
   playerOwned: 0
+  snapToGrid: 1
   gizmoDrawResolution: 20
   gizmosDrawTransparency: 0
---- !u!114 &5650978141399803862
+--- !u!114 &7477229079847491875
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -26,6 +26,7 @@ namespace Boids.Domain.Obstacles
             obstacleRadius = 1f
         };
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
+        public bool snapToGrid = false;
         
         [SerializeField] private int gizmoDrawResolution = 20;
         [Range(0, 1)]
@@ -69,6 +70,9 @@ namespace Boids.Domain.Obstacles
                 {
                     AddComponent(entity, new DraggableObstacle());
                     AddComponent(entity, new ScoringObstacleFlag());
+                }
+                if(authoring.snapToGrid || authoring.playerOwned)
+                {
                     AddComponent(entity, new SnapMeToGridFlag());
                 }
             }

@@ -305,22 +305,27 @@ MonoBehaviour:
       levelName: Gentle Nudge
       par: 1
     sceneReference:
-      scenePath: Assets/Scenes/Levels/Level 0.unity
+      scenePath: Assets/Scenes/Levels/0 Gentle Nudge.unity
+  - metadata:
+      levelName: Split
+      par: 2
+    sceneReference:
+      scenePath: Assets/Scenes/Levels/2 Split.unity
   - metadata:
       levelName: U turn
       par: 3
     sceneReference:
-      scenePath: Assets/Scenes/Levels/Level 1.unity
+      scenePath: Assets/Scenes/Levels/1 U turn.unity
   - metadata:
       levelName: Orbit
       par: 5
     sceneReference:
-      scenePath: Assets/Scenes/Levels/Level 2.unity
+      scenePath: Assets/Scenes/Levels/3 Orbit.unity
   - metadata:
       levelName: ???
       par: 5
     sceneReference:
-      scenePath: Assets/Scenes/Levels/Level 3.unity
+      scenePath: Assets/Scenes/Levels/Level debug.unity
   currentLevel: 0
   levelManagerCamera: {fileID: 519420031}
   levelName:

@@ -21,6 +21,7 @@ namespace Boids.Domain.GridSnap
         {
             Vector3 position = transform.position;
             Vector2 snappedPosition = SnapTo(new Vector2(position.x, position.y));
+            
             transform.position = new Vector3(snappedPosition.x, snappedPosition.y, position.z);
         }
 
