@@ -2,6 +2,7 @@
   "dependencies": {
     "com.cysharp.unitask": "2.5.10",
     "com.dman.simple-json-save-system": "https://github.com/dsmiller95/SimpleSave.git?path=Assets/com.dman.simple-json-save-system",
+    "com.dman.async-utilities": "https://github.com/dsmiller95/DmanUtilities.git?path=Assets/UtilityScripts/com.dman.async-utilities",
     "com.dman.utilities": "0.8.0",
     "com.unity.collab-proxy": "2.6.0",
     "com.unity.collections": "2.5.1",

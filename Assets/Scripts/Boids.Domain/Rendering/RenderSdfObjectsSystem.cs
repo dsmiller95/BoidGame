@@ -74,7 +74,7 @@ namespace Boids.Domain.Rendering
 
         protected override void OnCreate()
         {
-            _settings = SingletonLocator<RenderObstaclesConfig>.Instance.settings;
+            _settings = RenderSdfSettingsSingleton.Instance;
             _settings.SetSdfObjects(ref _graphicsBuffer, 0);
             
             _sdfObjectQuery = new EntityQueryBuilder(this.WorldUpdateAllocator)

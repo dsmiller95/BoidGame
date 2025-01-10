@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FullScreenSDF
+  m_Name: RenderSdfMaterial
   m_Shader: {fileID: 4800000, guid: 3df4581936cdc8e4e84790c44dd5d266, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0

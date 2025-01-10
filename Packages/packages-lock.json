@@ -7,6 +7,16 @@
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
+    "com.dman.async-utilities": {
+      "version": "https://github.com/dsmiller95/DmanUtilities.git?path=Assets/UtilityScripts/com.dman.async-utilities",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.cysharp.unitask": "2.3.1",
+        "com.dman.utilities": "0.7.0"
+      },
+      "hash": "0bb97132b34df34e3fac257c8e5c78d558c02861"
+    },
     "com.dman.math": {
       "version": "0.1.1",
       "depth": 0,
