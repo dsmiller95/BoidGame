@@ -11,7 +11,6 @@ namespace Boids.Domain.Obstacles
 {
     public class ObstacleAuthoring : MonoBehaviour
     {
-        [Range(0, 1)]
         public float hardSurfaceRadiusFraction = 0.8f;
         
         [FormerlySerializedAs("variantData")] 

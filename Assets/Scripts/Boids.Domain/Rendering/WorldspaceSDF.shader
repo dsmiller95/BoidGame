@@ -52,7 +52,7 @@ Shader "Unlit/FullScreenSDF 2"
             // enum defining shape types
             static int SPHERE = 0;
             static int BEAM = 1;
-            static int SQUARE = 2;
+            static int BOX = 2;
             
             struct SdfVariantData
             {
@@ -71,27 +71,6 @@ Shader "Unlit/FullScreenSDF 2"
                 SdfVariantData variantData;
             };
             
-            struct BeamVariant
-            {
-                float2 beamRelativeEnd;
-            };
-            BeamVariant AsBeamVariant(SdfVariantData variantData)
-            {
-                BeamVariant b;
-                b.beamRelativeEnd = variantData.unionData.xy;
-                return b;
-            }
-
-            struct SquareVariant
-            {
-                float2 corner;
-            };
-            SquareVariant AsSquareVariant(SdfVariantData variantData)
-            {
-                SquareVariant s;
-                s.corner = variantData.unionData.xy;
-                return s;
-            }
 
             struct CircleVariant
             {
@@ -102,35 +81,72 @@ Shader "Unlit/FullScreenSDF 2"
                 CircleVariant c;
                 return c;
             }
+            
+            float CircleDistance(float2 p, CircleVariant circle)
+            {
+                return length(p);
+            }
+            
+            struct BeamVariant
+            {
+                float2 beamRelativeEnd;
+            };
+            BeamVariant AsBeamVariant(SdfVariantData variantData)
+            {
+                BeamVariant b;
+                b.beamRelativeEnd = variantData.unionData.xy;
+                return b;
+            }
+            float BeamDistance(float2 p, BeamVariant beam)
+            {
+                float2 a = float2(0, 0);
+                float2 b = beam.beamRelativeEnd;
+                
+                float2 ba = b - a;
+                float2 pa = p - a;
+                float2 h = clamp(dot(pa, ba) / dot(ba, ba), 0, 1);
+                return length(pa - h * ba);
+            }
+
+            struct BoxVariant
+            {
+                float2 corner;
+            };
+            BoxVariant AsBoxVariant(SdfVariantData variantData)
+            {
+                BoxVariant s;
+                s.corner = variantData.unionData.xy;
+                return s;
+            }
+            float BoxDistance(float2 p, BoxVariant box)
+            {
+                float2 b = box.corner;
+                
+                float2 d = abs(p) - b;
+                return length(max(d, 0.0f)) + min(max(d.x, d.y), 0.0f);
+            }
 
             StructuredBuffer<SDFObjectData> _SDFObjects;
             int _SDFObjectCount;
 
-            float GetDistanceFromCenter(float2 relPos, SdfVariantData variantData)
+            float GetDistanceFromCenter(float2 relPos, SdfVariantData variantData, float radius)
             {
                 int st = variantData.shapeType;
 
                 if (st == SPHERE)
                 {
                     CircleVariant circle = AsCircleVariant(variantData);
-                    return length(relPos);
+                    return CircleDistance(relPos, circle);
                 }
                 if (st == BEAM)
                 {
                     BeamVariant beam = AsBeamVariant(variantData);
-                    float2 a = float2(0, 0);
-                    float2 b = beam.beamRelativeEnd;
-                    float2 p = relPos;
-                    
-                    float2 ba = b - a;
-                    float2 pa = p - a;
-                    float h = clamp(dot(pa, ba) / dot(ba, ba), 0, 1);
-                    return length(pa - h * ba);
+                    return BeamDistance(relPos, beam);
                 }
-                if (st == SQUARE)
+                if (st == BOX)
                 {
-                    SquareVariant square = AsSquareVariant(variantData);
-                    return 1;
+                    BoxVariant box = AsBoxVariant(variantData);
+                    return BoxDistance(relPos, box);
                 }
                 return 10000;
             }
@@ -140,7 +156,7 @@ Shader "Unlit/FullScreenSDF 2"
                 SDFObjectData objectData)
             {
                 
-                float dist = GetDistanceFromCenter(relPos, objectData.variantData);
+                float dist = GetDistanceFromCenter(relPos, objectData.variantData, objectData.radius);
                 if (objectData.annularRadius > 0)
                 {
                     dist = dist - objectData.radius;
@@ -214,6 +230,7 @@ Shader "Unlit/FullScreenSDF 2"
                 {
                     if (minDist > hardRadiusFraction)
                     {
+                        minDist = clamp(minDist, 0, 1);
                         finalColor.a = 1 - minDist;
                     }
                 }

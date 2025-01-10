@@ -51,7 +51,7 @@ namespace Boids.Domain.Rendering
         [FieldOffset(4)]
         public BeamVariant beamVariant;
         [FieldOffset(4)]
-        public SquareVariant squareVariant;
+        public BoxVariant boxVariant;
 
         public static SdfVariantData FromShape(ObstacleShape shape)
         {

@@ -13,14 +13,27 @@ namespace Boids.Domain.Obstacles
     {
         Sphere = 0,
         Beam = 1,
-        Square = 2,
+        Box = 2,
     }
 
     public interface ISdfDefinition
     {
-        public float GetDistance(in float2 queryRelativeToCenter);
+        public float GetDistance(in float2 queryRelativeToCenter, in float radius);
     }
     
+    [Serializable]
+    public struct CircleVariant : ISdfDefinition
+    {
+        public readonly CircleVariant AdjustForScale(float linearScale, float rotation)
+        {
+            return this;
+        }
+        public readonly float GetDistance(in float2 queryRelativeToCenter, in float radius)
+        {
+            return math.length(queryRelativeToCenter);
+        }
+    }
+
     [Serializable]
     public struct BeamVariant : ISdfDefinition
     {
@@ -35,7 +48,7 @@ namespace Boids.Domain.Obstacles
             };
         }
 
-        public readonly float GetDistance(in float2 queryRelativeToCenter)
+        public readonly float GetDistance(in float2 queryRelativeToCenter, in float radius)
         {
             var a = new float2(0, 0);
             var b = beamRelativeEnd;
@@ -48,32 +61,29 @@ namespace Boids.Domain.Obstacles
         }
     }
 
-    [Serializable]
-    public struct CircleVariant : ISdfDefinition
-    {
-        public readonly CircleVariant AdjustForScale(float linearScale, float rotation)
-        {
-            return this;
-        }
-        public readonly float GetDistance(in float2 queryRelativeToCenter)
-        {
-            return math.length(queryRelativeToCenter);
-        }
-    }
-
 
     [Serializable]
-    public struct SquareVariant : ISdfDefinition
+    public struct BoxVariant : ISdfDefinition
     {
+        /// <summary>
+        /// corner is normalized
+        /// </summary>
         public float2 corner;
-        public readonly SquareVariant AdjustForScale(float linearScale, float rotation)
+        public readonly BoxVariant AdjustForScale(float linearScale, float rotation)
         {
-            return this;
+            var rotatedCorner = math.mul(float2x2.Rotate(rotation), corner);
+            return new BoxVariant
+            {
+                corner = rotatedCorner * linearScale,
+            };
         }
-        public readonly float GetDistance(in float2 queryRelativeToCenter)
+        public readonly float GetDistance(in float2 queryRelativeToCenter, in float radius)
         {
-            // TODO
-            return math.length(queryRelativeToCenter);
+            float2 p = queryRelativeToCenter;
+            float2 b = corner;
+            
+            float2 d = math.abs(p) - b;
+            return math.length(math.max(d, 0.0f)) + math.min(math.max(d.x, d.y), 0.0f);
         }
     }
 
@@ -100,7 +110,7 @@ namespace Boids.Domain.Obstacles
         public CircleVariant circleVariant;
         
         [FieldOffset(12)]
-        public SquareVariant squareVariant;
+        public BoxVariant boxVariant;
 
         /// <summary>
         /// gets the maximum distance from the center which could be affected by this obstacle
@@ -117,14 +127,24 @@ namespace Boids.Domain.Obstacles
                     return baseExtent;
                 case ShapeVariant.Beam:
                     return baseExtent + math.length(beamVariant.beamRelativeEnd);
-                case ShapeVariant.Square:
-                    return baseExtent;
+                case ShapeVariant.Box:
+                    return baseExtent + math.length(boxVariant.corner);
                 default:
                     throw new NotImplementedException("Unknown obstacle shape");
             }
         }
         
         
+        public readonly (float, float2) GetNormalizedDistanceAndNormal(in float2 queryRelativeToCenter)
+        {
+            return shapeVariant switch
+            {
+                ShapeVariant.Sphere => GetNormalizedDistanceAndNormal(circleVariant, queryRelativeToCenter),
+                ShapeVariant.Beam => GetNormalizedDistanceAndNormal(beamVariant, queryRelativeToCenter),
+                ShapeVariant.Box => GetNormalizedDistanceAndNormal(boxVariant, queryRelativeToCenter),
+                _ => throw new NotImplementedException("Unknown obstacle shape")
+            };
+        }
         
         /// <summary>
         /// Get the distance from the center of the obstacle.
@@ -134,38 +154,29 @@ namespace Boids.Domain.Obstacles
         /// <exception cref="NotImplementedException"></exception>
         public readonly float GetNormalizedDistance(in float2 queryRelativeToCenter)
         {
-            var dist = GetDistance(queryRelativeToCenter);
-            return dist / obstacleRadius;
-        }
-        public readonly (float, float2) GetNormalizedDistanceAndNormal(in float2 queryRelativeToCenter)
-        {
-            var dist = GetDistance(queryRelativeToCenter);
-            var normal = GetNormal(queryRelativeToCenter);
-            return (dist / obstacleRadius, normal);
-        }
-
-        private readonly float2 GetNormal(in float2 pos)
-        {
-            const float epsilon = 0.01f;
-
             return shapeVariant switch
             {
-                ShapeVariant.Sphere => GetNormal(circleVariant, pos, epsilon),
-                ShapeVariant.Beam => GetNormal(beamVariant, pos, epsilon),
-                ShapeVariant.Square => GetNormal(squareVariant, pos, epsilon),
+                ShapeVariant.Sphere => GetNormalizedDistance(circleVariant, queryRelativeToCenter),
+                ShapeVariant.Beam => GetNormalizedDistance(beamVariant, queryRelativeToCenter),
+                ShapeVariant.Box => GetNormalizedDistance(boxVariant, queryRelativeToCenter),
                 _ => throw new NotImplementedException("Unknown obstacle shape")
             };
         }
         
-        private readonly float GetDistance(in float2 relativeToCenter)
+        private readonly (float, float2) GetNormalizedDistanceAndNormal<T>(in T variant, in float2 relativeToCenter) where T : ISdfDefinition
         {
-            return shapeVariant switch
-            {
-                ShapeVariant.Sphere => GetDistance(circleVariant, relativeToCenter),
-                ShapeVariant.Beam => GetDistance(beamVariant, relativeToCenter),
-                ShapeVariant.Square => GetDistance(squareVariant, relativeToCenter),
-                _ => throw new NotImplementedException("Unknown obstacle shape")
-            };
+            const float epsilon = 0.01f;
+            
+            var dist = GetDistance(variant, relativeToCenter);
+            var totalRadius = obstacleRadius;
+            return (dist / totalRadius, GetNormal(variant, relativeToCenter, epsilon));
+        }
+        
+        private readonly float GetNormalizedDistance<T>(in T variant, in float2 relativeToCenter) where T : ISdfDefinition
+        {
+            var dist = GetDistance(variant, relativeToCenter);
+            var totalRadius = obstacleRadius;
+            return dist / totalRadius;
         }
         
         private readonly float2 GetNormal<T>(in T variant, in float2 pos, float epsilon) where T : ISdfDefinition
@@ -179,7 +190,7 @@ namespace Boids.Domain.Obstacles
         
         private readonly float GetDistance<T>(in T variant, in float2 relativeToCenter) where T : ISdfDefinition
         {
-            var dist = variant.GetDistance(relativeToCenter);
+            var dist = variant.GetDistance(relativeToCenter, obstacleRadius);
             if (annularRadius > 0)
             {
                 dist = dist - obstacleRadius;
@@ -199,7 +210,7 @@ namespace Boids.Domain.Obstacles
         public ShapeVariant shapeVariant;
         
         [FieldOffset(4)]
-        [Range(1f, 30f)]
+        [Range(0f, 30f)]
         public float obstacleRadius;
         
         [FieldOffset(8)]
@@ -212,7 +223,7 @@ namespace Boids.Domain.Obstacles
         public CircleVariant circleVariant;
         
         [FieldOffset(12)]
-        public SquareVariant squareVariant;
+        public BoxVariant boxVariant;
         
         public readonly ObstacleShape GetWorldSpace(in LocalToWorld localToWorld)
         {
@@ -236,8 +247,8 @@ namespace Boids.Domain.Obstacles
                 case ShapeVariant.Beam:
                     resultShape.beamVariant = this.beamVariant.AdjustForScale(linearScale, rotation);
                     break;
-                case ShapeVariant.Square:
-                    resultShape.squareVariant = this.squareVariant.AdjustForScale(linearScale, rotation);
+                case ShapeVariant.Box:
+                    resultShape.boxVariant = this.boxVariant.AdjustForScale(linearScale, rotation);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

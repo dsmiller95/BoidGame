@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Boids.Domain.Rendering;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -70,5 +71,18 @@ namespace Boids.Domain.Zones
             Vector2 myCenter = transform.position;
             Gizmos.DrawWireCube(myCenter, extents * 2);
         }
+
+        #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            var childRenderer = GetComponentInChildren<SdfObjectAuthoring>();
+            if (childRenderer != null)
+            {
+                childRenderer.plainObject.shape.boxVariant.corner = extents;
+                // MARK AS DIRTY
+                UnityEditor.EditorUtility.SetDirty(childRenderer);
+            }
+        }
+        #endif
     }
 }
