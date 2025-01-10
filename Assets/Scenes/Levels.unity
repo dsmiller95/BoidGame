@@ -1065,11 +1065,6 @@ MonoBehaviour:
       par: 4
     sceneReference:
       scenePath: Assets/Scenes/Levels/5 Race.unity
-  - metadata:
-      levelName: ???
-      par: 5
-    sceneReference:
-      scenePath: Assets/Scenes/Levels/Level debug.unity
   currentLevel: 0
   levelSelectCamera: {fileID: 519420031}
   levelSelectCollection: {fileID: 254114397}
