@@ -51,6 +51,7 @@ namespace Levels
         
         [SerializeField] private Level[] levels;
         [SerializeField] private int currentLevel;
+        [SerializeField] private Camera levelManagerCamera;
 
         public UnityEvent<string> levelName;
 
@@ -118,6 +119,7 @@ namespace Levels
             {
                 Debug.LogWarning($"No InLevelActions component found in scene {level.sceneReference.Name}");
             }
+            levelManagerCamera.gameObject.SetActive(false);
         }
         
         private async UniTask  Unload(int levelIndex, CancellationToken cancel)
@@ -131,6 +133,7 @@ namespace Levels
                 await SceneManager.UnloadSceneAsync(loadedScene)
                     .WithCancellation(cancel);
             }
+            levelManagerCamera.gameObject.SetActive(true);
         }
         private async UniTask RestartLevelAsync(CancellationToken c)
         {
@@ -138,5 +141,6 @@ namespace Levels
             await UniTask.NextFrame(c);
             await Load(currentLevel, c);
         }
+        
     }
 }

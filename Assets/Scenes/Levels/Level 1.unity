@@ -129,7 +129,6 @@ GameObject:
   m_Component:
   - component: {fileID: 304124373}
   - component: {fileID: 304124374}
-  - component: {fileID: 304124375}
   m_Layer: 0
   m_Name: Gentle Nudge par 1
   m_TagString: Untagged
@@ -173,23 +172,6 @@ MonoBehaviour:
       y: 1185702398
       z: 3476755608
       w: 1792163590
---- !u!114 &304124375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 304124372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67cd88a3d2601354982102052f79c885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  metadata:
-    levelName: Gentle Nudge
-    par: 1
-  reference:
-    scenePath: 
 --- !u!1001 &1519215720
 PrefabInstance:
   m_ObjectHideFlags: 0
