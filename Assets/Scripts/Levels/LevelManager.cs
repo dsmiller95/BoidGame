@@ -18,6 +18,8 @@ namespace Levels
     {
         public void RestartLevel();
         public void NextLevel();
+        public void ExitLevel();
+        
         public void LoadLevelByIndex(int levelIndexId);
         
         public IEnumerable<LevelData> GetLevelData();
@@ -59,7 +61,8 @@ namespace Levels
         
         [SerializeField] private Level[] levels;
         [SerializeField] private int currentLevel;
-        [SerializeField] private Camera levelManagerCamera;
+        [SerializeField] private Camera levelSelectCamera;
+        [SerializeField] private GameObject levelSelectCollection;
 
         public UnityEvent<string> levelName;
 
@@ -91,6 +94,11 @@ namespace Levels
             _levelLoadCell.TryRun(c => LoadLevelAsync(currentLevel + 1, c), "Cannot run");
         }
 
+        public void ExitLevel()
+        {
+            _levelLoadCell.TryRun(ExitCurrentLevelAsync, "Cannot run");
+        }
+
         public void LoadLevelByIndex(int levelIndexId)
         {
             _levelLoadCell.TryRun(c => LoadLevelAsync(levelIndexId, c), "Cannot run");
@@ -106,6 +114,12 @@ namespace Levels
             });
         }
 
+        private async UniTask ExitCurrentLevelAsync(CancellationToken c)
+        {
+            await UnloadAsync(currentLevel, c);
+            levelSelectCollection.SetActive(true);
+        }
+        
         private async UniTask LoadLevelAsync(int levelIndex, CancellationToken cancel)
         {
             if (levelIndex < 0 || levelIndex >= levels.Length)
@@ -114,14 +128,16 @@ namespace Levels
                 return;
             }
             
+            levelSelectCollection.SetActive(false);
+            
             levelName.Invoke(levels[levelIndex].metadata.levelName);
 
-            await Unload(currentLevel, cancel);
-            await Load(levelIndex, cancel);
+            await UnloadAsync(currentLevel, cancel);
+            await LoadAsync(levelIndex, cancel);
             currentLevel = levelIndex;
         }
 
-        private async UniTask Load(int levelIndex, CancellationToken cancel)
+        private async UniTask LoadAsync(int levelIndex, CancellationToken cancel)
         {
             var level = levels[levelIndex];
             
@@ -142,10 +158,10 @@ namespace Levels
             {
                 Debug.LogWarning($"No InLevelActions component found in scene {level.sceneReference.Name}");
             }
-            levelManagerCamera.gameObject.SetActive(false);
+            levelSelectCamera.gameObject.SetActive(false);
         }
         
-        private async UniTask  Unload(int levelIndex, CancellationToken cancel)
+        private async UniTask UnloadAsync(int levelIndex, CancellationToken cancel)
         {
             var level = levels[levelIndex];
             
@@ -156,13 +172,13 @@ namespace Levels
                 await SceneManager.UnloadSceneAsync(loadedScene)
                     .WithCancellation(cancel);
             }
-            levelManagerCamera.gameObject.SetActive(true);
+            levelSelectCamera.gameObject.SetActive(true);
         }
         private async UniTask RestartLevelAsync(CancellationToken c)
         {
-            await Unload(currentLevel, c);
+            await UnloadAsync(currentLevel, c);
             await UniTask.NextFrame(c);
-            await Load(currentLevel, c);
+            await LoadAsync(currentLevel, c);
         }
         
     }

@@ -25,7 +25,7 @@ namespace Levels
             foreach (var level in levels)
             {
                 var newCell = Instantiate(levelSelectCellPrefab, levelSelectCellContainer.transform);
-                newCell.InitializeWith(level);
+                newCell.InitializeWith(level, forceUnlocked: level.LevelIndexId == 0);
             }
         }
         

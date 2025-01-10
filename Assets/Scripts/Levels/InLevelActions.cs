@@ -21,5 +21,10 @@ namespace Levels
         {
             SingletonLocator<IManageLevels>.Instance.NextLevel();
         }
+        
+        public void ExitLevel()
+        {
+            SingletonLocator<IManageLevels>.Instance.ExitLevel();
+        }
     }
 }
