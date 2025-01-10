@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 9145836004314635187}
   - component: {fileID: 3673743807244670062}
   - component: {fileID: 7477229079847491875}
+  - component: {fileID: 3995430483916216340}
   m_Layer: 0
   m_Name: Boid Sphere Repel Hard
   m_TagString: Untagged
@@ -120,6 +121,8 @@ MonoBehaviour:
         y: 0
   playerOwned: 0
   snapToGrid: 1
+  gizmoDrawResolutionUnselected: 10
+  gizmosDrawTransparencyUnselected: 0.1
   gizmoDrawResolution: 20
   gizmosDrawTransparency: 0
 --- !u!114 &7477229079847491875
@@ -136,3 +139,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridDefinition:
     gridSize: 5
+  debugName: 
+--- !u!114 &3995430483916216340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3813160163993543383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9fc0b8b771241d8b85e40e3bf96033d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 3
+  color: {r: 1, g: 1, b: 1, a: 1}

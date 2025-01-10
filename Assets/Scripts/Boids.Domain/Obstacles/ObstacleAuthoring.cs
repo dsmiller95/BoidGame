@@ -29,6 +29,9 @@ namespace Boids.Domain.Obstacles
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         public bool snapToGrid = false;
         
+        [SerializeField] private int gizmoDrawResolutionUnselected = 10;
+        [SerializeField] private float gizmosDrawTransparencyUnselected = .1f;
+        
         [SerializeField] private int gizmoDrawResolution = 20;
         [Range(0, 1)]
         [SerializeField] private float gizmosDrawTransparency = .7f;
@@ -92,21 +95,12 @@ namespace Boids.Domain.Obstacles
 
         private void OnDrawGizmosSelected()
         {
-            var obstacleComponent = new ObstacleComponent()
+            if (gizmosDrawTransparency <= 0)
             {
-                behavior = behavior,
-                obstacleHardSurfaceRadiusFraction = hardSurfaceRadiusFraction,
-            };
-            var shapeComponent = new SdfShapeComponent()
-            {
-                shapeData = shapeData,
-            };
-            var localToWorld = new LocalToWorld
-            {
-                Value = float4x4.TRS(float3.zero, this.transform.rotation, this.transform.lossyScale)
-            };
+                return;
+            }
             
-            var obstacle = shapeComponent.GetWorldSpace(localToWorld, obstacleComponent);
+            Obstacle obstacle = GetMyShape();
             var maxExtent = obstacle.shape.MaximumExtent();
             var minLocal = -new Vector2(maxExtent, maxExtent);
             var maxLocal = new Vector2(maxExtent, maxExtent);
@@ -125,6 +119,26 @@ namespace Boids.Domain.Obstacles
                 
                 return Color.Lerp(Color.clear, color, gizmosDrawTransparency);
             });
+        }
+
+        private Obstacle GetMyShape()
+        {
+            var obstacleComponent = new ObstacleComponent()
+            {
+                behavior = behavior,
+                obstacleHardSurfaceRadiusFraction = hardSurfaceRadiusFraction,
+            };
+            var shapeComponent = new SdfShapeComponent()
+            {
+                shapeData = shapeData,
+            };
+            var localToWorld = new LocalToWorld
+            {
+                Value = float4x4.TRS(float3.zero, this.transform.rotation, this.transform.lossyScale)
+            };
+            
+            var obstacle = shapeComponent.GetWorldSpace(localToWorld, obstacleComponent);
+            return obstacle;
         }
 
         private void SampleSdfGizmos(

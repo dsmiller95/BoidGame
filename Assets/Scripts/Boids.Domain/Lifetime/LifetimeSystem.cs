@@ -4,7 +4,7 @@ using Unity.Entities;
 namespace Boids.Domain.Lifetime
 {
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     public partial struct LifetimeSystem : ISystem
     {
         public void OnUpdate(ref SystemState state)

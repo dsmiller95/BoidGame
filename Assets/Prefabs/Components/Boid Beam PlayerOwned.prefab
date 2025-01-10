@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 9145836004314635187}
   - component: {fileID: 3673743807244670062}
   - component: {fileID: 8661441557384765509}
+  - component: {fileID: 9157343468977718929}
   m_Layer: 0
   m_Name: Boid Beam PlayerOwned
   m_TagString: Untagged
@@ -121,8 +122,10 @@ MonoBehaviour:
         y: 0
   playerOwned: 1
   snapToGrid: 1
+  gizmoDrawResolutionUnselected: 10
+  gizmosDrawTransparencyUnselected: 0.1
   gizmoDrawResolution: 40
-  gizmosDrawTransparency: 0.7
+  gizmosDrawTransparency: 0
 --- !u!114 &8661441557384765509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +141,20 @@ MonoBehaviour:
   gridDefinition:
     gridSize: 5
   debugName: 
+--- !u!114 &9157343468977718929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3813160163993543383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9fc0b8b771241d8b85e40e3bf96033d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 2
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &4600925141127766017
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +166,7 @@ GameObject:
   - component: {fileID: 1666957973904501214}
   - component: {fileID: 8292618965724622536}
   - component: {fileID: 6575719067358932169}
+  - component: {fileID: 3236412419082577168}
   m_Layer: 0
   m_Name: control point
   m_TagString: Untagged
@@ -215,3 +233,17 @@ MonoBehaviour:
   gridDefinition:
     gridSize: 5
   debugName: 
+--- !u!114 &3236412419082577168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4600925141127766017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9fc0b8b771241d8b85e40e3bf96033d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 2
+  color: {r: 1, g: 1, b: 1, a: 1}
