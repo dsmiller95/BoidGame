@@ -65,6 +65,10 @@ MonoBehaviour:
     lifetimeSeconds: 30
     randomMagnitude: 0
     spawnAngle: 3.1415
+  minColorSpeed: 4.5
+  minSpeedColor: {r: 0.475, g: 0.475, b: 0.475, a: 1}
+  maxColorSpeed: 5.5
+  maxSpeedColor: {r: 0.20392156, g: 0.91349566, b: 1, a: 1}
 --- !u!54 &5000036880073727084
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Boids.Domain.BoidColors;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -60,6 +61,11 @@ namespace Boids.Domain
         private Rigidbody2D _rigidbody2D;
         private BoidSwarm _mySwarm;
         private float _deathTime = 0f;
+
+        public float minColorSpeed = 4f;
+        public Color minSpeedColor = Color.white;
+        public float maxColorSpeed = 8f;
+        public Color maxSpeedColor = Color.cyan;
     
         [Serializable]
         public class BoidConfig
@@ -149,6 +155,15 @@ namespace Boids.Domain
                     randomMagnitude = authoring.config.randomMagnitude,
                     lifetimeSeconds = authoring.config.lifetimeSeconds,
                     spawnAngle = authoring.config.spawnAngle,
+                });
+                
+                AddComponent(entity, new SpeedToColor()
+                {
+                    minSpeed = authoring.minColorSpeed,
+                    minColor = authoring.minSpeedColor.ToFloat4(),
+                    
+                    maxSpeed = authoring.maxColorSpeed,
+                    maxColor = authoring.maxSpeedColor.ToFloat4(),
                 });
             }
         }
