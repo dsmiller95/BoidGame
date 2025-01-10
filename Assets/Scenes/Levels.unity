@@ -1041,15 +1041,15 @@ MonoBehaviour:
     sceneReference:
       scenePath: Assets/Scenes/Levels/2 Split.unity
   - metadata:
-      levelName: Tunnel
-      par: 3
-    sceneReference:
-      scenePath: Assets/Scenes/Levels/3 Tunnel.unity
-  - metadata:
       levelName: U turn
       par: 3
     sceneReference:
       scenePath: Assets/Scenes/Levels/1 U turn.unity
+  - metadata:
+      levelName: Tunnel
+      par: 3
+    sceneReference:
+      scenePath: Assets/Scenes/Levels/3 Tunnel.unity
   - metadata:
       levelName: Merge
       par: 7
@@ -1060,6 +1060,11 @@ MonoBehaviour:
       par: 5
     sceneReference:
       scenePath: Assets/Scenes/Levels/3 Orbit.unity
+  - metadata:
+      levelName: Race
+      par: 4
+    sceneReference:
+      scenePath: Assets/Scenes/Levels/5 Race.unity
   - metadata:
       levelName: ???
       par: 5
