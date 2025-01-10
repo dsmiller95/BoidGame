@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
+using Boids.Domain.Rendering;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 namespace Migrations{
@@ -74,10 +75,10 @@ namespace Migrations{
             AssetDatabase.Refresh();
         }
         
-        [MenuItem("Tools/migrate obstacles")]
+        [MenuItem("Tools/migrate sdf shapes")]
         public static void MigrateTmp()
         {
-            UpdateInAll<ObstacleAuthoring>(ObstacleAuthoring.Migrate);
+            UpdateInAll<SdfObjectAuthoring>(SdfObjectAuthoring.Migrate);
         }
     }
 }

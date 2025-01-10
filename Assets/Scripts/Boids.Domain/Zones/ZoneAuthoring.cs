@@ -78,7 +78,7 @@ namespace Boids.Domain.Zones
             var childRenderer = GetComponentInChildren<SdfObjectAuthoring>();
             if (childRenderer != null)
             {
-                childRenderer.plainObject.shape.boxVariant.corner = extents;
+                childRenderer.shape.boxVariant.corner = extents;
                 // MARK AS DIRTY
                 UnityEditor.EditorUtility.SetDirty(childRenderer);
             }

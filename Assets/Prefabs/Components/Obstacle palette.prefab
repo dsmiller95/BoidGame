@@ -91,6 +91,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af143c844634dc4b627e1a9b29f4d7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shape:
+    shapeVariant: 2
+    obstacleRadius: 0
+    annularRadius: 2
+    beamVariant:
+      beamRelativeEnd:
+        x: 20
+        y: 30
+    boxVariant:
+      corner:
+        x: 20
+        y: 30
   plainObject:
     shape:
       shapeVariant: 2

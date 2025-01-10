@@ -13,10 +13,10 @@ namespace Boids.Domain.Rendering
     {
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (objectData, plainObject, localToWorld) in 
-                     SystemAPI.Query<RefRW<SDFObjectRenderData>, RefRO<SdfPlainObject>, RefRO<LocalToWorld>>())
+            foreach (var (objectData, plainObject, shapeComponent, localToWorld) in 
+                     SystemAPI.Query<RefRW<SDFObjectRenderData>, RefRO<SdfPlainObject>, RefRO<SdfShapeComponent>, RefRO<LocalToWorld>>())
             {
-                var shape = plainObject.ValueRO.shape.GetWorldSpace(localToWorld.ValueRO);
+                var shape = shapeComponent.ValueRO.shapeData.GetWorldSpace(localToWorld.ValueRO);
                 
                 objectData.ValueRW = SDFObjectRenderData.FromShape(
                     shape,
