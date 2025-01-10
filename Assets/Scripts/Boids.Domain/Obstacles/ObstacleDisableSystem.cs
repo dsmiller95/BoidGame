@@ -20,6 +20,8 @@ namespace Boids.Domain.Obstacles
         {
             var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
+            // TODO: should I be doing this? are there examples of this working? I wonder if this is gonna break
+            var parallelWriter = ecb.AsParallelWriter();
             
             var world = state.WorldUnmanaged;
             var nullZoneQuery = SystemAPI.QueryBuilder()
@@ -27,12 +29,20 @@ namespace Boids.Domain.Obstacles
                 .Build();
             var zoneCount = nullZoneQuery.CalculateEntityCount();
 
-            var enabledObstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<ObstacleComponent, LocalToWorld, ObstacleMayDisableFlag>()
+            var enabledObstacleQueryWithChildren = SystemAPI.QueryBuilder()
+                .WithAll<LocalToWorld, ObstacleMayDisableFlag, Child>()
                 .WithNone<ObstacleDisabledFlag>()
                 .Build();
-            var disabledObstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<ObstacleComponent, LocalToWorld, ObstacleDisabledFlag, ObstacleMayDisableFlag>()
+            var enabledObstacleQueryWithoutChildren = SystemAPI.QueryBuilder()
+                .WithAll<LocalToWorld, ObstacleMayDisableFlag>()
+                .WithNone<ObstacleDisabledFlag, Child>()
+                .Build();
+            var disabledObstacleQueryWithChildren = SystemAPI.QueryBuilder()
+                .WithAll<LocalToWorld, ObstacleDisabledFlag, ObstacleMayDisableFlag, Child>()
+                .Build();
+            var disabledObstacleQueryWithoutChildren = SystemAPI.QueryBuilder()
+                .WithAll<LocalToWorld, ObstacleDisabledFlag, ObstacleMayDisableFlag>()
+                .WithNone<Child>()
                 .Build();
             
             var copyZones = CollectionHelper.CreateNativeArray<Zone, RewindableAllocator>(zoneCount, ref world.UpdateAllocator);
@@ -43,27 +53,50 @@ namespace Boids.Domain.Obstacles
             };
             state.Dependency = copyZoneJob.ScheduleParallel(nullZoneQuery, state.Dependency);
             nullZoneQuery.AddDependency(state.Dependency);
-
-            var parallelWriter = ecb.AsParallelWriter();
-            var enableObstaclesJob = new EnableObstacleJob()
+            
+            var enableObstaclesWithoutChildrenJob = new EnableObstacleJobWithoutChildren()
             {
                 Zones = copyZones,
                 CommandBuffer = parallelWriter,
                 SetEnable = true
             };
-            var enableObstacleJob = enableObstaclesJob.ScheduleParallel(disabledObstacleQuery, state.Dependency);
-            disabledObstacleQuery.AddDependency(enableObstacleJob);
+            state.Dependency = enableObstaclesWithoutChildrenJob.ScheduleParallel(disabledObstacleQueryWithoutChildren, state.Dependency);
+            disabledObstacleQueryWithoutChildren.AddDependency(state.Dependency);
             
-            var disableObstaclesJob = new EnableObstacleJob()
+            
+            var disableObstaclesWithoutChildrenJob = new EnableObstacleJobWithoutChildren()
             {
                 Zones = copyZones,
                 CommandBuffer = parallelWriter,
                 SetEnable = false
             };
-            var disableObstacleJob = disableObstaclesJob.ScheduleParallel(enabledObstacleQuery, enableObstacleJob);
-            enabledObstacleQuery.AddDependency(disableObstacleJob);
+            state.Dependency = disableObstaclesWithoutChildrenJob.ScheduleParallel(enabledObstacleQueryWithoutChildren, state.Dependency);
+            enabledObstacleQueryWithoutChildren.AddDependency(state.Dependency);
             
-            state.Dependency = JobHandle.CombineDependencies(enableObstacleJob, disableObstacleJob);
+            
+            var disabledComponentLookup = SystemAPI.GetComponentLookup<ObstacleDisabledFlag>(true);
+            var enableObstaclesWithChildrenJob = new EnableObstacleJobWithChildren()
+            {
+                DisabledObstacles = disabledComponentLookup,
+                Zones = copyZones,
+                CommandBuffer = parallelWriter,
+                SetEnable = true
+            };
+            state.Dependency = enableObstaclesWithChildrenJob.ScheduleParallel(disabledObstacleQueryWithChildren, state.Dependency);
+            disabledObstacleQueryWithChildren.AddDependency(state.Dependency);
+            
+            
+            var disableObstaclesWithChildrenJob = new EnableObstacleJobWithChildren()
+            {
+                DisabledObstacles = disabledComponentLookup,
+                Zones = copyZones,
+                CommandBuffer = parallelWriter,
+                SetEnable = false
+            };
+            state.Dependency = disableObstaclesWithChildrenJob.ScheduleParallel(enabledObstacleQueryWithChildren, state.Dependency);
+            enabledObstacleQueryWithChildren.AddDependency(state.Dependency);
+            
+            
         }
         
         [BurstCompile]
@@ -78,9 +111,59 @@ namespace Boids.Domain.Obstacles
         }
         
         [BurstCompile]
-        private partial struct EnableObstacleJob : IJobEntity
+        private partial struct EnableObstacleJobWithChildren : IJobEntity
         {
             [ReadOnly] public NativeArray<Zone> Zones;
+            [ReadOnly] public ComponentLookup<ObstacleDisabledFlag> DisabledObstacles;
+            
+            public EntityCommandBuffer.ParallelWriter CommandBuffer;
+            /// <summary>
+            /// Set to true if the job is iterating over a query of disabled obstacles,
+            /// and should set them to enabled.
+            /// </summary>
+            public bool SetEnable;
+            
+            public void Execute(
+                [EntityIndexInQuery] int index,
+                Entity entity,
+                in LocalToWorld localToWorld,
+                in DynamicBuffer<Child> children)
+            {
+                var position = localToWorld.Position.xy;
+                var shouldDisable = false;
+                foreach (Zone zone in Zones)
+                {
+                    shouldDisable |= zone.Contains(position);
+                }
+
+                if (!shouldDisable)
+                {
+                    foreach (var child in children)
+                    {
+                        if (DisabledObstacles.HasComponent(child.Value))
+                        {
+                            shouldDisable = true;
+                        }
+                    }
+                }
+                
+                if (SetEnable && !shouldDisable)
+                {
+                    CommandBuffer.RemoveComponent<ObstacleDisabledFlag>(index, entity);
+                }
+
+                if (!SetEnable && shouldDisable)
+                {
+                    CommandBuffer.AddComponent<ObstacleDisabledFlag>(-index, entity);
+                }
+            }
+        }
+        
+        [BurstCompile]
+        private partial struct EnableObstacleJobWithoutChildren : IJobEntity
+        {
+            [ReadOnly] public NativeArray<Zone> Zones;
+            
             public EntityCommandBuffer.ParallelWriter CommandBuffer;
             /// <summary>
             /// Set to true if the job is iterating over a query of disabled obstacles,
@@ -94,17 +177,18 @@ namespace Boids.Domain.Obstacles
                 in LocalToWorld localToWorld)
             {
                 var position = localToWorld.Position.xy;
-                var containedInAny = false;
+                var shouldDisable = false;
                 foreach (Zone zone in Zones)
                 {
-                    containedInAny |= zone.Contains(position);
+                    shouldDisable |= zone.Contains(position);
                 }
-                if (SetEnable && !containedInAny)
+                
+                if (SetEnable && !shouldDisable)
                 {
                     CommandBuffer.RemoveComponent<ObstacleDisabledFlag>(index, entity);
                 }
 
-                if (!SetEnable && containedInAny)
+                if (!SetEnable && shouldDisable)
                 {
                     CommandBuffer.AddComponent<ObstacleDisabledFlag>(-index, entity);
                 }
