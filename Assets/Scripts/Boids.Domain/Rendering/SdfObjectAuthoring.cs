@@ -9,8 +9,6 @@ namespace Boids.Domain.Rendering
     [Serializable]
     public struct SdfPlainObject : IComponentData
     {
-        [Obsolete("use SdfShapecomponent instead")]
-        public ShapeDataDefinition shape;
         [Range(0,1)]
         public float hardRadiusFraction;
         public Color color;
@@ -23,11 +21,7 @@ namespace Boids.Domain.Rendering
 
         public static bool Migrate(SdfObjectAuthoring component)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            if (component.shape.Equals(component.plainObject.shape)) return false;
-            component.shape = component.plainObject.shape;
-            return true;
-#pragma warning restore CS0618 // Type or member is obsolete
+            return false;
         }
 
         private class SdfObjectBaker : Baker<SdfObjectAuthoring>
