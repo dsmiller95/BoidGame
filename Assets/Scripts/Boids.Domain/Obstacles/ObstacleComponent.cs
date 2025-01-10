@@ -93,6 +93,11 @@ namespace Boids.Domain.Obstacles
     public struct SdfShapeComponent : IComponentData
     {
         public ShapeDataDefinition shapeData;
+
+        public void ApplyControlPointToVariant(int index, in float2 controlPoint)
+        {
+            shapeData.ApplyControlPointToVariant(index, controlPoint);
+        }
         
         public readonly float ReceivesDrag(in LocalToWorld localToWorld, float2 relativeToCenter)
         {

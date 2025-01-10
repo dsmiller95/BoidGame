@@ -25,7 +25,7 @@ namespace Boids.Domain.Rendering
             {
                 var entity = GetEntity(TransformUsageFlags.Renderable);
                 AddComponent(entity, authoring.plainObject);
-                AddComponent(entity, new SDFObjectData());
+                AddComponent(entity, new SDFObjectRenderData());
             }
         }
     }

@@ -7,8 +7,8 @@ using UnityEngine;
 namespace Boids.Domain.GridSnap
 {
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)]
-    [WorldSystemFilter(WorldSystemFilterFlags.Editor | WorldSystemFilterFlags.Default)]
+    [UpdateInGroup(typeof(MoveObstaclesSystemGroup))]
+    //[WorldSystemFilter(WorldSystemFilterFlags.Editor | WorldSystemFilterFlags.Default)]
     public partial struct GridSnapSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

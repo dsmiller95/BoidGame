@@ -18,12 +18,12 @@ namespace Boids.Domain.Rendering
         {
             foreach (var (objectData, localToWorld,
                          obstacleComponent, shapeComponent, obstacleRender) in 
-                     SystemAPI.Query<RefRW<SDFObjectData>, RefRO<LocalToWorld>,
+                     SystemAPI.Query<RefRW<SDFObjectRenderData>, RefRO<LocalToWorld>,
                          RefRO<ObstacleComponent>, RefRO<SdfShapeComponent>, RefRO<ObstacleRender>>())
             {
                 var obstacle = shapeComponent.ValueRO.GetWorldSpace(localToWorld.ValueRO, obstacleComponent.ValueRO);
                 var shape = obstacle.shape;
-                objectData.ValueRW = SDFObjectData.FromShape(
+                objectData.ValueRW = SDFObjectRenderData.FromShape(
                     shape,
                     obstacle.obstacleHardSurfaceRadiusFraction,
                     obstacleRender.ValueRO.color,

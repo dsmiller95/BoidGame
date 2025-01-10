@@ -12,7 +12,7 @@ namespace Boids.Domain.Rendering
 {
     
     [Serializable]
-    public struct SDFObjectData : IComponentData
+    public struct SDFObjectRenderData : IComponentData
     {
         public float radius;
         public float hardRadiusFraction;
@@ -22,9 +22,9 @@ namespace Boids.Domain.Rendering
         
         public SdfVariantData shapeVariant;
 
-        public static SDFObjectData FromShape(ObstacleShape shape, float hardSurface, float4 color, float2 worldCenter)
+        public static SDFObjectRenderData FromShape(ObstacleShape shape, float hardSurface, float4 color, float2 worldCenter)
         {
-            return new SDFObjectData
+            return new SDFObjectRenderData
             {
                 radius = shape.obstacleRadius,
                 hardRadiusFraction = hardSurface,
@@ -78,10 +78,10 @@ namespace Boids.Domain.Rendering
             _settings.SetSdfObjects(ref _graphicsBuffer, 0);
             
             _sdfObjectQuery = new EntityQueryBuilder(this.WorldUpdateAllocator)
-                .WithAll<SDFObjectData>()
+                .WithAll<SDFObjectRenderData>()
                 .Build(this);
             
-            _sdfObjectQuery.SetChangedVersionFilter(typeof(SDFObjectData));
+            _sdfObjectQuery.SetChangedVersionFilter(typeof(SDFObjectRenderData));
             
             base.OnCreate();
         }
@@ -91,7 +91,7 @@ namespace Boids.Domain.Rendering
             var count = _sdfObjectQuery.CalculateEntityCount();
             if (count == 0) return;
             
-            var sdfData = _sdfObjectQuery.ToComponentDataListAsync<SDFObjectData>(
+            var sdfData = _sdfObjectQuery.ToComponentDataListAsync<SDFObjectRenderData>(
                 World.UpdateAllocator.ToAllocator,
                 this.Dependency,
                 out var sdfObjectsDependency);

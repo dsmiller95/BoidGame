@@ -1,5 +1,6 @@
 ﻿using System;
 using Boids.Domain.GridSnap;
+using Boids.Domain.Obstacles.ComposedObstacles;
 using Boids.Domain.Rendering;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -42,6 +43,7 @@ namespace Boids.Domain.Obstacles
             public override void Bake(ObstacleAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.Renderable | TransformUsageFlags.Dynamic);
+                
                 AddComponent(entity, new ObstacleComponent()
                 {
                     behavior = authoring.behavior,
@@ -51,6 +53,12 @@ namespace Boids.Domain.Obstacles
                 {
                     shapeData = authoring.shapeData,
                 });
+                
+                var childControlPoint = GetComponentInChildren<ObstacleControlPointAuthoring>();
+                if (childControlPoint != null)
+                {
+                    AddComponent(entity, new CompositeObstacleFlag());
+                }
                 var spriteRenderer = GetComponent<SpriteRenderer>();
                 if (spriteRenderer != null)
                 {
@@ -64,14 +72,14 @@ namespace Boids.Domain.Obstacles
                     {
                         color = originalColor,
                     });
-                    AddComponent(entity, new SDFObjectData()
+                    AddComponent(entity, new SDFObjectRenderData()
                     {
                         color = originalColor,
                     });
                 }
                 if (authoring.playerOwned)
                 {
-                    AddComponent(entity, new DraggableObstacle());
+                    AddComponent(entity, DraggableSdf.Default);
                     AddComponent(entity, new ScoringObstacleFlag());
                     AddComponent(entity, new ObstacleMayDisableFlag());
                 }

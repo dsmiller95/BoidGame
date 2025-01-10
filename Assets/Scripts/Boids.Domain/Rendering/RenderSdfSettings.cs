@@ -33,7 +33,7 @@ namespace Boids.Domain.Rendering
             return new GraphicsBuffer(
                 GraphicsBuffer.Target.Structured,
                 count,
-                System.Runtime.InteropServices.Marshal.SizeOf(typeof(SDFObjectData))
+                System.Runtime.InteropServices.Marshal.SizeOf(typeof(SDFObjectRenderData))
             );
         }
         

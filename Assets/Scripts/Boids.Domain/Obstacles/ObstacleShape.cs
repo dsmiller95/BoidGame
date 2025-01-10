@@ -19,6 +19,7 @@ namespace Boids.Domain.Obstacles
     public interface ISdfDefinition
     {
         public float GetDistance(in float2 queryRelativeToCenter, in float radius);
+        public void ApplyControlPoint(int index, float2 controlPoint);
     }
     
     [Serializable]
@@ -31,6 +32,11 @@ namespace Boids.Domain.Obstacles
         public readonly float GetDistance(in float2 queryRelativeToCenter, in float radius)
         {
             return math.length(queryRelativeToCenter);
+        }
+
+        public void ApplyControlPoint(int index, float2 controlPoint)
+        {
+            // noop;
         }
     }
 
@@ -59,6 +65,14 @@ namespace Boids.Domain.Obstacles
             var h = math.clamp(math.dot(pa, ba) / math.dot(ba, ba), 0, 1);
             return math.length(pa - h * ba);
         }
+
+        public void ApplyControlPoint(int index, float2 controlPoint)
+        {
+            if(index == 0) 
+            {
+                beamRelativeEnd = controlPoint;
+            }
+        }
     }
 
 
@@ -84,6 +98,14 @@ namespace Boids.Domain.Obstacles
             
             float2 d = math.abs(p) - b;
             return math.length(math.max(d, 0.0f)) + math.min(math.max(d.x, d.y), 0.0f);
+        }
+
+        public void ApplyControlPoint(int index, float2 controlPoint)
+        {
+            if(index == 0) 
+            {
+                corner = controlPoint;
+            }
         }
     }
 
@@ -224,6 +246,24 @@ namespace Boids.Domain.Obstacles
         
         [FieldOffset(12)]
         public BoxVariant boxVariant;
+        
+        public void ApplyControlPointToVariant(int index, in float2 controlPoint)
+        {
+            switch (shapeVariant)
+            {
+                case ShapeVariant.Sphere:
+                    circleVariant.ApplyControlPoint(index, controlPoint);
+                    break;
+                case ShapeVariant.Beam:
+                    beamVariant.ApplyControlPoint(index, controlPoint);
+                    break;
+                case ShapeVariant.Box:
+                    boxVariant.ApplyControlPoint(index, controlPoint);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
         
         public readonly ObstacleShape GetWorldSpace(in LocalToWorld localToWorld)
         {
