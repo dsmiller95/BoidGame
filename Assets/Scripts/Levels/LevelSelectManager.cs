@@ -10,7 +10,7 @@ namespace Levels
         public LevelSelectCell levelSelectCellPrefab;
         public GameObject levelSelectCellContainer;
         
-        private void Start()
+        private void OnEnable()
         {
             UpdateLevelDisplay();
         }
