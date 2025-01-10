@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Dman.Utilities;
 using UnityEngine;
 
@@ -21,11 +22,16 @@ namespace Levels
                 Destroy(child.gameObject);
             }
             
-            var levels = SingletonLocator<IManageLevels>.Instance.GetLevelData();
-            foreach (var level in levels)
+            var levels = SingletonLocator<IManageLevels>.Instance.GetLevelData()
+                .ToList();
+
+            for (var index = 0; index < levels.Count; index++)
             {
+                LevelData level = levels[index];
                 var newCell = Instantiate(levelSelectCellPrefab, levelSelectCellContainer.transform);
-                newCell.InitializeWith(level, forceUnlocked: level.LevelIndexId == 0);
+                
+                var isPreviousLevelCompleted = index == 0 || levels[index - 1].SaveData?.best >= 0;
+                newCell.InitializeWith(level, unlocked: isPreviousLevelCompleted);
             }
         }
         

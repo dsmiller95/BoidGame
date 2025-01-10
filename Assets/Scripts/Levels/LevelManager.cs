@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Dman.SimpleJson;
 using Dman.Utilities;
 using Dman.Utilities.Logger;
 using Unity.Entities.Serialization;
@@ -18,6 +19,7 @@ namespace Levels
     {
         public void RestartLevel();
         public void NextLevel();
+        public void CompleteLevel(int levelIndexId, LevelCompletionData completionData);
         public void ExitLevel();
         
         public void LoadLevelByIndex(int levelIndexId);
@@ -25,17 +27,36 @@ namespace Levels
         public IEnumerable<LevelData> GetLevelData();
     }
 
+    public struct LevelCompletionData
+    {
+        public int usedObstacles;
+    }
+    
     public class LevelData
     {
         public int LevelIndexId;
         public LevelSaveData? SaveData;
         public LevelSetupData SetupData;
     }
+
+    [Serializable]
+    public class LevelsSaveData
+    {
+        public static LevelsSaveData Empty => new LevelsSaveData
+        {
+            levelData = new List<LevelSaveData>()
+        };
+        
+        public List<LevelSaveData> levelData;
+    }
     
     [Serializable]
-    public struct LevelSaveData
+    public class LevelSaveData
     {
-        public string levelId;
+        public static LevelSaveData Empty => new LevelSaveData
+        {
+            best = -1
+        };
         /// <summary>
         /// -1 if not completed
         /// </summary>
@@ -65,6 +86,7 @@ namespace Levels
         [SerializeField] private GameObject levelSelectCollection;
 
         public UnityEvent<string> levelName;
+        private static string _levelCompletionKey = "BoidGolfLevelCompletion";
 
         private AsyncFnOnceCell _levelLoadCell;
 
@@ -94,6 +116,36 @@ namespace Levels
             _levelLoadCell.TryRun(c => LoadLevelAsync(currentLevel + 1, c), "Cannot run");
         }
 
+        public void CompleteLevel(int levelIndexId, LevelCompletionData completionData)
+        {
+            Debug.Log($"completed level {levelIndexId} with {completionData.usedObstacles} obstacles");
+
+            var existingSaveData = GetExistingSaveData();
+            
+            if (existingSaveData.levelData.Count <= levelIndexId)
+            {
+                existingSaveData.levelData.AddRange(Enumerable.Repeat(
+                    LevelSaveData.Empty, levelIndexId - existingSaveData.levelData.Count + 1));
+            }
+            var levelSaveData = existingSaveData.levelData[levelIndexId];
+            if (levelSaveData.best < 0 || completionData.usedObstacles < levelSaveData.best)
+            {
+                Debug.Log($"new best score for level {levelIndexId}: {completionData.usedObstacles} obstacles");
+                levelSaveData.best = completionData.usedObstacles;
+            }
+
+            
+            
+            SimpleSave.Set(_levelCompletionKey, existingSaveData);
+            SimpleSave.Save();
+        }
+
+        private LevelsSaveData GetExistingSaveData()
+        {
+            SimpleSave.Refresh();
+            return SimpleSave.Get(_levelCompletionKey, LevelsSaveData.Empty);
+        }
+        
         public void ExitLevel()
         {
             _levelLoadCell.TryRun(ExitCurrentLevelAsync, "Cannot run");
@@ -106,12 +158,19 @@ namespace Levels
 
         public IEnumerable<LevelData> GetLevelData()
         {
-            return levels.Select((level, index) => new LevelData
+            var existingSaveData = GetExistingSaveData();
+            return levels.Select((_, index) => CreateLevelData(index, existingSaveData));
+        }
+        
+        private LevelData CreateLevelData(int levelIndex, LevelsSaveData existingSaveData)
+        {
+            return new LevelData
             {
-                LevelIndexId = index,
-                SetupData = level.metadata,
-                SaveData = null
-            });
+                LevelIndexId = levelIndex,
+                SetupData = levels[levelIndex].metadata,
+                SaveData = existingSaveData.levelData.Count > levelIndex ? 
+                    existingSaveData.levelData[levelIndex] : LevelSaveData.Empty
+            };
         }
 
         private async UniTask ExitCurrentLevelAsync(CancellationToken c)
@@ -152,7 +211,9 @@ namespace Levels
                 .FirstOrDefault();
             if (inLevelActionComponent != null)
             {
-                inLevelActionComponent.InitializeWith(level.metadata);
+                var existingSaveData = GetExistingSaveData();
+                var levelData = CreateLevelData(levelIndex, existingSaveData);
+                inLevelActionComponent.InitializeWith(levelData);
             }
             else
             {
