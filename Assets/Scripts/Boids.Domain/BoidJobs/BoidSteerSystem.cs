@@ -35,7 +35,7 @@ namespace Boids.Domain.BoidJobs
             _debugObstacles = false;
             
             _obstacleQuery = new EntityQueryBuilder(state.WorldUpdateAllocator)
-                .WithAll<ObstacleComponent, LocalToWorld>()
+                .WithAll<ObstacleComponent, SdfShapeComponent, LocalToWorld>()
                 .WithEnabledObstacles()
                 .Build(ref state);
         }

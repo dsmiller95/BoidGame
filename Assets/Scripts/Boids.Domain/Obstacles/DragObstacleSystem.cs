@@ -28,23 +28,22 @@ namespace Boids.Domain.Obstacles
                 var dragBeginAt = dragBegin.ValueRO.beginAt;
                 var closestDistance = float.MaxValue;
                 var closestObstacleEntity = Entity.Null;
-                Obstacle closestObstacle = default;
                 float2 closestObstaclePosition = default;
                 
-                foreach (var (dragObstacleComponent, obstacleLocalToWorld, entity) in
-                    SystemAPI.Query<RefRO<ObstacleComponent>, RefRO<LocalToWorld>>()
+                foreach (var (shape, obstacleLocalToWorld, entity) in
+                    SystemAPI.Query<RefRO<SdfShapeComponent>, RefRO<LocalToWorld>>()
                         .WithAll<DraggableObstacle>()
                         .WithNone<Dragging>()
                         .WithEntityAccess())
                 {
                     var obstaclePosition = obstacleLocalToWorld.ValueRO.Position.xy;
-                    var obstacle = dragObstacleComponent.ValueRO.GetWorldSpace(obstacleLocalToWorld.ValueRO);
                     var relativeToObstacleCenter = dragBeginAt - obstaclePosition;
-                    var normalizedDistance = obstacle.shape.GetNormalizedDistance(relativeToObstacleCenter);
+                    var normalizedDistance = shape.ValueRO.ReceivesDrag(
+                        obstacleLocalToWorld.ValueRO, relativeToObstacleCenter);
+                    
                     if(normalizedDistance > closestDistance) continue;
                     closestDistance = normalizedDistance;
                     closestObstacleEntity = entity;
-                    closestObstacle = obstacle;
                     closestObstaclePosition = obstaclePosition;
                 }
                 if (closestDistance <= 1)

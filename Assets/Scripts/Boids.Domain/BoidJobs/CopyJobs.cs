@@ -12,10 +12,12 @@ namespace Boids.Domain.BoidJobs
     {
         public NativeArray<float2> ObstaclePositions;
         public NativeArray<Obstacle> Obstacles;
-        void Execute([EntityIndexInQuery] int entityIndexInQuery, in LocalToWorld localToWorld, in ObstacleComponent obstacle)
+        void Execute(
+            [EntityIndexInQuery] int entityIndexInQuery, in LocalToWorld localToWorld,
+            in ObstacleComponent obstacle, in SdfShapeComponent shape)
         {
             ObstaclePositions[entityIndexInQuery] = localToWorld.Position.xy;
-            Obstacles[entityIndexInQuery] = obstacle.GetWorldSpace(localToWorld);
+            Obstacles[entityIndexInQuery] = shape.GetWorldSpace(localToWorld, obstacle);
         }
     }
 }

@@ -45,8 +45,11 @@ namespace Boids.Domain.Obstacles
                 AddComponent(entity, new ObstacleComponent()
                 {
                     behavior = authoring.behavior,
-                    shapeData = authoring.shapeData,
                     obstacleHardSurfaceRadiusFraction = authoring.hardSurfaceRadiusFraction,
+                });
+                AddComponent(entity, new SdfShapeComponent()
+                {
+                    shapeData = authoring.shapeData,
                 });
                 var spriteRenderer = GetComponent<SpriteRenderer>();
                 if (spriteRenderer != null)
@@ -84,15 +87,18 @@ namespace Boids.Domain.Obstacles
             var obstacleComponent = new ObstacleComponent()
             {
                 behavior = behavior,
-                shapeData = shapeData,
                 obstacleHardSurfaceRadiusFraction = hardSurfaceRadiusFraction,
             };
-            
+            var shapeComponent = new SdfShapeComponent()
+            {
+                shapeData = shapeData,
+            };
             var localToWorld = new LocalToWorld
             {
                 Value = float4x4.TRS(float3.zero, this.transform.rotation, this.transform.lossyScale)
             };
-            var obstacle = obstacleComponent.GetWorldSpace(localToWorld);
+            
+            var obstacle = shapeComponent.GetWorldSpace(localToWorld, obstacleComponent);
             var maxExtent = obstacle.shape.MaximumExtent();
             var minLocal = -new Vector2(maxExtent, maxExtent);
             var maxLocal = new Vector2(maxExtent, maxExtent);

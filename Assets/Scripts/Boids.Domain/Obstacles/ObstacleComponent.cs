@@ -90,21 +90,33 @@ namespace Boids.Domain.Obstacles
     }
 
     [Serializable]
-    public struct ObstacleComponent : IComponentData
+    public struct SdfShapeComponent : IComponentData
     {
-        public ObstacleBehavior behavior;
         public ShapeDataDefinition shapeData;
-        public float obstacleHardSurfaceRadiusFraction;
-
-        public readonly Obstacle GetWorldSpace(in LocalToWorld localToWorld)
+        
+        public readonly float ReceivesDrag(in LocalToWorld localToWorld, float2 relativeToCenter)
+        {
+            var shape = shapeData.GetWorldSpace(localToWorld);
+            var normalizedDistance = shape.GetNormalizedDistance(relativeToCenter);
+            return normalizedDistance;
+        }
+        
+        public readonly Obstacle GetWorldSpace(in LocalToWorld localToWorld, in ObstacleComponent obstacleBehavor)
         {
             return new Obstacle
             {
-                behavior = this.behavior,
+                behavior = obstacleBehavor.behavior,
                 shape = this.shapeData.GetWorldSpace(localToWorld),
-                obstacleHardSurfaceRadiusFraction = obstacleHardSurfaceRadiusFraction,
+                obstacleHardSurfaceRadiusFraction = obstacleBehavor.obstacleHardSurfaceRadiusFraction,
             };
         }
+    }
+    
+    [Serializable]
+    public struct ObstacleComponent : IComponentData
+    {
+        public ObstacleBehavior behavior;
+        public float obstacleHardSurfaceRadiusFraction;
     }
     
     public struct OriginalColor : IComponentData
