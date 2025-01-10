@@ -27,7 +27,7 @@ public partial struct BoidSpawnSystem : ISystem
         // randomize boid spawn positions between frames
         _seedOffset += 1;
         
-        var rng = Random.CreateFromIndex(_seedOffset);
+        var globalRng = Random.CreateFromIndex(_seedOffset);
 
         var deltaTime = state.World.Time.DeltaTime;
 
@@ -36,6 +36,18 @@ public partial struct BoidSpawnSystem : ISystem
         foreach (var (boidSpawner, boidSpawnerLocalToWorld, boidSpawnerState) in 
                  SystemAPI.Query<RefRO<BoidSpawner>, RefRO<LocalToWorld>, RefRW<BoidSpawnerState>>())
         {
+            var maxRngTypes = boidSpawner.ValueRO.MaxRngTypes;
+            Random rng;
+            if (maxRngTypes <= 0)
+            {
+                rng = globalRng;
+            }
+            else
+            {
+                var forkChoice = _seedOffset % maxRngTypes;
+                rng = Random.CreateFromIndex(forkChoice);
+            }
+            
             var timeSinceLast = boidSpawnerState.ValueRO.TimeSinceLastSpawn;
             timeSinceLast += deltaTime;
             timeSinceLast = math.min(timeSinceLast, boidSpawner.ValueRO.MaxTimeAccumulate(deltaTime));

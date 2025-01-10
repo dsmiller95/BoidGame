@@ -15,6 +15,8 @@ public struct BoidSpawner : IComponentData
     public float TimePerSpawnGroup;
     public int MaxBoids;
     public int GroupSize;
+    
+    public uint MaxRngTypes;
 
     public BoidSpawnData SpawnData;
 
@@ -45,6 +47,7 @@ public class BoidSpawnerAuthoring : MonoBehaviour
     public float timePerSpawn = 0.5f;
     public int boidGroupSize = 50;
     public int targetBoidCount = 1000;
+    public uint maxRngTypes = 3;
     
     [Range(0, 360)]
     public float spawnAngle;
@@ -70,6 +73,7 @@ public class BoidSpawnerAuthoring : MonoBehaviour
                 TimePerSpawnGroup = Mathf.Max(0.001f, authoring.timePerSpawn),
                 MaxBoids = authoring.targetBoidCount,
                 GroupSize = authoring.boidGroupSize,
+                MaxRngTypes = authoring.maxRngTypes,
                 SpawnData = new BoidSpawnData()
                 { 
                     spawnAngle = authoring.spawnAngle * Mathf.Deg2Rad,
