@@ -40,10 +40,11 @@ namespace Boids.Domain.Obstacles.ComposedObstacles
         
     }
 
-[Serializable]
+    [Serializable]
     public struct ObstacleControlPoint : IComponentData
     {
     }
+    
     
     
     

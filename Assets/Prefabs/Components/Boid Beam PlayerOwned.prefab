@@ -137,6 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridDefinition:
     gridSize: 5
+  debugName: 
 --- !u!1 &4600925141127766017
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,6 +195,8 @@ MonoBehaviour:
       corner:
         x: 0
         y: 0
+  limitDistance: 1
+  maximumDistance: 6
   color: {r: 1, g: 0, b: 0, a: 1}
   playerOwned: 1
   snapToGrid: 1
@@ -211,3 +214,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridDefinition:
     gridSize: 5
+  debugName: 

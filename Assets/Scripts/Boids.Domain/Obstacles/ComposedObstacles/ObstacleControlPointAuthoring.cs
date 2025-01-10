@@ -18,6 +18,9 @@ namespace Boids.Domain.Obstacles.ComposedObstacles
             obstacleRadius = 1f
         };
 
+        public bool limitDistance = false;
+        public float maximumDistance = 3f;
+
         public Color color;
         
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
@@ -43,6 +46,13 @@ namespace Boids.Domain.Obstacles.ComposedObstacles
                 {
                     shapeData = authoring.shapeData,
                 });
+                if (authoring.limitDistance)
+                {
+                    var limitDistanceComponent = LimitDistanceComponent.Default;
+                    limitDistanceComponent.maximumDistance = authoring.maximumDistance;
+                    limitDistanceComponent.Validate();
+                    AddComponent(entity, limitDistanceComponent);
+                }
 
                 if (authoring.color != Color.clear)
                 { 
