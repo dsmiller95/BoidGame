@@ -64,6 +64,7 @@ namespace Boids.Domain
 
         public float minColorSpeed = 4f;
         public Color minSpeedColor = Color.white;
+        public Color midSpeedColor = Color.white;
         public float maxColorSpeed = 8f;
         public Color maxSpeedColor = Color.cyan;
     
@@ -161,6 +162,8 @@ namespace Boids.Domain
                 {
                     minSpeed = authoring.minColorSpeed,
                     minColor = authoring.minSpeedColor.ToFloat4(),
+                    
+                    midColor = authoring.midSpeedColor.ToFloat4(),
                     
                     maxSpeed = authoring.maxColorSpeed,
                     maxColor = authoring.maxSpeedColor.ToFloat4(),

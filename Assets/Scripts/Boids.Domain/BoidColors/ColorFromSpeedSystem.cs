@@ -53,14 +53,23 @@ namespace Boids.Domain.BoidColors
         public float minSpeed;
         public float4 minColor;
         
+        public float4 midColor;
+        
         public float maxSpeed;
         public float4 maxColor;
         
         public readonly float4 GetColor(float speed)
         {
             var t = math.unlerp(minSpeed, maxSpeed, speed);
-            t = math.clamp(t, 0, 1);
-            return math.lerp(minColor, maxColor, t);
+            t = math.clamp(t, 0, 2);
+            if (t < 1)
+            { 
+                return math.lerp(minColor, midColor, t);
+            }
+            else
+            {
+                return math.lerp(midColor, maxColor, t - 1);
+            }
         }
     }
 }
