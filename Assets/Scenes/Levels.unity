@@ -1049,7 +1049,7 @@ MonoBehaviour:
       levelName: Tunnel
       par: 3
     sceneReference:
-      scenePath: Assets/Scenes/Levels/3 Tunnel.unity
+      scenePath: Assets/Scenes/Levels/3 Tunnel - secret pass.unity
   - metadata:
       levelName: Merge
       par: 7
