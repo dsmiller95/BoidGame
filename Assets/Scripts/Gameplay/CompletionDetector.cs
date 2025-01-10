@@ -1,4 +1,5 @@
 ﻿using Boids.Domain.Goals;
+using Levels;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,6 +15,8 @@ namespace Gameplay
         public UnityEvent<float> onInverseCompletionAmountChanged;
         [SerializeField] private float completionAmount;
 
+        public InLevelActions actions;
+        
         private bool _didEmit;
         
         private void Update()
@@ -36,6 +39,10 @@ namespace Gameplay
             if(value == isCompleted) return;
             isCompleted = value;
             onIsCompletedChanged.Invoke(isCompleted);
+            if (isCompleted)
+            {
+                actions.OnCompletion();
+            }
         }
         
         private void SetCompletionAmount(float value)

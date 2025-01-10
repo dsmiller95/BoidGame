@@ -30,6 +30,12 @@ namespace Levels
     public struct LevelCompletionData
     {
         public int usedObstacles;
+        
+        public static LevelCompletionData PickBest(LevelCompletionData? a, LevelCompletionData b)
+        {
+            if (!a.HasValue) return b;
+            return a.Value.usedObstacles < b.usedObstacles ? a.Value : b;
+        }
     }
     
     public class LevelData
