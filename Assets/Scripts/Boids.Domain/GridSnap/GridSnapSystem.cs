@@ -40,7 +40,7 @@ namespace Boids.Domain.GridSnap
     {
         public static GridDefinition Default => new GridDefinition
         {
-            gridSize = 10f
+            gridSize = 10f/2f
         };
         
         public float gridSize;
