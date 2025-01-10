@@ -104,17 +104,5 @@ MonoBehaviour:
         x: 20
         y: 30
   plainObject:
-    shape:
-      shapeVariant: 2
-      obstacleRadius: 0
-      annularRadius: 2
-      beamVariant:
-        beamRelativeEnd:
-          x: 20
-          y: 30
-      boxVariant:
-        corner:
-          x: 20
-          y: 30
     hardRadiusFraction: 0
     color: {r: 0.376, g: 0.013947097, b: 0.0026319884, a: 0.83137256}

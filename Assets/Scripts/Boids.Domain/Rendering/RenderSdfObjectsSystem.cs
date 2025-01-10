@@ -86,6 +86,12 @@ namespace Boids.Domain.Rendering
             base.OnCreate();
         }
 
+        protected override void OnDestroy()
+        {
+            _graphicsBuffer?.Dispose();
+            base.OnDestroy();
+        }
+
         protected override void OnUpdate()
         {
             var count = _sdfObjectQuery.CalculateEntityCount();
@@ -102,5 +108,6 @@ namespace Boids.Domain.Rendering
             var sdfDataArr = sdfData.AsArray();
             _graphicsBuffer?.SetData(sdfDataArr);
         }
+        
     }
 }

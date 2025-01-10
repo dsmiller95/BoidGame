@@ -30,6 +30,21 @@ namespace Boids.Domain.Rendering
                     localToWorld.ValueRO.Position.xy
                 );
             }
+            
+            foreach (var (objectData, localToWorld,
+                         shapeComponent, obstacleRender) in 
+                     SystemAPI.Query<RefRW<SDFObjectRenderData>, RefRO<LocalToWorld>,
+                         RefRO<SdfShapeComponent>, RefRO<ObstacleRender>>()
+                         .WithNone<ObstacleComponent>())
+            {
+                var shape = shapeComponent.ValueRO.shapeData.GetWorldSpace(localToWorld.ValueRO);
+                objectData.ValueRW = SDFObjectRenderData.FromShape(
+                    shape,
+                    0,
+                    obstacleRender.ValueRO.color,
+                    localToWorld.ValueRO.Position.xy
+                );
+            }
         }
     }
 }

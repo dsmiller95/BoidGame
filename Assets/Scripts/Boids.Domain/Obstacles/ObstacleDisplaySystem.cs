@@ -13,13 +13,13 @@ namespace Boids.Domain.Obstacles
         public void OnCreate(ref SystemState state)
         {
             _enabledObstacles = new EntityQueryBuilder(state.WorldUpdateAllocator)
-                .WithAll<ObstacleComponent, OriginalColor>()
+                .WithAll<OriginalColor>()
                 .WithAllRW<ObstacleRender>()
                 .WithEnabledObstacles()
                 .Build(ref state);
             
             _disabledObstacles = new EntityQueryBuilder(state.WorldUpdateAllocator)
-                .WithAll<ObstacleComponent, OriginalColor>()
+                .WithAll<OriginalColor>()
                 .WithAllRW<ObstacleRender>()
                 .WithDisabledObstacles()
                 .Build(ref state);
@@ -48,7 +48,9 @@ namespace Boids.Domain.Obstacles
         {
             public float4 LerpToColor;
             public float Amount;
-            private void Execute(ref ObstacleRender obstacleRender, in OriginalColor originalColor)
+            private void Execute(
+                ref ObstacleRender obstacleRender,
+                in OriginalColor originalColor)
             {
                 var color = math.lerp(originalColor.Color, LerpToColor, Amount);
                 obstacleRender.color = new float4(color.x, color.y, color.z, color.w);

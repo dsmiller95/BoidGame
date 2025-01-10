@@ -22,6 +22,7 @@ namespace Boids.Domain.Rendering
             {
                 if (buffer == null || buffer.count < count)
                 {
+                    buffer?.Dispose();
                     buffer = CreateBuffer(count);
                 }
                 sdfMaterial.SetBuffer("_SDFObjects", buffer);
