@@ -21,16 +21,36 @@ namespace Boids.Domain.GridSnap
         public void OnUpdate(ref SystemState state)
         {
             var gridDefinition = state.WorldUnmanaged.EntityManager.GetComponentData<GridDefinition>(state.SystemHandle);
-            
-            foreach (var transform in 
+
+            foreach (var transform in
                      SystemAPI.Query<RefRW<LocalTransform>>()
                          .WithAll<SnapMeToGridFlag>()
-                         .WithChangeFilter<LocalTransform>())
+                         .WithNone<Parent>()
+                         .WithChangeFilter<LocalTransform>()
+                    )
             {
                 var position = transform.ValueRO.Position.xy;
                 position = gridDefinition.SnapToClosest(position);
-                
+
                 transform.ValueRW = transform.ValueRW.WithPosition(new float3(position, 0));
+            }
+
+            foreach (var (transform, parent) in 
+                     SystemAPI.Query<RefRW<LocalTransform>, RefRO<Parent>>()
+                         .WithAll<SnapMeToGridFlag>()
+                         .WithChangeFilter<LocalTransform>()
+                    )
+            {
+                var parentTransform = SystemAPI.GetComponent<LocalToWorld>(parent.ValueRO.Value);
+
+
+                var worldPosition = parentTransform.Value.TransformPoint(transform.ValueRO.Position);
+                var newWorldPosition = new float3(gridDefinition.SnapToClosest(worldPosition.xy), 0);
+
+                var newLocalPosition = parentTransform.Value.InverseTransformPoint(newWorldPosition);
+                
+                
+                transform.ValueRW = transform.ValueRW.WithPosition(newLocalPosition);
             }
         }
     }

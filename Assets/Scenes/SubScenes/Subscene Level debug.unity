@@ -643,7 +643,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1666957973904501214, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.666667
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1666957973904501214, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalPosition.y
@@ -659,11 +659,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3964514647153594225, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -40
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 3964514647153594225, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 17.320509
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3964514647153594225, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalPosition.z
@@ -696,10 +696,6 @@ PrefabInstance:
     - target: {fileID: 3964514647153594225, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6575719067358932169, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
-      propertyPath: gridDefinition.gridSize
-      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
