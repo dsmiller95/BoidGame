@@ -1,14 +1,14 @@
 ﻿using System;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace Boids.Domain.GridSnap
 {
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(MoveObstaclesSystemGroup))]
-    //[WorldSystemFilter(WorldSystemFilterFlags.Editor | WorldSystemFilterFlags.Default)]
+    [BurstCompile]
     public partial struct GridSnapSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
