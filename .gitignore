@@ -11,6 +11,9 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 /TestResults/
+/SaveContexts/
+/Assets/SaveContexts
+/Assets/SaveContexts.meta
 
 /Assets/3DForge
 /Assets/3DForge.meta
