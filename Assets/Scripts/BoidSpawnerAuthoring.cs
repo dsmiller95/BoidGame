@@ -16,6 +16,8 @@ public struct BoidSpawner : IComponentData
     public int MaxBoids;
     public int GroupSize;
 
+    public BoidSpawnData SpawnData;
+
     [Pure]
     public float MaxTimeAccumulate(float deltaTime)
     {
@@ -44,6 +46,14 @@ public class BoidSpawnerAuthoring : MonoBehaviour
     public int boidGroupSize = 50;
     public int targetBoidCount = 1000;
     
+    [Range(0, 360)]
+    public float spawnAngle;
+    
+    public float initialSpeed = 5;
+    [Range(0, 1)]
+    public float randomMagnitude = 0;
+    public float lifetimeSeconds = 30;
+    
     public Vector2 spawnSize;
 
     private float _timeSinceLastSpawn = 0f;
@@ -60,6 +70,13 @@ public class BoidSpawnerAuthoring : MonoBehaviour
                 TimePerSpawnGroup = Mathf.Max(0.001f, authoring.timePerSpawn),
                 MaxBoids = authoring.targetBoidCount,
                 GroupSize = authoring.boidGroupSize,
+                SpawnData = new BoidSpawnData()
+                { 
+                    spawnAngle = authoring.spawnAngle * Mathf.Deg2Rad,
+                    initialSpeed = authoring.initialSpeed,
+                    randomMagnitude = authoring.randomMagnitude,
+                    lifetimeSeconds = authoring.lifetimeSeconds
+                }
             });
             AddComponent(entity, new BoidSpawnerState
             {
@@ -95,10 +112,14 @@ public class BoidSpawnerAuthoring : MonoBehaviour
         instantiated.Initialize(swarmOwner);
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Vector2 myCenter = transform.position;
         Gizmos.DrawWireCube(myCenter, spawnSize);
+        
+        var dirFromAngle = new Vector2(Mathf.Sin(spawnAngle * Mathf.Deg2Rad), Mathf.Cos(spawnAngle * Mathf.Deg2Rad));
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(myCenter, myCenter + dirFromAngle * 5);
     }
 }

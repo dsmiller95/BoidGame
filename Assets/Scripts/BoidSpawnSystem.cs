@@ -56,6 +56,7 @@ public partial struct BoidSpawnSystem : ISystem
                 var spawnPoint = spawnCenter + new float3(boidSpawner.ValueRO.GetRelativeSpawn(ref rng), 0);
                 var localToWorld = LocalTransform.FromPosition(spawnPoint);
                 ecb.SetComponent(spawned, localToWorld);
+                ecb.SetSharedComponent(spawned, boidSpawner.ValueRO.SpawnData);
                 //ecb.RemoveComponent<LocalTransform>(spawned);
             }
         }

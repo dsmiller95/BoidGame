@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -17,15 +18,22 @@ namespace Levels
     {
         public void RestartLevel();
         public void NextLevel();
+        public void LoadLevelByIndex(int levelIndexId);
+        
+        public IEnumerable<LevelData> GetLevelData();
+    }
+
+    public class LevelData
+    {
+        public int LevelIndexId;
+        public LevelSaveData? SaveData;
+        public LevelSetupData SetupData;
     }
     
     [Serializable]
     public struct LevelSaveData
     {
         public string levelId;
-        
-        public string levelName;
-        public int par;
         /// <summary>
         /// -1 if not completed
         /// </summary>
@@ -82,7 +90,22 @@ namespace Levels
         {
             _levelLoadCell.TryRun(c => LoadLevelAsync(currentLevel + 1, c), "Cannot run");
         }
-        
+
+        public void LoadLevelByIndex(int levelIndexId)
+        {
+            _levelLoadCell.TryRun(c => LoadLevelAsync(levelIndexId, c), "Cannot run");
+        }
+
+        public IEnumerable<LevelData> GetLevelData()
+        {
+            return levels.Select((level, index) => new LevelData
+            {
+                LevelIndexId = index,
+                SetupData = level.metadata,
+                SaveData = null
+            });
+        }
+
         private async UniTask LoadLevelAsync(int levelIndex, CancellationToken cancel)
         {
             if (levelIndex < 0 || levelIndex >= levels.Length)

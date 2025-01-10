@@ -165,63 +165,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &82514026
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -20
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 51.961525
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
 --- !u!1001 &136490381
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -368,234 +311,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 307e6b3b48cf63b4f8944f392cc0c640, type: 3}
---- !u!1001 &221947232
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 8.6602545
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (8)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
---- !u!1001 &295423172
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 34.641018
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (4)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
---- !u!1001 &298560442
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 25.980762
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (6)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
---- !u!1001 &313525922
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -15
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 43.30127
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
 --- !u!1001 &321290674
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -744,7 +459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6085342649790300458, guid: 748f387586708ba4db0ef34e9d67e909, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -60
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 6085342649790300458, guid: 748f387586708ba4db0ef34e9d67e909, type: 3}
       propertyPath: m_LocalPosition.y
@@ -782,12 +497,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8051992338381986812, guid: 748f387586708ba4db0ef34e9d67e909, type: 3}
+      propertyPath: spawnAngle
+      value: 213
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 748f387586708ba4db0ef34e9d67e909, type: 3}
---- !u!1001 &482906401
+--- !u!1001 &493805286
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -797,11 +516,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 17.320509
       objectReference: {fileID: 0}
     - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: m_LocalPosition.z
@@ -837,7 +556,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: m_Name
-      value: Boid Sphere Repel Soft (9)
+      value: Boid Sphere Repel Soft (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
+      propertyPath: shapeData.annularRadius
+      value: 1.91
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
+      propertyPath: shapeData.obstacleRadius
+      value: 11.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
+      propertyPath: hardSurfaceRadiusFraction
+      value: -0.14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1490,120 +1221,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
---- !u!1001 &1238528315
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 25.980762
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (5)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
---- !u!1001 &1272517087
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -30
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 51.961525
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
 --- !u!1001 &1288810350
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1677,6 +1294,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3673743807244670062, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
+      propertyPath: playerOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3813160163993543383, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_Name
       value: Boid Beam Obstacle
@@ -1856,120 +1477,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6271227bbb6563448b23d583ee846360, type: 3}
---- !u!1001 &1584064821
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 43.30127
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
---- !u!1001 &1768769717
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 17.320509
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2371425894230674588, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2524028649496469818, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
-      propertyPath: m_Name
-      value: Boid Sphere Repel Soft (7)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
 --- !u!1001 &1830991083
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1978,6 +1485,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3673743807244670062, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
+      propertyPath: playerOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3813160163993543383, guid: 30243e69c291dd849b0a8d43092dad00, type: 3}
       propertyPath: m_Name
       value: Boid Beam Obstacle (1)
@@ -2222,16 +1733,7 @@ SceneRoots:
   - {fileID: 2435486352286014172}
   - {fileID: 1361071129}
   - {fileID: 1830991083}
-  - {fileID: 1272517087}
-  - {fileID: 82514026}
-  - {fileID: 1584064821}
-  - {fileID: 313525922}
-  - {fileID: 295423172}
-  - {fileID: 1238528315}
-  - {fileID: 298560442}
-  - {fileID: 1768769717}
-  - {fileID: 221947232}
-  - {fileID: 482906401}
+  - {fileID: 493805286}
   - {fileID: 1288810350}
   - {fileID: 1161718087}
   - {fileID: 788138327}

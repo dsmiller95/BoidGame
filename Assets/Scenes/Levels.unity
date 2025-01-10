@@ -312,10 +312,20 @@ MonoBehaviour:
     sceneReference:
       scenePath: Assets/Scenes/Levels/2 Split.unity
   - metadata:
+      levelName: Tunnel
+      par: 3
+    sceneReference:
+      scenePath: Assets/Scenes/Levels/3 Tunnel.unity
+  - metadata:
       levelName: U turn
       par: 3
     sceneReference:
       scenePath: Assets/Scenes/Levels/1 U turn.unity
+  - metadata:
+      levelName: Merge
+      par: 7
+    sceneReference:
+      scenePath: Assets/Scenes/Levels/2.1 Merge.unity
   - metadata:
       levelName: Orbit
       par: 5

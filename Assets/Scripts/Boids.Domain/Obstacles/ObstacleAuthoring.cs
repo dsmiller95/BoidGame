@@ -70,6 +70,7 @@ namespace Boids.Domain.Obstacles
                 {
                     AddComponent(entity, new DraggableObstacle());
                     AddComponent(entity, new ScoringObstacleFlag());
+                    AddComponent(entity, new ObstacleMayDisableFlag());
                 }
                 if(authoring.snapToGrid || authoring.playerOwned)
                 {

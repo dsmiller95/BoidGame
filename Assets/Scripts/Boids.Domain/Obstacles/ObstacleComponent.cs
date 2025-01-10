@@ -14,6 +14,10 @@ namespace Boids.Domain.Obstacles
         Attract,
     }
     
+    public struct ObstacleMayDisableFlag : IComponentData
+    {
+    }
+    
     public struct ObstacleDisabledFlag : IComponentData
     {
     }

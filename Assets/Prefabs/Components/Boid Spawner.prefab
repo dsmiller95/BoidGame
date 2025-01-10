@@ -51,6 +51,10 @@ MonoBehaviour:
   timePerSpawn: 1.5
   boidGroupSize: 50
   targetBoidCount: 10000
+  spawnAngle: 180
+  initialSpeed: 5
+  randomMagnitude: 0
+  lifetimeSeconds: 30
   spawnSize: {x: 10, y: 10}
 --- !u!114 &4692180007938197849
 MonoBehaviour:

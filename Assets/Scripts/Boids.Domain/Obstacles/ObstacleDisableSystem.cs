@@ -28,11 +28,11 @@ namespace Boids.Domain.Obstacles
             var zoneCount = nullZoneQuery.CalculateEntityCount();
 
             var enabledObstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<ObstacleComponent, LocalToWorld>()
+                .WithAll<ObstacleComponent, LocalToWorld, ObstacleMayDisableFlag>()
                 .WithNone<ObstacleDisabledFlag>()
                 .Build();
             var disabledObstacleQuery = SystemAPI.QueryBuilder()
-                .WithAll<ObstacleComponent, LocalToWorld, ObstacleDisabledFlag>()
+                .WithAll<ObstacleComponent, LocalToWorld, ObstacleDisabledFlag, ObstacleMayDisableFlag>()
                 .Build();
             
             var copyZones = CollectionHelper.CreateNativeArray<Zone, RewindableAllocator>(zoneCount, ref world.UpdateAllocator);
@@ -94,18 +94,19 @@ namespace Boids.Domain.Obstacles
                 in LocalToWorld localToWorld)
             {
                 var position = localToWorld.Position.xy;
+                var containedInAny = false;
                 foreach (Zone zone in Zones)
                 {
-                    var containsPosition = zone.Contains(position);
-                    if (SetEnable && !containsPosition)
-                    {
-                        CommandBuffer.RemoveComponent<ObstacleDisabledFlag>(index, entity);
-                    }
+                    containedInAny |= zone.Contains(position);
+                }
+                if (SetEnable && !containedInAny)
+                {
+                    CommandBuffer.RemoveComponent<ObstacleDisabledFlag>(index, entity);
+                }
 
-                    if (!SetEnable && containsPosition)
-                    {
-                        CommandBuffer.AddComponent<ObstacleDisabledFlag>(-index, entity);
-                    }
+                if (!SetEnable && containedInAny)
+                {
+                    CommandBuffer.AddComponent<ObstacleDisabledFlag>(-index, entity);
                 }
             }
         }

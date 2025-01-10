@@ -109,15 +109,17 @@ MonoBehaviour:
   shapeData:
     shapeVariant: 1
     obstacleRadius: 2.2
+    annularRadius: 0
     beamVariant:
       beamRelativeEnd:
         x: 3.3333333
         y: 0
-    squareVariant:
+    boxVariant:
       corner:
         x: 3.3333333
         y: 0
-  playerOwned: 1
+  playerOwned: 0
+  snapToGrid: 0
   gizmoDrawResolution: 40
   gizmosDrawTransparency: 0.7
 --- !u!114 &8661441557384765509
