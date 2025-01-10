@@ -28,6 +28,7 @@ namespace Boids.Domain.Obstacles.ComposedObstacles
         {
             public override void Bake(ObstacleControlPointAuthoring authoring)
             {
+                if (!authoring.enabled) return;
                 var parent = this.GetParent();
                 var parentAuthoring = GetComponent<ObstacleAuthoring>(parent);
                 if (parent == null || parentAuthoring == null)
