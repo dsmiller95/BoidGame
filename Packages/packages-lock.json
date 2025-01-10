@@ -31,7 +31,7 @@
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2"
       },
-      "hash": "2592572cf57e0280b62aa13a2f82727a7dcdb75a"
+      "hash": "a951f783b499bd036186991cb4ff6ac40e9f7305"
     },
     "com.dman.utilities": {
       "version": "0.8.0",
