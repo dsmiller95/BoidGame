@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/3 Orbit.unity
     guid: 3fb0385c4a8c51446ad1a5bfd33044fe
   - enabled: 1
+    path: Assets/Scenes/Levels/6 Free play.unity
+    guid: 6297aa841d14f7b44b0e9a89be6ead09
+  - enabled: 1
     path: Assets/Scenes/Levels/2 Split.unity
     guid: 6354114a316b5574ba03eb7adece89df
   - enabled: 1
