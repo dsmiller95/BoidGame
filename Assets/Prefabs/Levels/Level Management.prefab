@@ -1270,7 +1270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3155143355645795848
 Transform:
   m_ObjectHideFlags: 0
@@ -1302,10 +1302,11 @@ MonoBehaviour:
   - type: 0
     clips:
     - {fileID: 8300000, guid: fe5bd785f1b2d7a468317d200dc9be58, type: 3}
-    volume: 1
+    volume: 0.01
     semiTones: f9fffffffcffffff000000000400000007000000
   audioSourcePrefab: {fileID: 891391608649075381, guid: 65d5f83a94895854da83d1b1ccc91468, type: 3}
-  totalSources: 8
+  totalSources: 4
+  audioSources: []
 --- !u!1 &2433769093624132994
 GameObject:
   m_ObjectHideFlags: 0

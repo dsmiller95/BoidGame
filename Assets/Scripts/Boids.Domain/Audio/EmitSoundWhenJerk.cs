@@ -45,6 +45,7 @@ namespace Boids.Domain.Audio
         {
             var world = state.WorldUnmanaged;
             var buffer = world.EntityManager.GetBuffer<EmittedSound>(state.SystemHandle);
+            buffer.Clear();
             
             // var emitter = SingletonLocator<IEmitSoundEffects>.Instance;
             // if (emitter == null)
@@ -57,8 +58,9 @@ namespace Boids.Domain.Audio
 
             var totalEmitted = 0;
             
-            foreach (var (trackedAcceleration, emitSoundComponent, localToWorld) in 
-                     SystemAPI.Query<RefRO<TrackedAccelerationComponent>, RefRO<EmitSoundWhenJerkComponent>, RefRO<LocalToWorld>>())
+            foreach (var (trackedAcceleration, emitSoundComponent, localToWorld, entity) in 
+                     SystemAPI.Query<RefRO<TrackedAccelerationComponent>, RefRO<EmitSoundWhenJerkComponent>, RefRO<LocalToWorld>>()
+                         .WithEntityAccess())
             {
                 if (buffer.Length > maxEmitted) return;
                 
@@ -68,6 +70,7 @@ namespace Boids.Domain.Audio
                 var position = localToWorld.ValueRO.Position.xy;
                 var emitted = new SoundEffectEmit
                 {
+                    emittedFrom = entity,
                     type = emittedType.Value,
                     position = position
                 };
@@ -76,11 +79,11 @@ namespace Boids.Domain.Audio
             }
         }
         
-        public static NativeArray<SoundEffectEmit> GetSoundData(World world)
+        public static NativeArray<EmittedSound> GetSoundData(World world)
         {
             var system = world.GetExistingSystem<EmitSoundWhenJerk>();
             var buffer = world.EntityManager.GetBuffer<EmittedSound>(system, isReadOnly: true);
-            return buffer.ToNativeArray(Allocator.Temp).Reinterpret<SoundEffectEmit>();
+            return buffer.ToNativeArray(Allocator.Temp);
         }
     }
 
