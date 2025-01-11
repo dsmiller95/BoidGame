@@ -22,9 +22,10 @@ namespace Boids.Domain
             var targetHeading = math.lerp(cycleDir, randDir, _boidSpawn.randomMagnitude);
 
             _velocity.ValueRW.Linear = new float3(targetHeading * _boidSpawn.initialSpeed, 0) * _boidShared.simSpeedMultiplier;
-            
-            var deathTime = time + _boidSpawn.lifetimeSeconds;
-            deathTime *= rng.NextFloat(0.9f, 1.1f);
+
+            var timeTillDeath = _boidSpawn.lifetimeSeconds;
+            timeTillDeath *= rng.NextFloat(0.9f, 1.1f);
+            var deathTime = time + timeTillDeath;
             var boidState = new BoidState()
             {
             };
