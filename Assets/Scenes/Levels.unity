@@ -1042,17 +1042,17 @@ MonoBehaviour:
       scenePath: Assets/Scenes/Levels/2 Split.unity
   - metadata:
       levelName: U turn
-      par: 3
+      par: 2
     sceneReference:
       scenePath: Assets/Scenes/Levels/1 U turn.unity
   - metadata:
       levelName: Beef Tunnel
-      par: 3
+      par: 2
     sceneReference:
       scenePath: Assets/Scenes/Levels/3 Tunnel - secret pass.unity
   - metadata:
       levelName: Merge
-      par: 7
+      par: 4
     sceneReference:
       scenePath: Assets/Scenes/Levels/2.1 Merge.unity
   - metadata:
@@ -1070,6 +1070,11 @@ MonoBehaviour:
       par: 4
     sceneReference:
       scenePath: Assets/Scenes/Levels/4 Windmil.unity
+  - metadata:
+      levelName: Free Play
+      par: 9999999
+    sceneReference:
+      scenePath: Assets/Scenes/Levels/6 Free play.unity
   currentLevel: 0
   levelSelectCamera: {fileID: 519420031}
   levelSelectCollection: {fileID: 254114397}
