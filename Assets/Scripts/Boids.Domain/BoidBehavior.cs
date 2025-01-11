@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Boids.Domain.Audio;
 using Boids.Domain.BoidColors;
+using Boids.Domain.TrackAcceleration;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -68,6 +70,9 @@ namespace Boids.Domain
         public float maxColorSpeed = 8f;
         public Color maxSpeedColor = Color.cyan;
     
+        public float emitSoundJerkThreshold = 0.1f;
+        public SoundEffectType emitSoundType = SoundEffectType.Ding;
+        
         [Serializable]
         public class BoidConfig
         {
@@ -167,6 +172,13 @@ namespace Boids.Domain
                     
                     maxSpeed = authoring.maxColorSpeed,
                     maxColor = authoring.maxSpeedColor.ToFloat4(),
+                });
+                
+                AddComponent(entity, TrackedAccelerationComponent.Default);
+                AddComponent(entity, new EmitSoundWhenJerkComponent
+                {
+                    soundType = authoring.emitSoundType,
+                    jerkThreshold = authoring.emitSoundJerkThreshold,
                 });
             }
         }

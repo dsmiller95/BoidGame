@@ -17,6 +17,11 @@ namespace Boids.Domain
             return new float4(color.r, color.g, color.b, color.a);
         }
         
+        public static float3 ToFloat3(this Vector3 vector)
+        {
+            return new float3(vector.x, vector.y, vector.z);
+        }
+        
         public static Color ToColor(this float4 color)
         {
             return new Color(color.x, color.y, color.z, color.w);

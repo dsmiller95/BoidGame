@@ -1188,6 +1188,7 @@ Transform:
   - {fileID: 2958291281707967625}
   - {fileID: 5026102875592136556}
   - {fileID: 4201953830266873941}
+  - {fileID: 3155143355645795848}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5978132639839040228
@@ -1253,6 +1254,58 @@ MonoBehaviour:
       m_Calls: []
   completionAmount: 0
   actions: {fileID: 5978132639839040228}
+--- !u!1 &2367735694519739739
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3155143355645795848}
+  - component: {fileID: 3390995444826747555}
+  m_Layer: 0
+  m_Name: sound effects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3155143355645795848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367735694519739739}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3331272388252908012}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3390995444826747555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367735694519739739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87c328e44dce4627b5c2f0dc9f5fc3c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundEffects:
+  - type: 0
+    clips:
+    - {fileID: 8300000, guid: fe5bd785f1b2d7a468317d200dc9be58, type: 3}
+    volume: 1
+    semiTones: f9fffffffcffffff000000000400000007000000
+  audioSourcePrefab: {fileID: 891391608649075381, guid: 65d5f83a94895854da83d1b1ccc91468, type: 3}
+  totalSources: 8
 --- !u!1 &2433769093624132994
 GameObject:
   m_ObjectHideFlags: 0
