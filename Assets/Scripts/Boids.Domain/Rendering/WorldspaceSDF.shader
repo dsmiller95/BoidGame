@@ -231,7 +231,7 @@ Shader "Unlit/FullScreenSDF 2"
                     if (minDist > hardRadiusFraction)
                     {
                         minDist = clamp(minDist, 0, 1);
-                        finalColor.a = 1 - minDist;
+                        finalColor.a = min(finalColor.a, 1 - minDist);
                     }
                 }
                 

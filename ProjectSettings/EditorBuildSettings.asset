@@ -24,6 +24,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/Level debug.unity
     guid: cc817d3f0a4f63448a8ca59626173200
   - enabled: 1
+    path: Assets/Scenes/Levels/4 Windmil.unity
+    guid: 4a4d373f080f4e84885bb3ba546ec216
+  - enabled: 1
     path: Assets/Scenes/Levels/2.1 Merge.unity
     guid: bc0946d60732bff4ebdb33753b08c34c
   - enabled: 1
