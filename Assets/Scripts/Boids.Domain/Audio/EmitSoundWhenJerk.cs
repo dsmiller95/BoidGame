@@ -40,9 +40,8 @@ namespace Boids.Domain.Audio
             var maxEmitted = 10;
             buffer.Capacity = math.max(buffer.Capacity, maxEmitted);
             
-            foreach (var (trackedAcceleration, emitSoundComponent, localToWorld, entity) in 
-                     SystemAPI.Query<RefRO<TrackedAccelerationComponent>, RefRO<EmitSoundWhenJerkComponent>, RefRO<LocalToWorld>>()
-                         .WithEntityAccess())
+            foreach (var (trackedAcceleration, emitSoundComponent, localToWorld) in 
+                     SystemAPI.Query<RefRO<TrackedAccelerationComponent>, RefRO<EmitSoundWhenJerkComponent>, RefRO<LocalToWorld>>())
             {
                 if (buffer.Length > maxEmitted) return;
                 
@@ -52,7 +51,6 @@ namespace Boids.Domain.Audio
                 var position = localToWorld.ValueRO.Position.xy;
                 var emitted = new SoundEffectEmit
                 {
-                    emittedFrom = entity,
                     type = emittedType.Value,
                     position = position
                 };

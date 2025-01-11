@@ -40,10 +40,9 @@ namespace Boids.Domain.Audio
             var maxEmitted = 10;
             buffer.Capacity = math.max(buffer.Capacity, maxEmitted);
             
-            foreach (var (wasDragging, isDragging, emitSoundComponent, localToWorld, entity) in 
+            foreach (var (wasDragging, isDragging, emitSoundComponent, localToWorld) in 
                      SystemAPI.Query<RefRW<WasDragging>, RefRO<IsDragging>, RefRO<EmitSoundWhenDragComponent>, RefRO<LocalToWorld>>()
-                         .WithChangeFilter<IsDragging>()
-                         .WithEntityAccess())
+                         .WithChangeFilter<IsDragging>())
             {
                 if (buffer.Length > maxEmitted) return;
                 
@@ -56,7 +55,6 @@ namespace Boids.Domain.Audio
                 var position = localToWorld.ValueRO.Position.xy;
                 var emitted = new SoundEffectEmit
                 {
-                    emittedFrom = entity,
                     type = emittedType.Value,
                     position = position
                 };

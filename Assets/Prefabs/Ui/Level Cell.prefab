@@ -147,7 +147,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.85
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -278,6 +278,7 @@ GameObject:
   - component: {fileID: 8854035067640943978}
   - component: {fileID: 3642715447315340980}
   - component: {fileID: 4259007421263148771}
+  - component: {fileID: 6943009509136891779}
   m_Layer: 5
   m_Name: Play button
   m_TagString: Untagged
@@ -399,6 +400,31 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6943009509136891779}
+        m_TargetAssemblyTypeName: Boids.Domain.Audio.EmitSoundAction, Boids.Domain
+        m_MethodName: EmitSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6943009509136891779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4168729842920544784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a23e4efa4c340368abf10ddf06b8bb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundType: 3
 --- !u!1 &6757150732570679176
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +519,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.05
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

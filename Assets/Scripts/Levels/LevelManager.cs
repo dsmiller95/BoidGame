@@ -98,13 +98,15 @@ namespace Levels
 
         private void Awake()
         {
-            _levelLoadCell = new AsyncFnOnceCell(gameObject);
-            
-            DontDestroyOnLoad(this);
             if(SingletonLocator<LevelManager>.Instance != this)
             {
                 Destroy(this);
+                return;
             }
+            
+            _levelLoadCell = new AsyncFnOnceCell(gameObject);
+            
+            DontDestroyOnLoad(this);
         }
 
         private void Start()

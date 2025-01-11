@@ -17,6 +17,8 @@ namespace Boids.Domain.Audio
         Ding,
         ObstacleDrop,
         ObstaclePickup,
+        ButtonClick,
+        UiMove,
     }
 
     [Serializable]
@@ -51,7 +53,6 @@ namespace Boids.Domain.Audio
     [Serializable]
     public struct SoundEffectEmit
     {
-        public Entity emittedFrom;
         public SoundEffectType type;
         public float2 position;
     }
@@ -60,22 +61,6 @@ namespace Boids.Domain.Audio
     {
         public void EmitSounds(SoundEffectEmit[] sounds);
         public int MaxEvents { get; }
-    }
-
-    [Serializable]
-    public struct SerializableEntity
-    {
-        public int index;
-        public int version;
-
-        public static SerializableEntity From(Entity entity)
-        {
-            return new SerializableEntity
-            {
-                index = entity.Index,
-                version = entity.Version
-            };
-        }
     }
     
     [UnitySingleton]
@@ -172,6 +157,13 @@ namespace Boids.Domain.Audio
         
         private void Awake()
         {
+            if(SingletonLocator<SoundEmitter>.Instance != this)
+            {
+                Destroy(this);
+                return;
+            }
+            
+            DontDestroyOnLoad(this);
             audioSources = new AudioPlayingSource[totalSources];
             for (int i = 0; i < totalSources; i++)
             {
