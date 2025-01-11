@@ -222,8 +222,8 @@ MonoBehaviour:
   playerOwned: 1
   snapToGrid: 1
   emitSounds: 1
-  emitWhenPickedUp: 0
-  emitWhenDropped: 0
+  emitWhenPickedUp: 2
+  emitWhenDropped: 1
 --- !u!114 &6575719067358932169
 MonoBehaviour:
   m_ObjectHideFlags: 0

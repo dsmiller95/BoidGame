@@ -64,8 +64,10 @@ namespace Boids.Domain.Audio
         public static NativeArray<EmittedSound> GetSoundData(World world)
         {
             var system = world.GetExistingSystem<EmitSoundWhenJerk>();
-            var buffer = world.EntityManager.GetBuffer<EmittedSound>(system, isReadOnly: true);
-            return buffer.ToNativeArray(Allocator.Temp);
+            var buffer = world.EntityManager.GetBuffer<EmittedSound>(system, isReadOnly: false);
+            var bufferArr = buffer.ToNativeArray(Allocator.Temp);
+            buffer.Clear();
+            return bufferArr;
         }
     }
 

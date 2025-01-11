@@ -27,6 +27,7 @@ namespace Boids.Domain.Audio
         public float volume;
         public int semiToneOffset;
         public int[] semiTones;
+        public int maxConcurrent;
         
         
         public readonly float GetPitch(Random rng)
@@ -113,16 +114,29 @@ namespace Boids.Domain.Audio
                 return lastType == type;
             }
 
-            public bool Play(SoundEffectEmit emit, SoundEffect[] effects, Random rng)
+            public bool Play(SoundEffectEmit emit, SoundEffect effect, Random rng)
             {
-                var effect = Array.Find(effects, e => e.type == emit.type);
+                if (this.IsPlaying(emit.type))
+                {
+                    return PlayOverlap(emit.type);
+                }
+                else
+                {
+                    return PlayNew(emit, effect, rng);
+                }
+            }
+
+            private bool PlayNew(SoundEffectEmit emit, SoundEffect effect, Random rng)
+            {
                 lastEffect = effect;
+                lastType = emit.type;
                 totalPlaying = 1;
                 
                 source.clip = rng.PickRandom(effect.clips);
                 source.transform.position = new Vector3(emit.position.x, emit.position.y, 0);
-                source.volume = effect.volume;
                 source.pitch = effect.GetPitch(rng);
+                
+                source.volume = lastEffect.Value.volume;
                 source.Play();
                 
                 return true;
@@ -211,9 +225,38 @@ namespace Boids.Domain.Audio
             
             var effect = Array.Find(soundEffects, e => e.type == emit.type);
             if(effect.Equals(default)) return;
+            
+            var source = GetBestFor(effect, rng);
+            if (source == null) return;
+            source.Play(emit, effect, rng);
+        }
 
-            var source = audioSources[sourceIndex.Value];
-            source.Play(emit, soundEffects, rng);
+        private AudioPlayingSource? GetBestFor(SoundEffect effect, Random rng)
+        {
+            var playingSources = new List<AudioPlayingSource>();
+            
+            foreach (AudioPlayingSource source in audioSources)
+            {
+                if (source.IsPlaying(effect.type))
+                {
+                    playingSources.Add(source);
+                }
+            }
+
+            if (playingSources.Count >= effect.maxConcurrent)
+            {
+                return rng.PickRandom(playingSources);
+            }
+            
+            foreach (AudioPlayingSource source in audioSources)
+            {
+                if (!source.IsPlaying())
+                {
+                    return source;
+                }
+            }
+
+            return null;
         }
 
 
