@@ -1,4 +1,5 @@
 ﻿using System;
+using Boids.Domain.Audio;
 using Boids.Domain.GridSnap;
 using Boids.Domain.Obstacles.ComposedObstacles;
 using Boids.Domain.Rendering;
@@ -28,6 +29,9 @@ namespace Boids.Domain.Obstacles
         };
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         public bool snapToGrid = false;
+        public bool emitSounds = true;
+        public SoundEffectType emitWhenPickedUp = SoundEffectType.Ding;
+        public SoundEffectType emitWhenDropped = SoundEffectType.Ding;
         
         [SerializeField] private int gizmoDrawResolutionUnselected = 10;
         [SerializeField] private float gizmosDrawTransparencyUnselected = .1f;
@@ -83,12 +87,23 @@ namespace Boids.Domain.Obstacles
                 if (authoring.playerOwned)
                 {
                     AddComponent(entity, DraggableSdf.Default);
+                    AddComponent(entity, IsDragging.Default);
+                    AddComponent(entity, WasDragging.Default);
                     AddComponent(entity, new ScoringObstacleFlag());
                     AddComponent(entity, new ObstacleMayDisableFlag());
                 }
                 if(authoring.snapToGrid || authoring.playerOwned)
                 {
                     AddComponent(entity, new SnapMeToGridFlag());
+                }
+                
+                if (authoring.emitSounds)
+                {
+                    AddComponent(entity, new EmitSoundWhenDragComponent()
+                    {
+                        pickupSoundType = authoring.emitWhenPickedUp,
+                        dropSoundType = authoring.emitWhenDropped,
+                    });
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Boids.Domain.Audio;
 using Boids.Domain.GridSnap;
 using Boids.Domain.Rendering;
 using Dman.Utilities.Logger;
@@ -25,6 +26,9 @@ namespace Boids.Domain.Obstacles.ComposedObstacles
         
         [FormerlySerializedAs("draggable")] public bool playerOwned = false;
         public bool snapToGrid = false;
+        public bool emitSounds = true;
+        public SoundEffectType emitWhenPickedUp = SoundEffectType.Ding;
+        public SoundEffectType emitWhenDropped = SoundEffectType.Ding;
         
         
         private class ComposedObstacleBaker : Baker<ObstacleControlPointAuthoring>
@@ -75,11 +79,21 @@ namespace Boids.Domain.Obstacles.ComposedObstacles
                 if (authoring.playerOwned)
                 {
                     AddComponent(entity, DraggableSdf.HighPriority);
+                    AddComponent(entity, IsDragging.Default);
+                    AddComponent(entity, WasDragging.Default);
                     AddComponent(entity, new ObstacleMayDisableFlag());
                 }
                 if(authoring.snapToGrid || authoring.playerOwned)
                 {
                     AddComponent(entity, new SnapMeToGridFlag());
+                }
+                if (authoring.emitSounds)
+                {
+                    AddComponent(entity, new EmitSoundWhenDragComponent()
+                    {
+                        pickupSoundType = authoring.emitWhenPickedUp,
+                        dropSoundType = authoring.emitWhenDropped,
+                    });
                 }
             }
         }

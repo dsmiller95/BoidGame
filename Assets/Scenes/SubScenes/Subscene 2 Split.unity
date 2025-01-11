@@ -381,6 +381,22 @@ PrefabInstance:
       value: Obstacle palette
       objectReference: {fileID: 0}
     - target: {fileID: 3497137292991281611, guid: 307e6b3b48cf63b4f8944f392cc0c640, type: 3}
+      propertyPath: shape.boxVariant.corner.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3497137292991281611, guid: 307e6b3b48cf63b4f8944f392cc0c640, type: 3}
+      propertyPath: shape.boxVariant.corner.y
+      value: 22.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3497137292991281611, guid: 307e6b3b48cf63b4f8944f392cc0c640, type: 3}
+      propertyPath: shape.beamVariant.beamRelativeEnd.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3497137292991281611, guid: 307e6b3b48cf63b4f8944f392cc0c640, type: 3}
+      propertyPath: shape.beamVariant.beamRelativeEnd.y
+      value: 22.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3497137292991281611, guid: 307e6b3b48cf63b4f8944f392cc0c640, type: 3}
       propertyPath: plainObject.shape.boxVariant.corner.x
       value: 30
       objectReference: {fileID: 0}

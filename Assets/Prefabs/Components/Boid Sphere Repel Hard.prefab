@@ -121,6 +121,9 @@ MonoBehaviour:
         y: 0
   playerOwned: 0
   snapToGrid: 1
+  emitSounds: 1
+  emitWhenPickedUp: 2
+  emitWhenDropped: 1
   gizmoDrawResolutionUnselected: 10
   gizmosDrawTransparencyUnselected: 0.1
   gizmoDrawResolution: 20

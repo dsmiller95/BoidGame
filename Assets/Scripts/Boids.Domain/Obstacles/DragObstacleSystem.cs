@@ -1,4 +1,6 @@
-﻿using Boids.Domain.OnClick;
+﻿using System;
+using Boids.Domain.OnClick;
+using Dman.Utilities.Logger;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -68,6 +70,7 @@ namespace Boids.Domain.Obstacles
                         dragId = dragBegin.ValueRO.dragId,
                     };
                     ecb.AddComponent(closestObstacleEntity, draggin);
+                    ecb.SetComponent(closestObstacleEntity, IsDragging.Dragging);
                 }
             }
 
@@ -113,6 +116,7 @@ namespace Boids.Domain.Obstacles
                     obstacleTransform.ValueRW = obstacleTransform.ValueRW.WithPosition(newPosTransformed);
                     
                     ecb.RemoveComponent<Dragging>(entity);
+                    ecb.SetComponent(entity, IsDragging.NotDragging);
                 }
             }
             
@@ -134,6 +138,21 @@ namespace Boids.Domain.Obstacles
         public float dragPriority;
         // local space
         //public float dragRadius;
+    }
+
+    [Serializable]
+    public struct IsDragging : IComponentData
+    {
+        public static IsDragging Default => NotDragging;
+        public static IsDragging Dragging => new IsDragging
+        {
+            value = true
+        };
+        public static IsDragging NotDragging => new IsDragging
+        {
+            value = false
+        };
+        public bool value;
     }
     
     public struct Dragging : IComponentData

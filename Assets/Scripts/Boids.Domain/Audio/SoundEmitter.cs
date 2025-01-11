@@ -15,6 +15,8 @@ namespace Boids.Domain.Audio
     public enum SoundEffectType
     {
         Ding,
+        ObstacleDrop,
+        ObstaclePickup,
     }
 
     [Serializable]
@@ -23,7 +25,26 @@ namespace Boids.Domain.Audio
         public SoundEffectType type;
         public AudioClip[] clips;
         public float volume;
+        public int semiToneOffset;
         public int[] semiTones;
+        
+        
+        public readonly float GetPitch(Random rng)
+        {
+            var semitone = rng.PickRandom(semiTones) + semiToneOffset;
+            return GetSemiTone(1f, semitone);
+        }
+        
+        /// <summary>
+        /// Returns a pitch value for a given base pitch shifted by a specified number of semitones.
+        /// </summary>
+        /// <param name="basePitch">The original pitch.</param>
+        /// <param name="semitones">The number of semitones to shift. Positive = higher, negative = lower.</param>
+        /// <returns>A float representing the new pitch.</returns>
+        private static float GetSemiTone(float basePitch, int semitones)
+        {
+            return basePitch * Mathf.Pow(2f, semitones / 12f);
+        }
     }
 
     [Serializable]
@@ -101,8 +122,7 @@ namespace Boids.Domain.Audio
                 source.clip = rng.PickRandom(effect.clips);
                 source.transform.position = new Vector3(emit.position.x, emit.position.y, 0);
                 source.volume = effect.volume;
-                var semitone = rng.PickRandom(effect.semiTones);
-                source.pitch = GetSemiTone(1f, semitone);
+                source.pitch = effect.GetPitch(rng);
                 source.Play();
                 
                 return true;
@@ -127,16 +147,6 @@ namespace Boids.Domain.Audio
                 return true;
             }
             
-            /// <summary>
-            /// Returns a pitch value for a given base pitch shifted by a specified number of semitones.
-            /// </summary>
-            /// <param name="basePitch">The original pitch.</param>
-            /// <param name="semitones">The number of semitones to shift. Positive = higher, negative = lower.</param>
-            /// <returns>A float representing the new pitch.</returns>
-            private static float GetSemiTone(float basePitch, int semitones)
-            {
-                return basePitch * Mathf.Pow(2f, semitones / 12f);
-            }
         }
         
         [SerializeField]
@@ -144,6 +154,8 @@ namespace Boids.Domain.Audio
 
         public int MaxEvents => totalSources;
 
+        private EntityQuery _soundQuery;
+        
         private void Awake()
         {
             audioSources = new AudioPlayingSource[totalSources];
@@ -155,12 +167,16 @@ namespace Boids.Domain.Audio
                 audioSources[i] = new AudioPlayingSource(source);
             }
         }
+        
+        
 
         private void Update()
         {
             var world = World.DefaultGameObjectInjectionWorld;
             using var sounds = EmitSoundWhenJerk.GetSoundData(world);
             this.EmitSounds(sounds);
+            using var sounds2 = EmitSoundWhenDrag.GetSoundData(world);
+            this.EmitSounds(sounds2);
         }
 
 

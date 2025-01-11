@@ -72,6 +72,7 @@ namespace Boids.Domain
     
         public float emitSoundJerkThreshold = 0.1f;
         public SoundEffectType emitSoundType = SoundEffectType.Ding;
+        public bool emitSounds = false;
         
         [Serializable]
         public class BoidConfig
@@ -173,13 +174,16 @@ namespace Boids.Domain
                     maxSpeed = authoring.maxColorSpeed,
                     maxColor = authoring.maxSpeedColor.ToFloat4(),
                 });
-                
-                AddComponent(entity, TrackedAccelerationComponent.Default);
-                AddComponent(entity, new EmitSoundWhenJerkComponent
+
+                if (authoring.emitSounds)
                 {
-                    soundType = authoring.emitSoundType,
-                    jerkThreshold = authoring.emitSoundJerkThreshold,
-                });
+                    AddComponent(entity, TrackedAccelerationComponent.Default);
+                    AddComponent(entity, new EmitSoundWhenJerkComponent
+                    {
+                        soundType = authoring.emitSoundType,
+                        jerkThreshold = authoring.emitSoundJerkThreshold,
+                    });
+                }
             }
         }
     

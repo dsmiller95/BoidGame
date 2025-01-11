@@ -1,4 +1,5 @@
 ﻿using System;
+using Boids.Domain.Obstacles;
 using Boids.Domain.TrackAcceleration;
 using Dman.Utilities;
 using Dman.Utilities.Logger;
@@ -14,7 +15,7 @@ namespace Boids.Domain.Audio
 {
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-    public partial struct EmitSoundWhenJerk : ISystem
+    public partial struct EmitSoundWhenDrag : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
@@ -34,19 +35,22 @@ namespace Boids.Domain.Audio
         public void OnUpdate(ref SystemState state)
         {
             var world = state.WorldUnmanaged;
-            var buffer = world.EntityManager.GetBuffer<EmittedSound>(state.SystemHandle);
-            buffer.Clear();
+            var buffer = world.EntityManager.GetBuffer<EmittedSound>(state.SystemHandle, isReadOnly: false);
             
             var maxEmitted = 10;
             buffer.Capacity = math.max(buffer.Capacity, maxEmitted);
             
-            foreach (var (trackedAcceleration, emitSoundComponent, localToWorld, entity) in 
-                     SystemAPI.Query<RefRO<TrackedAccelerationComponent>, RefRO<EmitSoundWhenJerkComponent>, RefRO<LocalToWorld>>()
+            foreach (var (wasDragging, isDragging, emitSoundComponent, localToWorld, entity) in 
+                     SystemAPI.Query<RefRW<WasDragging>, RefRO<IsDragging>, RefRO<EmitSoundWhenDragComponent>, RefRO<LocalToWorld>>()
+                         .WithChangeFilter<IsDragging>()
                          .WithEntityAccess())
             {
                 if (buffer.Length > maxEmitted) return;
                 
-                var emittedType = emitSoundComponent.ValueRO.TryEmit(trackedAcceleration.ValueRO);
+                if(isDragging.ValueRO.value == wasDragging.ValueRO.value) continue;
+                wasDragging.ValueRW.value = isDragging.ValueRO.value;
+                
+                var emittedType = emitSoundComponent.ValueRO.TryEmit(becameDragging: isDragging.ValueRO.value);
                 if (!emittedType.HasValue) continue;
                 
                 var position = localToWorld.ValueRO.Position.xy;
@@ -63,26 +67,33 @@ namespace Boids.Domain.Audio
         
         public static NativeArray<EmittedSound> GetSoundData(World world)
         {
-            var system = world.GetExistingSystem<EmitSoundWhenJerk>();
-            var buffer = world.EntityManager.GetBuffer<EmittedSound>(system, isReadOnly: true);
-            return buffer.ToNativeArray(Allocator.Temp);
+            var system = world.GetExistingSystem<EmitSoundWhenDrag>();
+            var buffer = world.EntityManager.GetBuffer<EmittedSound>(system, isReadOnly: false);
+            var bufferArr = buffer.ToNativeArray(Allocator.Temp);
+            buffer.Clear();
+            return bufferArr;
         }
     }
 
     [Serializable]
-    public struct EmitSoundWhenJerkComponent : IComponentData
+    public struct WasDragging : IComponentData
     {
-        public SoundEffectType soundType;
-        public float jerkThreshold;
+        public static WasDragging Default => NotDragging;
+        public static WasDragging Dragging => new() {value = true};
+        public static WasDragging NotDragging => new() {value = false};
+        
+        public bool value;
+    }
+    
+    [Serializable]
+    public struct EmitSoundWhenDragComponent : IComponentData
+    {
+        public SoundEffectType pickupSoundType;
+        public SoundEffectType dropSoundType;
 
-        public readonly SoundEffectType? TryEmit(TrackedAccelerationComponent trackedAccelerationComponent)
+        public readonly SoundEffectType? TryEmit(bool becameDragging)
         {
-            if (math.length(trackedAccelerationComponent.jerk) > jerkThreshold)
-            {
-                return soundType;
-            }
-
-            return null;
+            return becameDragging ? pickupSoundType : dropSoundType;
         }
     }
 }

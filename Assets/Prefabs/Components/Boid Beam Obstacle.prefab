@@ -63,6 +63,9 @@ MonoBehaviour:
   color: {r: 1, g: 0, b: 0, a: 1}
   playerOwned: 0
   snapToGrid: 1
+  emitSounds: 1
+  emitWhenPickedUp: 0
+  emitWhenDropped: 0
 --- !u!114 &1096274206254446858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +217,9 @@ MonoBehaviour:
         y: 0
   playerOwned: 0
   snapToGrid: 1
+  emitSounds: 1
+  emitWhenPickedUp: 2
+  emitWhenDropped: 1
   gizmoDrawResolutionUnselected: 10
   gizmosDrawTransparencyUnselected: 0.1
   gizmoDrawResolution: 40
