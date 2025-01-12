@@ -52,6 +52,12 @@ namespace Levels
             lastCompletionData = score;
 
             var levelManager = SingletonLocator<IManageLevels>.Instance;
+            if (levelManager == null)
+            { 
+                Debug.LogWarning("level manager is null. playing in editor?");
+                return;
+            }
+            
             levelManager.CompleteLevel(_levelData.LevelIndexId, score);
             
             gameWinScreenDisplay.SetActive(true);

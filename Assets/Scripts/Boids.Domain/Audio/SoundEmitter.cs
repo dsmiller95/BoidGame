@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Boids.Domain.Goals;
 using Dman.Utilities;
 using Dman.Utilities.Logger;
@@ -19,8 +20,29 @@ namespace Boids.Domain.Audio
         ObstaclePickup,
         ButtonClick,
         UiMove,
+        GoalCompleteIncrement,
     }
 
+    [Serializable]
+    public struct SemitoneLayer
+    {
+        public int semitoneA;
+        public float volumeA;
+        
+        public int semitoneB;
+        public float volumeB;
+    }
+
+    [Serializable]
+    public struct ShepardToneLayer
+    {
+        public float pitchA;
+        public float volumeA;
+        
+        public float pitchB;
+        public float volumeB;
+    }
+    
     [Serializable]
     public struct SoundEffect
     {
@@ -29,13 +51,66 @@ namespace Boids.Domain.Audio
         public float volume;
         public int semiToneOffset;
         public int[] semiTones;
+        
+        [Tooltip("presumes semiTones are sorted in ascending order")]
+        [Range(0, 12)]
+        public int shepardToneSemitoneOffset;
+        
         public int maxConcurrent;
+        public bool allowOverlapPlay;
         
-        
-        public readonly float GetPitch(Random rng)
+        public readonly int PickSemitone(Random rng)
         {
-            var semitone = rng.PickRandom(semiTones) + semiToneOffset;
-            return GetSemiTone(1f, semitone);
+            return rng.PickRandom(semiTones) + semiToneOffset;
+        }
+        public readonly int PickSemitoneIndex(Random rng)
+        {
+            return rng.Next(0, semiTones.Length);
+        }
+        public readonly float GetSemitonePitch(int index)
+        {
+            var semiTone = semiTones[index] + semiToneOffset;
+            return GetSemiTone(1, semiTone);
+        }
+
+        public readonly ShepardToneLayer GetShepardTone(int semiToneIndex)
+        {
+            var minSemitone = semiTones.First() + semiToneOffset;
+            var maxSemitone = semiTones.Last() + semiToneOffset + shepardToneSemitoneOffset;
+            var allSemitonesMidpoint = (maxSemitone + minSemitone) / 2f;
+            var semitonesExtent = (maxSemitone - minSemitone) / 2f;
+            
+            
+            var toneA = semiTones[semiToneIndex] + semiToneOffset;
+            var toneB = toneA + shepardToneSemitoneOffset;
+            
+            var toneANormalized = (toneA - allSemitonesMidpoint) / semitonesExtent;
+            var toneBNormalized = (toneB - allSemitonesMidpoint) / semitonesExtent;
+
+            var toneAVolume = GaussianValue(toneANormalized); //  1 - math.abs(toneANormalized);
+            var toneBVolume = GaussianValue(toneBNormalized); //  1 - math.abs(toneBNormalized);
+            
+            return new ShepardToneLayer()
+            {
+                pitchA = GetSemiTone(1, toneA),
+                volumeA = toneAVolume,
+                
+                pitchB = GetSemiTone(1, toneB),
+                volumeB = toneBVolume,
+            };
+        }
+        
+        public static float GaussianValue(float x, float sigma = 0.5f)
+        {
+            // Gaussian function (centered at 0)
+            // f(x) = e^(-0.5 * (x/sigma)^2)
+            // This peaks at x=0 and tapers off.
+            return Mathf.Exp(-0.5f * (x / sigma) * (x / sigma));
+        }
+        
+        public readonly int NextSemitoneIndex(int currentSemitoneIndex)
+        {
+            return (currentSemitoneIndex + 1) % semiTones.Length;
         }
         
         /// <summary>
@@ -55,6 +130,8 @@ namespace Boids.Domain.Audio
     {
         public SoundEffectType type;
         public float2 position;
+        // when passing in non-zero, this will ensure that all sounds from the same emitter will be played on the same source
+        public int emitterId;
     }
 
     public interface IEmitSoundEffects
@@ -74,17 +151,23 @@ namespace Boids.Domain.Audio
         private class AudioPlayingSource
         {
             public AudioSource source;
+            public AudioSource overlaySource;
             public SoundEffectType? lastType;
             public SoundEffect? lastEffect;
+            public int lastEmitterId;
             public int totalPlaying;
 
+            private int lastSemitoneIndexPlayed;
 
-            public AudioPlayingSource(AudioSource source)
+
+            public AudioPlayingSource(AudioSource source, AudioSource overlaySource)
             {
                 this.source = source;
+                this.overlaySource = overlaySource;
                 lastType = null;
                 lastEffect = null;
                 totalPlaying = 0;
+                lastEmitterId = 0;
             }
             
             public bool IsPlaying()
@@ -101,6 +184,7 @@ namespace Boids.Domain.Audio
 
             public bool Play(SoundEffectEmit emit, SoundEffect effect, Random rng)
             {
+                this.lastEmitterId = emit.emitterId;
                 if (this.IsPlaying(emit.type))
                 {
                     return PlayOverlap(emit.type);
@@ -117,12 +201,44 @@ namespace Boids.Domain.Audio
                 lastType = emit.type;
                 totalPlaying = 1;
                 
-                source.clip = rng.PickRandom(effect.clips);
-                source.transform.position = new Vector3(emit.position.x, emit.position.y, 0);
-                source.pitch = effect.GetPitch(rng);
+                var clip = rng.PickRandom(effect.clips);
                 
-                source.volume = lastEffect.Value.volume;
-                source.Play();
+                
+
+                source.clip = clip;
+                source.transform.position = new Vector3(emit.position.x, emit.position.y, 0);
+                
+                if (effect.shepardToneSemitoneOffset > 0)
+                {
+                    overlaySource.clip = clip;
+                    overlaySource.transform.position = new Vector3(emit.position.x, emit.position.y, 0);
+                    
+                    
+                    var semiToneIndex = effect.NextSemitoneIndex(lastSemitoneIndexPlayed);
+                    lastSemitoneIndexPlayed = semiToneIndex;
+                    
+                    var shepardTone = effect.GetShepardTone(semiToneIndex);
+                    source.pitch = shepardTone.pitchA;
+                    source.volume = lastEffect.Value.volume * shepardTone.volumeA;
+                    source.Play();
+                    
+                    overlaySource.pitch = shepardTone.pitchB;
+                    overlaySource.volume = lastEffect.Value.volume * shepardTone.volumeB;
+                    overlaySource.Play();
+                }
+                else
+                {
+                    
+                    var semiToneIndex = effect.PickSemitoneIndex(rng);
+                    lastSemitoneIndexPlayed = semiToneIndex;
+                    var pitch = effect.GetSemitonePitch(semiToneIndex);
+                    
+                    source.pitch = pitch;
+                    source.volume = lastEffect.Value.volume;
+                    source.Play();
+                }
+                
+                
                 
                 return true;
             }
@@ -163,14 +279,20 @@ namespace Boids.Domain.Audio
                 return;
             }
             
+            transform.SetParent(null);
             DontDestroyOnLoad(this);
             audioSources = new AudioPlayingSource[totalSources];
             for (int i = 0; i < totalSources; i++)
             {
+                audioSources[i] = new AudioPlayingSource(CreateSource(), CreateSource());
+            }
+
+            AudioSource CreateSource()
+            {
                 var source = Instantiate(audioSourcePrefab, transform);
                 source.playOnAwake = false;
                 source.loop = false;
-                audioSources[i] = new AudioPlayingSource(source);
+                return source;
             }
         }
         
@@ -205,40 +327,47 @@ namespace Boids.Domain.Audio
 
         private void EmitEffect(SoundEffectEmit emit, Random rng)
         {
-            var sourceIndex = GetAvailableSource();
-            if (sourceIndex == null)
-            {
-                var alreadyPlayingSourceIndex = GetRandomSourcePlaying(emit.type, rng);
-                if (!alreadyPlayingSourceIndex.HasValue) return;
-                var alreadyPlayingSource = audioSources[alreadyPlayingSourceIndex.Value];
-                alreadyPlayingSource.PlayOverlap(emit.type);
-                return;
-            }
-            
             var effect = Array.Find(soundEffects, e => e.type == emit.type);
             if(effect.Equals(default)) return;
             
-            var source = GetBestFor(effect, rng);
+            var source = GetBestFor(effect, emit.emitterId, rng);
             if (source == null) return;
             source.Play(emit, effect, rng);
         }
 
-        private AudioPlayingSource? GetBestFor(SoundEffect effect, Random rng)
+        private AudioPlayingSource? GetBestFor(SoundEffect effect, int emitterId, Random rng)
         {
-            var playingSources = new List<AudioPlayingSource>();
-            
-            foreach (AudioPlayingSource source in audioSources)
+            if (emitterId != 0)
             {
-                if (source.IsPlaying(effect.type))
+                // if we were provided an emitterID, passthrough to the same source
+                var affinitySource = audioSources.FirstOrDefault(x => x.lastEmitterId == emitterId && (x.IsPlaying(effect.type) || !x.IsPlaying()));
+                if (affinitySource != null)
                 {
-                    playingSources.Add(source);
+                    // already playing, and can't overlap. we're done
+                    if (!effect.allowOverlapPlay && affinitySource.IsPlaying()) return null;
+                    return affinitySource;
                 }
             }
-
-            if (playingSources.Count >= effect.maxConcurrent)
+            else
             {
-                return rng.PickRandom(playingSources);
+                // if we don't have emitterId affinity, pick whichever source is already playing this sound, if we are above the max concurrency
+                var playingSources = new List<AudioPlayingSource>();
+            
+                foreach (AudioPlayingSource source in audioSources)
+                {
+                    if (source.IsPlaying(effect.type))
+                    {
+                        playingSources.Add(source);
+                    }
+                }
+
+                if (playingSources.Count >= effect.maxConcurrent)
+                {
+                    return effect.allowOverlapPlay ? rng.PickRandom(playingSources) : null;
+                }
             }
+            
+            // if all else fails, pick the first available source
             
             foreach (AudioPlayingSource source in audioSources)
             {
@@ -249,38 +378,6 @@ namespace Boids.Domain.Audio
             }
 
             return null;
-        }
-
-
-        
-        private int? GetAvailableSource()
-        {
-            for (var index = 0; index < audioSources.Length; index++)
-            {
-                var source = audioSources[index];
-                if (!source.IsPlaying())
-                {
-                    return index;
-                }
-            }
-
-            return null;
-        }
-        
-        private int? GetRandomSourcePlaying(SoundEffectType type, Random rng)
-        {
-            var playingSources = new List<int>();
-            for (var index = 0; index < audioSources.Length; index++)
-            {
-                var source = audioSources[index];
-                if (source.IsPlaying(type))
-                {
-                    playingSources.Add(index);
-                }
-            }
-
-            if (playingSources.Count == 0) return null;
-            return rng.PickRandom(playingSources);
         }
     }
 }

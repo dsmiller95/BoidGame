@@ -51,35 +51,54 @@ MonoBehaviour:
     volume: 0.05
     semiToneOffset: 0
     semiTones: f9fffffffcffffff000000000400000007000000
+    shepardToneSemitoneOffset: 0
     maxConcurrent: 1
+    allowOverlapPlay: 1
   - type: 1
     clips:
     - {fileID: 8300000, guid: 9ce1041aab6a03549875f9c6f8c42d8a, type: 3}
     volume: 1
     semiToneOffset: -6
     semiTones: 00000000fdfffffff9ffffff
+    shepardToneSemitoneOffset: 0
     maxConcurrent: 2
+    allowOverlapPlay: 0
   - type: 2
     clips:
     - {fileID: 8300000, guid: 9ce1041aab6a03549875f9c6f8c42d8a, type: 3}
     volume: 1
     semiToneOffset: -6
     semiTones: 000000000400000007000000
+    shepardToneSemitoneOffset: 0
     maxConcurrent: 2
+    allowOverlapPlay: 0
   - type: 3
     clips:
     - {fileID: 8300000, guid: 9ce1041aab6a03549875f9c6f8c42d8a, type: 3}
     volume: 1
     semiToneOffset: 0
     semiTones: f9fffffffcffffff000000000400000007000000
+    shepardToneSemitoneOffset: 0
     maxConcurrent: 1
+    allowOverlapPlay: 0
   - type: 4
     clips:
     - {fileID: 8300000, guid: 9ce1041aab6a03549875f9c6f8c42d8a, type: 3}
     volume: 0.5
     semiToneOffset: 0
     semiTones: f9fffffffcffffff000000000400000007000000
+    shepardToneSemitoneOffset: 0
     maxConcurrent: 2
+    allowOverlapPlay: 0
+  - type: 5
+    clips:
+    - {fileID: 8300000, guid: 16892ce107d138e4dbb9cfd894bb3d97, type: 3}
+    volume: 0.5
+    semiToneOffset: 0
+    semiTones: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b000000
+    shepardToneSemitoneOffset: 12
+    maxConcurrent: 1
+    allowOverlapPlay: 0
   audioSourcePrefab: {fileID: 891391608649075381, guid: 65d5f83a94895854da83d1b1ccc91468, type: 3}
   totalSources: 4
   audioSources: []

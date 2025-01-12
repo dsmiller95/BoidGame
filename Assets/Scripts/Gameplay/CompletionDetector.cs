@@ -13,6 +13,9 @@ namespace Gameplay
         
         public UnityEvent<float> onCompletionAmountChanged;
         public UnityEvent<float> onInverseCompletionAmountChanged;
+        
+        public UnityEvent<float> onCompletionAmountIncrease;
+        
         [SerializeField] private float completionAmount;
 
         public InLevelActions actions;
@@ -48,9 +51,15 @@ namespace Gameplay
         private void SetCompletionAmount(float value)
         {
             if(Mathf.Approximately(value, completionAmount)) return;
+            var delta = value - completionAmount;
             completionAmount = value;
             onCompletionAmountChanged.Invoke(value);
             onInverseCompletionAmountChanged.Invoke(1 - value);
+            
+            if(delta > 0)
+            {
+                onCompletionAmountIncrease.Invoke(delta);
+            }
         }
     }
 }

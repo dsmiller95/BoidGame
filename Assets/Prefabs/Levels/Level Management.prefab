@@ -499,6 +499,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundType: 3
+  enforceUnique: 0
 --- !u!1 &1729329430113499710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1054,6 +1055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundType: 3
+  enforceUnique: 0
 --- !u!1 &2219872078527042010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1215,6 +1217,7 @@ GameObject:
   - component: {fileID: 3331272388252908012}
   - component: {fileID: 5978132639839040228}
   - component: {fileID: 615962329383423887}
+  - component: {fileID: 4281455326907195890}
   m_Layer: 0
   m_Name: Level Management
   m_TagString: Untagged
@@ -1304,8 +1307,37 @@ MonoBehaviour:
   onInverseCompletionAmountChanged:
     m_PersistentCalls:
       m_Calls: []
+  onCompletionAmountIncrease:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4281455326907195890}
+        m_TargetAssemblyTypeName: Boids.Domain.Audio.EmitSoundAction, Boids.Domain
+        m_MethodName: EmitSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   completionAmount: 0
   actions: {fileID: 5978132639839040228}
+--- !u!114 &4281455326907195890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2352205910239390944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a23e4efa4c340368abf10ddf06b8bb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundType: 5
+  enforceUnique: 1
 --- !u!1 &2433769093624132994
 GameObject:
   m_ObjectHideFlags: 0
@@ -2642,6 +2674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundType: 4
+  enforceUnique: 0
 --- !u!1 &4843334454144634437
 GameObject:
   m_ObjectHideFlags: 0
@@ -3262,6 +3295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundType: 3
+  enforceUnique: 0
 --- !u!1 &6642060828922250452
 GameObject:
   m_ObjectHideFlags: 0
@@ -3493,6 +3527,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundType: 3
+  enforceUnique: 0
 --- !u!1 &7467513035269773413
 GameObject:
   m_ObjectHideFlags: 0
@@ -3652,6 +3687,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundType: 3
+  enforceUnique: 0
 --- !u!1 &7558900410702277461
 GameObject:
   m_ObjectHideFlags: 0
