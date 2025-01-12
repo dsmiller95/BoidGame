@@ -13,6 +13,10 @@ namespace Boids.Domain.Goals
         public int required;
         public float decayPerSecond;
         
+        public readonly float GetUnclampedCompletionPercent(in GoalCount count)
+        {
+            return (float)count.count / required;
+        }
         public readonly float GetCompletionPercent(in GoalCount count)
         {
             return math.clamp((float)count.count / required, 0, 1);

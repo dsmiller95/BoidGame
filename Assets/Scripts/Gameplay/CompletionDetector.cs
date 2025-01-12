@@ -3,6 +3,7 @@ using Levels;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace Gameplay
 {
@@ -14,9 +15,11 @@ namespace Gameplay
         public UnityEvent<float> onCompletionAmountChanged;
         public UnityEvent<float> onInverseCompletionAmountChanged;
         
-        public UnityEvent<float> onCompletionAmountIncrease;
+        [FormerlySerializedAs("onCompletionAmountIncrease")] 
+        public UnityEvent<float> onUnclampedCompletionAmountIncrease;
         
         [SerializeField] private float completionAmount;
+        [SerializeField] private float unclampedCompletionAmount;
 
         public InLevelActions actions;
         
@@ -35,12 +38,14 @@ namespace Gameplay
             
             SetIsCompleted(score.IsCompleted);
             SetCompletionAmount(score.scoreCompletionPercent);
+            SetUnclampedCompletionAmount(score.unclampedScoreCompletionPercent);
         }
         
         private void SetIsCompleted(bool value)
         {
             if(value == isCompleted) return;
             isCompleted = value;
+            
             onIsCompletedChanged.Invoke(isCompleted);
             if (isCompleted)
             {
@@ -51,14 +56,21 @@ namespace Gameplay
         private void SetCompletionAmount(float value)
         {
             if(Mathf.Approximately(value, completionAmount)) return;
-            var delta = value - completionAmount;
             completionAmount = value;
+            
             onCompletionAmountChanged.Invoke(value);
             onInverseCompletionAmountChanged.Invoke(1 - value);
+        }
+        
+        private void SetUnclampedCompletionAmount(float value)
+        {
+            if(Mathf.Approximately(value, unclampedCompletionAmount)) return;
+            var delta = value - unclampedCompletionAmount;
+            unclampedCompletionAmount = value;
             
             if(delta > 0)
             {
-                onCompletionAmountIncrease.Invoke(delta);
+                onUnclampedCompletionAmountIncrease.Invoke(delta);
             }
         }
     }

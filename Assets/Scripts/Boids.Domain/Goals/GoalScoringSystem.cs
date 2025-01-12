@@ -18,10 +18,12 @@ namespace Boids.Domain.Goals
         public void OnUpdate(ref SystemState state)
         {
             var completionAllGoals = 0f;
+            var unclampedCompletionAllGoals = 0f;
             var totalGoals = 0;
 
             foreach (var (goal, goalCount) in SystemAPI.Query<RefRO<Goal>, RefRO<GoalCount>>())
             {
+                unclampedCompletionAllGoals += goal.ValueRO.GetUnclampedCompletionPercent(goalCount.ValueRO);
                 completionAllGoals += goal.ValueRO.GetCompletionPercent(goalCount.ValueRO);
                 totalGoals++;
             }
@@ -29,6 +31,7 @@ namespace Boids.Domain.Goals
             var scoredData = new ScoredGoalsData()
             {
                 scoreCompletionPercent = totalGoals == 0 ? 0 : completionAllGoals / totalGoals,
+                unclampedScoreCompletionPercent = totalGoals == 0 ? 0 : unclampedCompletionAllGoals / totalGoals
             };
             state.WorldUnmanaged.EntityManager.SetComponentData(state.SystemHandle, scoredData);
         }
@@ -45,6 +48,7 @@ namespace Boids.Domain.Goals
     {
         [Range(0, 1)]
         public float scoreCompletionPercent;
+        public float unclampedScoreCompletionPercent;
         
         public bool IsCompleted => scoreCompletionPercent >= 1;
     }
