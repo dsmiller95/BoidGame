@@ -1,4 +1,5 @@
-﻿using Boids.Domain.Goals;
+﻿using Analytics;
+using Boids.Domain.Goals;
 using Boids.Domain.Obstacles;
 using Cysharp.Threading.Tasks;
 using Dman.Utilities;
@@ -15,18 +16,21 @@ namespace Levels
         public TMPro.TMP_Text gameWinText;
 
         private AsyncFnOnceCell _uiOnceCell;
+        private bool hasCompleted = false;
         
         private LevelData _levelData;
         public void InitializeWith(LevelData levelData)
         {
             _levelData = levelData;
             labelText.text = levelData.SetupData.levelName + "\nPar: " + levelData.SetupData.par;
+            CustomAnalytics.LogLevelStart(levelData.LevelIndexId);
         }
 
         private void Awake()
         {
             _uiOnceCell = new AsyncFnOnceCell(gameObject);
             gameWinScreenDisplay.SetActive(false);
+            hasCompleted = false;
         }
 
         public void RestartLevel()
@@ -38,17 +42,24 @@ namespace Levels
         
         public void OnCompletion()
         {
+            if(hasCompleted)
+            {
+                Debug.LogWarning("level has already been completed");
+                return;
+            }
+
+            hasCompleted = true;
+            
+            
             var world = World.DefaultGameObjectInjectionWorld;
-            var scoredObstacles = ObstacleScoringSystem.GetScoringObstacleData(world);
             var scoredGoals = GoalScoringSystem.GetScoringData(world);
             if (!scoredGoals.IsCompleted)
             {
                 Debug.LogWarning("marking level as completed but goal scoring system does not indicate completion");
             }
-            var score = new LevelCompletionData
-            {
-                usedObstacles = scoredObstacles.totalScoringObstacles
-            };
+            
+            var score = GetScore(world);
+            
             lastCompletionData = score;
 
             var levelManager = SingletonLocator<IManageLevels>.Instance;
@@ -59,6 +70,7 @@ namespace Levels
             }
             
             levelManager.CompleteLevel(_levelData.LevelIndexId, score);
+            CustomAnalytics.LogLevelCompletion(_levelData.LevelIndexId, score.usedObstacles);
             
             gameWinScreenDisplay.SetActive(true);
             
@@ -74,7 +86,17 @@ namespace Levels
             gameWinText.text = gameWinMessage;
             
             
+            
             //this._uiOnceCell.TryRun(c => DoCompletionAsync(score), "warn");
+        }
+
+        private LevelCompletionData GetScore(World world)
+        {
+            var scoredObstacles = ObstacleScoringSystem.GetScoringObstacleData(world);
+            return new LevelCompletionData
+            {
+                usedObstacles = scoredObstacles.totalScoringObstacles
+            };
         }
 
         private ScoreFlavor? GetFlavor(int score, int par)
@@ -114,32 +136,28 @@ namespace Levels
             Albatross,
             Condor,
         }
-
-        private async UniTask DoCompletionAsync(LevelCompletionData completionData)
-        {
-            var levelManager = SingletonLocator<IManageLevels>.Instance;
-            levelManager.CompleteLevel(_levelData.LevelIndexId, completionData);
-        }
         
         public void NextLevel()
         {
             var world = World.DefaultGameObjectInjectionWorld;
-            var scoredObstacles = ObstacleScoringSystem.GetScoringObstacleData(world);
             var scoredGoals = GoalScoringSystem.GetScoringData(world);
-            var score = new LevelCompletionData
+
+            LevelCompletionData score;
+            if (scoredGoals.IsCompleted)
             {
-                usedObstacles = scoredObstacles.totalScoringObstacles
-            };
-            if (!scoredGoals.IsCompleted)
+                score = GetScore(world);
+            }
+            else
             {
-                if(!lastCompletionData.HasValue)
+                if (!lastCompletionData.HasValue)
                 {
                     Debug.LogWarning("marking level as completed but goal scoring system does not indicate completion");
                     return;
                 }
+
                 score = lastCompletionData.Value;
             }
-            
+
             var levelManager = SingletonLocator<IManageLevels>.Instance;
             levelManager.CompleteLevel(_levelData.LevelIndexId, score);
             levelManager.NextLevel();
@@ -151,17 +169,14 @@ namespace Levels
             var scoredGoals = GoalScoringSystem.GetScoringData(world);
             if (scoredGoals.IsCompleted)
             {
-                var scoredObstacles = ObstacleScoringSystem.GetScoringObstacleData(world);
-                var score = new LevelCompletionData
-                {
-                    usedObstacles = scoredObstacles.totalScoringObstacles
-                };
+                var score = GetScore(world);
                 
                 var levelManager = SingletonLocator<IManageLevels>.Instance;
                 levelManager.CompleteLevel(_levelData.LevelIndexId, score);
             }
             
             SingletonLocator<IManageLevels>.Instance.ExitLevel();
+            CustomAnalytics.LogLevelExit(_levelData.LevelIndexId);
         }
     }
 }

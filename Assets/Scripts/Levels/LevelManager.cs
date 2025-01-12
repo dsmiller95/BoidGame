@@ -36,6 +36,11 @@ namespace Levels
             if (!a.HasValue) return b;
             return a.Value.usedObstacles < b.usedObstacles ? a.Value : b;
         }
+
+        public bool AmIBetterThan(LevelCompletionData other)
+        {
+            return usedObstacles < other.usedObstacles;
+        }
     }
     
     public class LevelData
