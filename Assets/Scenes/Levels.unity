@@ -1106,17 +1106,17 @@ MonoBehaviour:
       levelName: Beef Tunnel
       par: 2
     sceneReference:
-      scenePath: Assets/Scenes/Levels/3 Tunnel - secret pass.unity
+      scenePath: Assets/Scenes/Levels/3 Tunnel.unity
+  - metadata:
+      levelName: Race
+      par: 4
+    sceneReference:
+      scenePath: Assets/Scenes/Levels/5 Race - secret pass.unity
   - metadata:
       levelName: Merge
       par: 4
     sceneReference:
       scenePath: Assets/Scenes/Levels/2.1 Merge.unity
-  - metadata:
-      levelName: Race
-      par: 4
-    sceneReference:
-      scenePath: Assets/Scenes/Levels/5 Race.unity
   - metadata:
       levelName: Orbit
       par: 2
