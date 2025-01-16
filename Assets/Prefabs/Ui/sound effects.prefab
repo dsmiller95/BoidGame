@@ -93,7 +93,7 @@ MonoBehaviour:
   - type: 5
     clips:
     - {fileID: 8300000, guid: 0a5921dadb2ef0948af8c9e72b7bb1b6, type: 3}
-    volume: 0.1
+    volume: 0.15
     semiToneOffset: -12
     semiTones: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b000000
     shepardToneSemitoneOffset: 12
