@@ -106,9 +106,9 @@ namespace Levels
                 return ScoreFlavor.Ace;
             }
 
-            var delta = par - score;
+            var overPar = score - par;
 
-            return delta switch
+            return overPar switch
             {
                 -4 => ScoreFlavor.Condor,
                 -3 => ScoreFlavor.Albatross,
