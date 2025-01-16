@@ -756,10 +756,10 @@ RectTransform:
   - {fileID: 3286556341852951274}
   m_Father: {fileID: 5517963905722995563}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -4.9999847, y: -5}
+  m_SizeDelta: {x: -10.0000305, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1030356321242129439
 MonoBehaviour:
@@ -778,8 +778,8 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
+  m_ChildAlignment: 2
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -1307,7 +1307,7 @@ MonoBehaviour:
   onInverseCompletionAmountChanged:
     m_PersistentCalls:
       m_Calls: []
-  onCompletionAmountIncrease:
+  onUnclampedCompletionAmountIncrease:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4281455326907195890}
@@ -1323,6 +1323,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   completionAmount: 0
+  unclampedCompletionAmount: 0
   actions: {fileID: 5978132639839040228}
 --- !u!114 &4281455326907195890
 MonoBehaviour:
