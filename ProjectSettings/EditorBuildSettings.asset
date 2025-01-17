@@ -38,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Levels/5 Race - secret pass.unity
     guid: 527cdabaec93e714bb013fb3112dd57d
+  - enabled: 1
+    path: Assets/Scenes/Levels/5 Black Hole.unity
+    guid: da2f347a13af30a46876d3c05a0bec0c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
