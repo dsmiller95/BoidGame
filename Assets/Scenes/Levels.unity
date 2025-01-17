@@ -1128,7 +1128,7 @@ MonoBehaviour:
     sceneReference:
       scenePath: Assets/Scenes/Levels/3 Orbit.unity
   - metadata:
-      levelName: Black Hole
+      levelName: Blue Hole
       par: 4
     sceneReference:
       scenePath: Assets/Scenes/Levels/5 Black Hole.unity
