@@ -463,6 +463,14 @@ PrefabInstance:
       propertyPath: spawnAngle
       value: 213
       objectReference: {fileID: 0}
+    - target: {fileID: 8051992338381986812, guid: 748f387586708ba4db0ef34e9d67e909, type: 3}
+      propertyPath: timePerSpawn
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 8051992338381986812, guid: 748f387586708ba4db0ef34e9d67e909, type: 3}
+      propertyPath: boidGroupSize
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
