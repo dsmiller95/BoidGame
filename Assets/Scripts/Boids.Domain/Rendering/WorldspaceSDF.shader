@@ -129,7 +129,7 @@ Shader "Unlit/FullScreenSDF 2"
             StructuredBuffer<SDFObjectData> _SDFObjects;
             int _SDFObjectCount;
 
-            float GetDistanceFromCenter(float2 relPos, SdfVariantData variantData, float radius)
+            float GetDistanceFromCenter(float2 relPos, SdfVariantData variantData)
             {
                 int st = variantData.shapeType;
 
@@ -156,7 +156,7 @@ Shader "Unlit/FullScreenSDF 2"
                 SDFObjectData objectData)
             {
                 
-                float dist = GetDistanceFromCenter(relPos, objectData.variantData, objectData.radius);
+                float dist = GetDistanceFromCenter(relPos, objectData.variantData);
                 if (objectData.annularRadius > 0)
                 {
                     dist = dist - objectData.radius;
@@ -210,7 +210,7 @@ Shader "Unlit/FullScreenSDF 2"
 
                 float minNormalDist = 1e9;
                 float finalDist = 1e9;
-                float hardRadius = 1e9;
+                float hardRadius = 1;
                 float4 finalColor = _BackgroundColor;
 
                 //[unroll]
@@ -225,8 +225,8 @@ Shader "Unlit/FullScreenSDF 2"
                     {
                         minNormalDist = normalDist;
                         finalDist = dist;
-                        finalColor = obj.color;
                         hardRadius = obj.hardRadius;
+                        finalColor = obj.color;
                     }
                 }
                 if (minNormalDist < 1)
