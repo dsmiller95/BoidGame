@@ -176,6 +176,7 @@ Shader "Unlit/FullScreenSDF 2"
 
             struct SdfHit
             {
+                int objIndex;
                 float distance;
                 float normalizedDistance;
                 float hardRadius;
@@ -184,7 +185,8 @@ Shader "Unlit/FullScreenSDF 2"
                 void accumulate(SdfHit other)
                 {
                     if(other.normalizedDistance >= normalizedDistance) return;
-                    
+
+                    objIndex = other.objIndex;
                     distance = other.distance;
                     normalizedDistance = other.normalizedDistance;
                     hardRadius = other.hardRadius;
@@ -193,7 +195,7 @@ Shader "Unlit/FullScreenSDF 2"
 
                 bool isHit()
                 {
-                    return normalizedDistance < 1;
+                    return objIndex >= 0;
                 }
             };
             
@@ -208,8 +210,13 @@ Shader "Unlit/FullScreenSDF 2"
                     return sdfHit.color;
                 }
 
-                float normalizedDistance = sdfHit.distance / radius;
-                float alpha = 1 - normalizedDistance;
+                float t = sdfHit.distance + _Time.y * -4;
+                
+                
+                float normalizedDistance = (sdfHit.distance - sdfHit.hardRadius) / (radius - sdfHit.hardRadius);
+                float alpha =
+                    (1 - normalizedDistance) *
+                    ((sin(t * 3) + 1) / 2);
                 
                 float4 objectColor = sdfHit.color;
                 objectColor.a = min(objectColor.a, alpha);
@@ -247,17 +254,18 @@ Shader "Unlit/FullScreenSDF 2"
             {
                 float2 uv = i.uv;
                 
-                SdfHit hit = {1e9, 1e9, 1, _BackgroundColor};
+                SdfHit hit = {-1, 1e9, 1e9, 1, _BackgroundColor};
 
                 //[unroll]
-                for (int i = 0; i < _SDFObjectCount; i++)
+                for (int index = 0; index < _SDFObjectCount; index++)
                 {
-                    SDFObjectData obj = _SDFObjects[i];
+                    SDFObjectData obj = _SDFObjects[index];
                     float2 relPos = uv - obj.center;
                     float dist = GetDistance(relPos, obj);
                     float normalDist = dist / obj.radius;
 
                     SdfHit currentHit = {
+                        index,
                         dist,
                         normalDist,
                         obj.hardRadius,
