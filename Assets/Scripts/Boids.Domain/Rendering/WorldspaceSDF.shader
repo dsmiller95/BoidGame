@@ -65,6 +65,7 @@ Shader "Unlit/FullScreenSDF 2"
                 float radius;
                 float hardRadius;
                 float annularRadius;
+                uint objectFlags;
                 float2 center;
                 float4 color;
 
@@ -198,8 +199,14 @@ Shader "Unlit/FullScreenSDF 2"
                     return objIndex >= 0;
                 }
             };
+
+            void Unity_RandomRange_float(float2 Seed, float Min, float Max, out float Out)
+            {
+                float randomno =  frac(sin(dot(Seed, float2(12.9898, 78.233)))*43758.5453);
+                Out = lerp(Min, Max, randomno);
+            }
             
-            float4 Render(float4 backgroundColor, SdfHit sdfHit)
+            float4 Render(float4 backgroundColor, SdfHit sdfHit, SDFObjectData hitObject)
             {
                 float radius = sdfHit.distance / sdfHit.normalizedDistance;
                 
@@ -210,13 +217,16 @@ Shader "Unlit/FullScreenSDF 2"
                     return sdfHit.color;
                 }
 
-                float t = sdfHit.distance + _Time.y * -4;
-                
+                float speedAdj = 1;
+                //Unity_RandomRange_float(float2(sdfHit.color.x, sdfHit.objIndex) , .9, 1.1, speedAdj);
+
+                int reverseFlow = (hitObject.objectFlags & 1) ? -1 : 1;
+                float t = sdfHit.distance + _Time.y * -4 * reverseFlow * speedAdj;
                 
                 float normalizedDistance = (sdfHit.distance - sdfHit.hardRadius) / (radius - sdfHit.hardRadius);
-                float alpha =
-                    (1 - normalizedDistance) *
-                    ((sin(t * 3) + 1) / 2);
+                float alphaFromEdge = (1 - normalizedDistance);
+                float ridges = (sin(t * 2) + 1) / 2;
+                float alpha = alphaFromEdge * (ridges * 0.7 + 0.3);
                 
                 float4 objectColor = sdfHit.color;
                 objectColor.a = min(objectColor.a, alpha);
@@ -276,7 +286,8 @@ Shader "Unlit/FullScreenSDF 2"
                 }
                 if(hit.isHit())
                 {
-                    return Render(_BackgroundColor, hit);
+                    SDFObjectData hitObject = _SDFObjects[hit.objIndex];
+                    return Render(_BackgroundColor, hit, hitObject);
                 }
                 return _BackgroundColor;
             }

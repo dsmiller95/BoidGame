@@ -17,6 +17,7 @@ namespace Boids.Domain.Rendering
         public float radius;
         public float hardRadius;
         public float annularRadius;
+        public uint objectFlags;
         public float2 center;
         public float4 color;
         
@@ -29,6 +30,7 @@ namespace Boids.Domain.Rendering
                 radius = shape.obstacleRadius,
                 hardRadius = hardRadius,
                 annularRadius = shape.annularRadius,
+                objectFlags = shape.objectFlags,
                 color = color,
                 center = worldCenter,
                 shapeVariant = SdfVariantData.FromShape(shape)
