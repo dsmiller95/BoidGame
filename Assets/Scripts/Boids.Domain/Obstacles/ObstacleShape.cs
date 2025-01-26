@@ -123,14 +123,15 @@ namespace Boids.Domain.Obstacles
         [FieldOffset(8)]
         public float annularRadius;
 
+        // TODO: put into its own thing, along with shape variant. externalize radii.
         [FieldOffset(12)]
         public FixedBytes16 variantData;
         
         [FieldOffset(12)]
-        public BeamVariant beamVariant;
+        public CircleVariant circleVariant;
         
         [FieldOffset(12)]
-        public CircleVariant circleVariant;
+        public BeamVariant beamVariant;
         
         [FieldOffset(12)]
         public BoxVariant boxVariant;
@@ -294,10 +295,13 @@ namespace Boids.Domain.Obstacles
         public float annularRadius;
         
         [FieldOffset(12)]
-        public BeamVariant beamVariant;
+        public FixedBytes16 variantData;
         
         [FieldOffset(12)]
         public CircleVariant circleVariant;
+        
+        [FieldOffset(12)]
+        public BeamVariant beamVariant;
         
         [FieldOffset(12)]
         public BoxVariant boxVariant;
@@ -333,6 +337,7 @@ namespace Boids.Domain.Obstacles
                 shapeVariant = this.shapeVariant,
                 obstacleRadius = this.obstacleRadius,
                 annularRadius = this.annularRadius,
+                variantData = this.variantData,
             };
             resultShape.AdjustForScale(linearScale, rotation);
             return resultShape;
