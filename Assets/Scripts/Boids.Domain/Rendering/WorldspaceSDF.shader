@@ -174,6 +174,48 @@ Shader "Unlit/FullScreenSDF 2"
                 return dist / objectData.radius;
             }
 
+            struct SdfHit
+            {
+                float distance;
+                float normalizedDistance;
+                float hardRadius;
+                float4 color;
+
+                void accumulate(SdfHit other)
+                {
+                    if(other.normalizedDistance >= normalizedDistance) return;
+                    
+                    distance = other.distance;
+                    normalizedDistance = other.normalizedDistance;
+                    hardRadius = other.hardRadius;
+                    color = other.color;
+                }
+
+                bool isHit()
+                {
+                    return normalizedDistance < 1;
+                }
+            };
+            
+            float4 Render(float4 backgroundColor, SdfHit sdfHit)
+            {
+                float radius = sdfHit.distance / sdfHit.normalizedDistance;
+                
+                if(sdfHit.distance > radius) return backgroundColor;
+
+                if(sdfHit.distance < sdfHit.hardRadius)
+                {
+                    return sdfHit.color;
+                }
+
+                float normalizedDistance = sdfHit.distance / radius;
+                float alpha = 1 - normalizedDistance;
+                
+                float4 objectColor = sdfHit.color;
+                objectColor.a = min(objectColor.a, alpha);
+                return objectColor;
+            }
+
             v2f vert(appdata v)
             {
                 v2f o;
@@ -203,15 +245,9 @@ Shader "Unlit/FullScreenSDF 2"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                //return float4(i.uv.xy, 1, 1);
-
                 float2 uv = i.uv;
-
-
-                float minNormalDist = 1e9;
-                float finalDist = 1e9;
-                float hardRadius = 1;
-                float4 finalColor = _BackgroundColor;
+                
+                SdfHit hit = {1e9, 1e9, 1, _BackgroundColor};
 
                 //[unroll]
                 for (int i = 0; i < _SDFObjectCount; i++)
@@ -221,25 +257,20 @@ Shader "Unlit/FullScreenSDF 2"
                     float dist = GetDistance(relPos, obj);
                     float normalDist = dist / obj.radius;
 
-                    if (normalDist < 1 && normalDist < minNormalDist)
-                    {
-                        minNormalDist = normalDist;
-                        finalDist = dist;
-                        hardRadius = obj.hardRadius;
-                        finalColor = obj.color;
-                    }
+                    SdfHit currentHit = {
+                        dist,
+                        normalDist,
+                        obj.hardRadius,
+                        obj.color
+                    };
+
+                    hit.accumulate(currentHit);
                 }
-                if (minNormalDist < 1)
+                if(hit.isHit())
                 {
-                    if (finalDist > hardRadius)
-                    {
-                        minNormalDist = clamp(minNormalDist, 0, 1);
-                        finalColor.a = min(finalColor.a, 1 - minNormalDist);
-                    }
+                    return Render(_BackgroundColor, hit);
                 }
-                
-                return finalColor;
-                
+                return _BackgroundColor;
             }
             ENDCG
         }
