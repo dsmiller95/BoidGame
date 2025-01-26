@@ -18,6 +18,7 @@ namespace Boids.Domain.BoidJobs
 
         private Obstacle _nearestObstacle;
         private float2 _nearastObstacleNormal;
+        private float _nearestObstacleDistance;
         private float _nearestObstacleDistanceNormalizedFromCenter;
         private bool HasObstacle => // we have a variant, and we are inside the obstacle's radius
             _nearestObstacle.behavior.variant != ObstacleBehaviorVariant.None &&
@@ -66,14 +67,16 @@ namespace Boids.Domain.BoidJobs
             
             //var relativeObstaclePosition = obstacleCellData.Position - position;
             var relativeToObstacle = position - obstacleCellData.Position;
-            var (obstacleDistance, obstacleNormal) = obstacleCellData.Obstacle.shape.GetNormalizedDistanceAndNormal(relativeToObstacle);
+            var (obstacleDistance, obstacleNormal) = obstacleCellData.Obstacle.shape.GetDistanceAndNormal(relativeToObstacle);
             // var distance = math.length(relativeObstaclePosition);
             // var normalizedDistanceFromCenter = distance / obstacleCellData.Obstacle.obstacleRadius;
-            if (obstacleDistance > 0.00001f && obstacleDistance < this._nearestObstacleDistanceNormalizedFromCenter)
+            var normalizedDistance = obstacleDistance / obstacleCellData.Obstacle.shape.obstacleRadius;
+            if (obstacleDistance > 0.00001f && normalizedDistance < this._nearestObstacleDistanceNormalizedFromCenter)
             {
                 this._nearestObstacle = obstacleCellData.Obstacle;
                 this._nearastObstacleNormal = obstacleNormal;
-                this._nearestObstacleDistanceNormalizedFromCenter = obstacleDistance;
+                this._nearestObstacleDistance = obstacleDistance;
+                this._nearestObstacleDistanceNormalizedFromCenter = normalizedDistance;
             }
         }
         
@@ -114,6 +117,7 @@ namespace Boids.Domain.BoidJobs
             {
                 var (resultHeading, forceHeading) = _nearestObstacle.GetHeading(
                     _nearastObstacleNormal,
+                    _nearestObstacleDistance,
                     _nearestObstacleDistanceNormalizedFromCenter,
                     boidSettings,
                     linearVelocity);

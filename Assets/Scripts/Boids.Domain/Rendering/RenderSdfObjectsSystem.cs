@@ -15,19 +15,19 @@ namespace Boids.Domain.Rendering
     public struct SDFObjectRenderData : IComponentData
     {
         public float radius;
-        public float hardRadiusFraction;
+        public float hardRadius;
         public float annularRadius;
         public float2 center;
         public float4 color;
         
         public SdfVariantData shapeVariant;
 
-        public static SDFObjectRenderData FromShape(ObstacleShape shape, float hardSurface, float4 color, float2 worldCenter)
+        public static SDFObjectRenderData FromShape(ObstacleShape shape, float hardRadius, float4 color, float2 worldCenter)
         {
             return new SDFObjectRenderData
             {
                 radius = shape.obstacleRadius,
-                hardRadiusFraction = hardSurface,
+                hardRadius = hardRadius,
                 annularRadius = shape.annularRadius,
                 color = color,
                 center = worldCenter,

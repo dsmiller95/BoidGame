@@ -43,21 +43,23 @@ namespace Boids.Domain.Obstacles
         public ObstacleBehavior behavior;
         public ObstacleShape shape;
 
-        public float obstacleHardSurfaceRadiusFraction;
+        public float hardRadius;
 
-        public readonly bool IsInsideHardSurface(in float normalizedDistance)
+        public readonly bool IsInsideHardSurface(in float distance)
         {
-            return normalizedDistance < obstacleHardSurfaceRadiusFraction;
+            return distance < hardRadius;
         }
 
         public readonly (float2 resultHeading, bool forceHeading) GetHeading(
             in float2 normalFromObstacle,
+            in float distanceFromMe,
             in float normalizedDistanceFromMe,
             in Boid boidSettings,
             in float2 boidLinearVelocity)
         {
             var awayFromObstacleNormal = normalFromObstacle;
 
+            // TODO: wrong?change?
             float distanceToSurface = 1 - normalizedDistanceFromMe;
 
             float2 upToSurfaceOfObstacle = awayFromObstacleNormal * distanceToSurface;
@@ -65,7 +67,7 @@ namespace Boids.Domain.Obstacles
             {
                 case ObstacleBehaviorVariant.Repel:
                     upToSurfaceOfObstacle += awayFromObstacleNormal * boidSettings.obstacleAvoidanceConstantRepellent;
-                    var hardSurface = normalizedDistanceFromMe < obstacleHardSurfaceRadiusFraction;
+                    var hardSurface = distanceFromMe < hardRadius;
                     if (!hardSurface)
                     {
                         upToSurfaceOfObstacle = upToSurfaceOfObstacle.ClampMagnitude(behavior.maxEffectMagnitude);
@@ -108,11 +110,13 @@ namespace Boids.Domain.Obstacles
         
         public readonly Obstacle GetWorldSpace(in LocalToWorld localToWorld, in ObstacleComponent obstacleBehavor)
         {
+            // TODO: repeated calculation inside GetWorldSpace
+            var presumedLinearScale = localToWorld.Value.GetPresumedLinearScale();
             return new Obstacle
             {
                 behavior = obstacleBehavor.behavior,
                 shape = this.shapeData.GetWorldSpace(localToWorld),
-                obstacleHardSurfaceRadiusFraction = obstacleBehavor.obstacleHardSurfaceRadiusFraction,
+                hardRadius = obstacleBehavor.hardRadius * presumedLinearScale,
             };
         }
     }
@@ -121,7 +125,7 @@ namespace Boids.Domain.Obstacles
     public struct ObstacleComponent : IComponentData
     {
         public ObstacleBehavior behavior;
-        public float obstacleHardSurfaceRadiusFraction;
+        public float hardRadius;
     }
     
     public struct OriginalColor : IComponentData

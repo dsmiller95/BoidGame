@@ -20,7 +20,7 @@ namespace Boids.Domain.Rendering
                 
                 objectData.ValueRW = SDFObjectRenderData.FromShape(
                     shape,
-                    plainObject.ValueRO.hardRadiusFraction,
+                    plainObject.ValueRO.hardRadius,
                     plainObject.ValueRO.color.ToFloat4(),
                     localToWorld.ValueRO.Position.xy
                 );

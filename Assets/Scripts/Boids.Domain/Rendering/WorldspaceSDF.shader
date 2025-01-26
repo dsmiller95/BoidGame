@@ -63,7 +63,7 @@ Shader "Unlit/FullScreenSDF 2"
             struct SDFObjectData
             {
                 float radius;
-                float hardRadiusFraction;
+                float hardRadius;
                 float annularRadius;
                 float2 center;
                 float4 color;
@@ -208,8 +208,9 @@ Shader "Unlit/FullScreenSDF 2"
                 float2 uv = i.uv;
 
 
-                float minDist = 1e9;
-                float hardRadiusFraction = 1e9;
+                float minNormalDist = 1e9;
+                float finalDist = 1e9;
+                float hardRadius = 1e9;
                 float4 finalColor = _BackgroundColor;
 
                 //[unroll]
@@ -217,21 +218,23 @@ Shader "Unlit/FullScreenSDF 2"
                 {
                     SDFObjectData obj = _SDFObjects[i];
                     float2 relPos = uv - obj.center;
-                    float dist = GetNormalizedDistanceFromCenter(relPos, obj);
+                    float dist = GetDistance(relPos, obj);
+                    float normalDist = dist / obj.radius;
 
-                    if (dist < 1 && dist < minDist)
+                    if (normalDist < 1 && normalDist < minNormalDist)
                     {
-                        minDist = dist;
+                        minNormalDist = normalDist;
+                        finalDist = dist;
                         finalColor = obj.color;
-                        hardRadiusFraction = obj.hardRadiusFraction;
+                        hardRadius = obj.hardRadius;
                     }
                 }
-                if (minDist < 1)
+                if (minNormalDist < 1)
                 {
-                    if (minDist > hardRadiusFraction)
+                    if (finalDist > hardRadius)
                     {
-                        minDist = clamp(minDist, 0, 1);
-                        finalColor.a = min(finalColor.a, 1 - minDist);
+                        minNormalDist = clamp(minNormalDist, 0, 1);
+                        finalColor.a = min(finalColor.a, 1 - minNormalDist);
                     }
                 }
                 

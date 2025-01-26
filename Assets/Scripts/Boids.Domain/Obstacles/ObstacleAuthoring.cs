@@ -13,7 +13,9 @@ namespace Boids.Domain.Obstacles
 {
     public class ObstacleAuthoring : MonoBehaviour
     {
+        [Obsolete]
         public float hardSurfaceRadiusFraction = 0.8f;
+        public float hardSurfaceRadius = 0.8f;
         
         [FormerlySerializedAs("variantData")] 
         public ObstacleBehavior behavior = new ObstacleBehavior()
@@ -42,6 +44,13 @@ namespace Boids.Domain.Obstacles
 
         public static bool Migrate(ObstacleAuthoring component)
         {
+            var hardRadius = component.hardSurfaceRadiusFraction * component.shapeData.obstacleRadius;
+            if(!Mathf.Approximately(component.hardSurfaceRadius, hardRadius))
+            {
+                component.hardSurfaceRadius = hardRadius;
+                return true;
+            }
+
             return false;
         }
         
@@ -54,7 +63,7 @@ namespace Boids.Domain.Obstacles
                 AddComponent(entity, new ObstacleComponent()
                 {
                     behavior = authoring.behavior,
-                    obstacleHardSurfaceRadiusFraction = authoring.hardSurfaceRadiusFraction,
+                    hardRadius = authoring.hardSurfaceRadius,
                 });
                 AddComponent(entity, new SdfShapeComponent()
                 {
@@ -122,10 +131,10 @@ namespace Boids.Domain.Obstacles
             var resolution = new Vector2Int(gizmoDrawResolution, gizmoDrawResolution);
             SampleSdfGizmos(minLocal, maxLocal, resolution, localPoint =>
             {
-                var normalizedDistance = obstacle.shape.GetNormalizedDistance(localPoint);
-                if (normalizedDistance > 1) return null;
+                var distance = obstacle.shape.GetDistance(localPoint);
+                if (!obstacle.shape.IsInside(distance)) return null;
                 var color = Color.green;
-                if (obstacle.IsInsideHardSurface(normalizedDistance))
+                if (obstacle.IsInsideHardSurface(distance))
                 {
                     color = Color.red;
                 }
@@ -141,7 +150,7 @@ namespace Boids.Domain.Obstacles
             var obstacleComponent = new ObstacleComponent()
             {
                 behavior = behavior,
-                obstacleHardSurfaceRadiusFraction = hardSurfaceRadiusFraction,
+                hardRadius = hardSurfaceRadius,
             };
             var shapeComponent = new SdfShapeComponent()
             {

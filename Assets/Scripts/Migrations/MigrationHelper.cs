@@ -79,6 +79,7 @@ namespace Migrations{
         public static void MigrateTmp()
         {
             UpdateInAll<SdfObjectAuthoring>(SdfObjectAuthoring.Migrate);
+            UpdateInAll<ObstacleAuthoring>(ObstacleAuthoring.Migrate);
         }
     }
 }

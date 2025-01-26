@@ -25,7 +25,7 @@ namespace Boids.Domain.Rendering
                 var shape = obstacle.shape;
                 objectData.ValueRW = SDFObjectRenderData.FromShape(
                     shape,
-                    obstacle.obstacleHardSurfaceRadiusFraction,
+                    obstacle.hardRadius,
                     obstacleRender.ValueRO.color,
                     localToWorld.ValueRO.Position.xy
                 );
