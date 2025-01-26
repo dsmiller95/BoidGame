@@ -13,6 +13,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3673743807244670062, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
+      propertyPath: hardSurfaceRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3673743807244670062, guid: e545b981f6a36e64d99cca618b1ae9b9, type: 3}
       propertyPath: variantData.variant
       value: 2
       objectReference: {fileID: 0}

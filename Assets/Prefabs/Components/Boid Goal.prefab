@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hardSurfaceRadiusFraction: 0
+  hardSurfaceRadius: 0
   behavior:
     variant: 2
     obstacleEffectMultiplier: 10
@@ -63,6 +64,9 @@ MonoBehaviour:
         y: 0
   playerOwned: 0
   snapToGrid: 0
+  emitSounds: 1
+  emitWhenPickedUp: 0
+  emitWhenDropped: 0
   gizmoDrawResolutionUnselected: 10
   gizmosDrawTransparencyUnselected: 0.1
   gizmoDrawResolution: 20

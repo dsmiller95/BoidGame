@@ -529,6 +529,10 @@ PrefabInstance:
       value: Boid Sphere Repel Soft (1)
       objectReference: {fileID: 0}
     - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
+      propertyPath: hardSurfaceRadius
+      value: -1.6520001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: shapeData.annularRadius
       value: 1.91
       objectReference: {fileID: 0}

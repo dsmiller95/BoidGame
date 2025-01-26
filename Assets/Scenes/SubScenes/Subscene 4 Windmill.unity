@@ -424,6 +424,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
+      propertyPath: hardSurfaceRadius
+      value: 4.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: shapeData.annularRadius
       value: 0
       objectReference: {fileID: 0}
@@ -1123,6 +1127,10 @@ PrefabInstance:
     - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: behavior.variant
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
+      propertyPath: hardSurfaceRadius
+      value: 4.8
       objectReference: {fileID: 0}
     - target: {fileID: 2672874142553347971, guid: 1e9501e208e8e0a43b1246a21ea2e002, type: 3}
       propertyPath: shapeData.annularRadius
