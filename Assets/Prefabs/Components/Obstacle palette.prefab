@@ -95,6 +95,24 @@ MonoBehaviour:
     shapeVariant: 2
     obstacleRadius: 0
     annularRadius: 2
+    objectFlags: 0
+    variantData:
+      byte0000: 0
+      byte0001: 0
+      byte0002: 160
+      byte0003: 65
+      byte0004: 0
+      byte0005: 0
+      byte0006: 240
+      byte0007: 65
+      byte0008: 0
+      byte0009: 0
+      byte0010: 0
+      byte0011: 0
+      byte0012: 0
+      byte0013: 0
+      byte0014: 0
+      byte0015: 0
     beamVariant:
       beamRelativeEnd:
         x: 20
@@ -104,5 +122,5 @@ MonoBehaviour:
         x: 20
         y: 30
   plainObject:
-    hardRadiusFraction: 0
+    hardRadius: 0
     color: {r: 0.376, g: 0.013947097, b: 0.0026319884, a: 0.83137256}

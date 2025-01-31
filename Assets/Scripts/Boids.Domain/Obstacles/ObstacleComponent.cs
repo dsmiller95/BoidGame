@@ -70,7 +70,7 @@ namespace Boids.Domain.Obstacles
                     var hardSurface = distanceFromMe < hardRadius;
                     if (!hardSurface)
                     {
-                        upToSurfaceOfObstacle = upToSurfaceOfObstacle.ClampMagnitude(behavior.maxEffectMagnitude);
+                        upToSurfaceOfObstacle = (upToSurfaceOfObstacle * behavior.obstacleEffectMultiplier).ClampMagnitude(behavior.maxEffectMagnitude);
                         return (upToSurfaceOfObstacle, false);
                     }
                     
