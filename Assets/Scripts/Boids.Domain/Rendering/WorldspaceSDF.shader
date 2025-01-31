@@ -221,12 +221,12 @@ Shader "Unlit/FullScreenSDF 2"
                 //Unity_RandomRange_float(float2(sdfHit.color.x, sdfHit.objIndex) , .9, 1.1, speedAdj);
 
                 int reverseFlow = (hitObject.objectFlags & 1) ? -1 : 1;
-                float t = sdfHit.distance + _Time.y * -4 * reverseFlow * speedAdj;
+                float t = sdfHit.distance + _Time.y * -2 * reverseFlow * speedAdj;
                 
-                float normalizedDistance = (sdfHit.distance - sdfHit.hardRadius) / (radius - sdfHit.hardRadius);
+                float normalizedDistance = sdfHit.distance / radius;
                 float alphaFromEdge = (1 - normalizedDistance);
                 float ridges = (sin(t * 2) + 1) / 2;
-                float alpha = alphaFromEdge * (ridges * 0.7 + 0.3);
+                float alpha = alphaFromEdge * (ridges * 0.5 + 0.5);
                 
                 float4 objectColor = sdfHit.color;
                 objectColor.a = min(objectColor.a, alpha);
