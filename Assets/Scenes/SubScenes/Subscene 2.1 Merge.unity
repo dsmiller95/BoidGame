@@ -248,7 +248,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1688805877764602052, guid: eb07853f1b26eac438410f157c3426dc, type: 3}
       propertyPath: decayPerSecond
-      value: 40
+      value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 2767075929349691855, guid: eb07853f1b26eac438410f157c3426dc, type: 3}
       propertyPath: m_LocalPosition.x
