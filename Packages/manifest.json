@@ -1,8 +1,9 @@
 {
   "dependencies": {
     "com.cysharp.unitask": "2.5.10",
-    "com.dman.simple-json-save-system": "https://github.com/dsmiller95/SimpleSave.git?path=Assets/com.dman.simple-json-save-system",
     "com.dman.async-utilities": "https://github.com/dsmiller95/DmanUtilities.git?path=Assets/UtilityScripts/com.dman.async-utilities",
+    "com.dman.math": "0.1.1",
+    "com.dman.simple-json-save-system": "https://github.com/dsmiller95/SimpleSave.git?path=Assets/com.dman.simple-json-save-system",
     "com.dman.utilities": "0.8.0",
     "com.unity.collab-proxy": "2.6.0",
     "com.unity.collections": "2.5.1",
@@ -17,6 +18,7 @@
     "com.unity.render-pipelines.universal": "17.0.3",
     "com.unity.test-framework": "1.4.5",
     "com.unity.timeline": "1.8.7",
+    "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.10",
     "com.unity.ugui": "2.0.0",
     "com.unity.visualscripting": "1.9.5",
     "com.unity.modules.accessibility": "1.0.0",
@@ -50,8 +52,7 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "com.dman.math": "0.1.1"
+    "com.unity.modules.xr": "1.0.0"
   },
   "scopedRegistries": [
     {
