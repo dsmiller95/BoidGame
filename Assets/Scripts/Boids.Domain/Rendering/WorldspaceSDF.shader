@@ -174,14 +174,13 @@ Shader "Unlit/FullScreenSDF 2"
                 float dist = GetDistance(relPos, objectData);
                 return dist / objectData.radius;
             }
+            
 
             struct SdfHit
             {
                 int objIndex;
                 float distance;
                 float normalizedDistance;
-                float hardRadius;
-                float4 color;
 
                 void accumulate(SdfHit other)
                 {
@@ -190,8 +189,6 @@ Shader "Unlit/FullScreenSDF 2"
                     objIndex = other.objIndex;
                     distance = other.distance;
                     normalizedDistance = other.normalizedDistance;
-                    hardRadius = other.hardRadius;
-                    color = other.color;
                 }
 
                 bool isHit()
@@ -206,15 +203,19 @@ Shader "Unlit/FullScreenSDF 2"
                 Out = lerp(Min, Max, randomno);
             }
             
-            float4 Render(float4 backgroundColor, SdfHit sdfHit, SDFObjectData hitObject)
+            void Render(SdfHit sdfHit, SDFObjectData hitObject, out float4 color, out float weight)
             {
-                float radius = sdfHit.distance / sdfHit.normalizedDistance;
+                if(sdfHit.distance > hitObject.radius){
+                    weight = 0;
+                    color = 0;
+                    return;
+                }
                 
-                if(sdfHit.distance > radius) return backgroundColor;
-
-                if(sdfHit.distance < sdfHit.hardRadius)
+                if(sdfHit.distance < hitObject.hardRadius)
                 {
-                    return sdfHit.color;
+                    weight = 1 - sdfHit.normalizedDistance;
+                    color = hitObject.color;
+                    return;
                 }
 
                 float speedAdj = 1;
@@ -223,14 +224,55 @@ Shader "Unlit/FullScreenSDF 2"
                 int reverseFlow = (hitObject.objectFlags & 1) ? -1 : 1;
                 float t = sdfHit.distance + _Time.y * -2 * reverseFlow * speedAdj;
                 
-                float normalizedDistance = sdfHit.distance / radius;
+                float normalizedDistance = sdfHit.distance / hitObject.radius;
                 float alphaFromEdge = (1 - normalizedDistance);
                 float ridges = (sin(t * 2) + 1) / 2;
                 float alpha = alphaFromEdge * (ridges * 0.5 + 0.5);
                 
-                float4 objectColor = sdfHit.color;
+                float4 objectColor = hitObject.color;
                 objectColor.a = min(objectColor.a, alpha);
-                return objectColor;
+                
+                weight = 1 - sdfHit.normalizedDistance;
+                color = objectColor;
+                return;
+            }
+            
+            struct SdfRenderAccumulate
+            {
+                float4 color;
+                float totalWeight;
+
+                void accumulate(SdfHit hit)
+                {
+                    if (!hit.isHit()) return;
+
+                    SDFObjectData hitObject = _SDFObjects[hit.objIndex];
+                    
+                    float4 renderColor;
+                    float renderWeight;
+                    Render(hit, hitObject, renderColor, renderWeight);
+                    
+                    color += renderColor * renderWeight;
+                    totalWeight += renderWeight;
+                }
+
+                float4 blendedColor()
+                {
+                    return color / totalWeight;
+                }
+
+                bool isEmpty()
+                {
+                    return totalWeight < 0.0001;
+                }
+            };
+            
+            SdfRenderAccumulate SdfRenderAccumulateDefault()
+            {
+                SdfRenderAccumulate result;
+                result.color = float4(0, 0, 0, 0);
+                result.totalWeight = 0;
+                return result;
             }
 
             v2f vert(appdata v)
@@ -263,8 +305,9 @@ Shader "Unlit/FullScreenSDF 2"
             fixed4 frag(v2f i) : SV_Target
             {
                 float2 uv = i.uv;
-                
-                SdfHit hit = {-1, 1e9, 1e9, 1, _BackgroundColor};
+
+                SdfRenderAccumulate acc = SdfRenderAccumulateDefault();
+                SdfHit hit = {-1, 1e9, 1e9};
 
                 //[unroll]
                 for (int index = 0; index < _SDFObjectCount; index++)
@@ -278,16 +321,26 @@ Shader "Unlit/FullScreenSDF 2"
                         index,
                         dist,
                         normalDist,
-                        obj.hardRadius,
-                        obj.color
                     };
+                    //currentHit.color = obj.color;
 
+                    acc.accumulate(currentHit);
                     hit.accumulate(currentHit);
                 }
+                // if (!acc.isEmpty())
+                // {
+                //     return acc.blendedColor();
+                // }
                 if(hit.isHit())
                 {
                     SDFObjectData hitObject = _SDFObjects[hit.objIndex];
-                    return Render(_BackgroundColor, hit, hitObject);
+                    float4 renderColor;
+                    float weight;
+                    Render(hit, hitObject, renderColor, weight);
+                    if (weight > 0.0001)
+                    {
+                        return renderColor;
+                    }
                 }
                 return _BackgroundColor;
             }
