@@ -131,7 +131,7 @@ namespace Boids.Domain.Audio
         public SoundEffectType type;
         public float2 position;
         // when passing in non-zero, this will ensure that all sounds from the same emitter will be played on the same source
-        public int emitterId;
+        public ulong emitterId;
     }
 
     public interface IEmitSoundEffects
@@ -154,7 +154,7 @@ namespace Boids.Domain.Audio
             public AudioSource overlaySource;
             public SoundEffectType? lastType;
             public SoundEffect? lastEffect;
-            public int lastEmitterId;
+            public ulong lastEmitterId;
             public int totalPlaying;
 
             private int lastSemitoneIndexPlayed;
@@ -335,7 +335,7 @@ namespace Boids.Domain.Audio
             source.Play(emit, effect, rng);
         }
 
-        private AudioPlayingSource? GetBestFor(SoundEffect effect, int emitterId, Random rng)
+        private AudioPlayingSource? GetBestFor(SoundEffect effect, ulong emitterId, Random rng)
         {
             if (emitterId != 0)
             {

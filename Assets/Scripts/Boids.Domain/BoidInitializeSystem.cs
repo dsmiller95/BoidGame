@@ -2,6 +2,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 
 namespace Boids.Domain
 {
@@ -24,9 +25,11 @@ namespace Boids.Domain
             var time = (float)state.WorldUnmanaged.Time.ElapsedTime;
             
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var newBoid in SystemAPI.Query<NewBoidAspect>())
+            foreach (var (boidShared, boidSpawn, velocity, entity) in SystemAPI
+                         .Query<Boid, BoidSpawnData, RefRW<PhysicsVelocity>>()
+                         .WithEntityAccess())
             {
-                newBoid.Initialize(ref rng, ecb, time);
+                NewBoidHelper.Initialize(entity, boidShared, boidSpawn, velocity, ref rng, ecb, time);
             }
             ecb.Playback(state.EntityManager);
         }

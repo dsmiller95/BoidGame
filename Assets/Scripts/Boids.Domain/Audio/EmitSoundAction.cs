@@ -14,7 +14,7 @@ namespace Boids.Domain.Audio
             {
                 type = soundType,
                 position = transform.position.ToFloat3().xy,
-                emitterId = enforceUnique ? GetInstanceID() : 0
+                emitterId = enforceUnique ? EntityId.ToULong(GetEntityId()) : 0
             };
             var soundEmitter = SingletonLocator<IEmitSoundEffects>.Instance;
             soundEmitter.EmitSounds(new[] {soundEmit});

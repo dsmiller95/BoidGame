@@ -1,34 +1,31 @@
-﻿using System;
+using System;
 using Unity.Entities;
 using UnityEngine;
 
 namespace Boids.Domain.DebugFlags
 {
+    public struct DebugSpriteRenderer : IComponentData
+    {
+        public UnityObjectRef<SpriteRenderer> value;
+    }
+
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct DebugRenderSystem: ISystem
     {
         public void OnUpdate(ref SystemState state)
         {
-            var query = SystemAPI.QueryBuilder()
-                .WithAll<SpriteRenderer, DebugFlagComponent>()
-                .Build();
-            var job = new WriteDebugColors();
-            job.Run(query);
-        }
-
-        private partial struct WriteDebugColors : IJobEntity
-        {
-            private void Execute(in DebugFlagComponent flag, SpriteRenderer spriteRenderer)
+            foreach (var (flag, spriteRenderer) in SystemAPI
+                         .Query<RefRO<DebugFlagComponent>, RefRO<DebugSpriteRenderer>>())
             {
-                var color = flag.flag switch
+                var color = flag.ValueRO.flag switch
                 {
                     FlagType.None => Color.white,
                     FlagType.Secondary => Color.red,
                     FlagType.Primary => Color.magenta,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                spriteRenderer.color = color;
+                spriteRenderer.ValueRO.value.Value.color = color;
             }
         }
     }
